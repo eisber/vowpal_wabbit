@@ -6,18 +6,19 @@ license as described in the file LICENSE.
 
 #include "io_buf.h"
 
-using namespace System;
-using namespace System::IO;
+#include <vector>
 
 namespace VW
 {
-	class clr_io_buf : public io_buf
+	class clr_io_memory_buf : public io_buf
 	{
 	private:
-		gcroot<Stream^> m_stream;
+		vector<char> m_data;
+
+		vector<char>::const_iterator m_iterator;
 
 	public:
-		clr_io_buf(Stream^stream);
+		clr_io_memory_buf();
 
 		virtual int open_file(const char* name, bool stdin_off, int flag = READ);
 
@@ -30,7 +31,7 @@ namespace VW
 		virtual ssize_t write_file(int file, const void* buf, size_t nbytes);
 
 		virtual bool compressed();
-
+		
 		virtual bool close_file();
 	};
 }

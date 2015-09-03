@@ -93,6 +93,7 @@ namespace VW {
   void releaseFeatureSpace(primitive_feature_space* features, size_t len);
 
   void save_predictor(vw& all, string reg_name);
+  void save_predictor(vw& all, io_buf& buf);
 
   // inlines
 

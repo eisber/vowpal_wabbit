@@ -7,6 +7,7 @@ license as described in the file LICENSE.
 #include "vw_clr.h"
 #include "best_constant.h"
 #include "clr_io.h"
+#include "clr_io_memory.h"
 #include "parser.h"
 #include "parse_regressor.h"
 #include "parse_args.h"
@@ -43,18 +44,15 @@ namespace VW
 		CATCHRETHROW
 	}
 
-	VowpalWabbitBase::VowpalWabbitBase(String^ args, System::IO::Stream^ stream)
-        : VowpalWabbitBase((vw*)nullptr)
+	void VowpalWabbitBase::InitializeFromModel(string args, io_buf& model)
 	{
-		clr_io_buf model(stream);
 		char** argv = nullptr;
 		int argc = 0;
-		
+
 		try
 		{
-			auto string = msclr::interop::marshal_as<std::string>(args);
-			string += " --no_stdin";
-			argv = VW::get_argv_from_string(string, argc);
+
+			argv = VW::get_argv_from_string(args, argc);
 
 			vw& all = parse_args(argc, argv);
 			parse_modules(all, model);
@@ -66,7 +64,7 @@ namespace VW
 			m_hasher = GetHasher();
 		}
 		CATCHRETHROW
-		finally
+			finally
 		{
 			if (argv != nullptr)
 			{
@@ -75,6 +73,16 @@ namespace VW
 				free(argv);
 			}
 		}
+	}
+
+	VowpalWabbitBase::VowpalWabbitBase(String^ args, System::IO::Stream^ stream)
+        : VowpalWabbitBase((vw*)nullptr)
+	{
+		clr_io_buf model(stream);
+		auto string = msclr::interop::marshal_as<std::string>(args);
+		string += " --no_stdin";
+
+		InitializeFromModel(string, model);
 	}
 
     example* VowpalWabbitBase::GetOrCreateNativeExample()
@@ -200,6 +208,30 @@ namespace VW
 		try
 		{
 			VW::save_predictor(*m_vw, name);
+		}
+		CATCHRETHROW
+	}
+
+	void VowpalWabbitBase::Reload()
+	{
+		clr_io_memory_buf mem_buf;
+
+		try
+		{
+			VW::save_predictor(*m_vw, mem_buf);
+			mem_buf.flush();
+
+			release_parser_datastructures(*m_vw);
+
+			// make sure don't try to free m_vw twice in case VW::finish throws.
+			vw* vw_tmp = m_vw;
+			m_vw = nullptr;
+			VW::finish(*vw_tmp);
+
+			// reload from model
+			// seek to beginning
+			mem_buf.reset_file(0);
+			InitializeFromModel("", mem_buf);
 		}
 		CATCHRETHROW
 	}

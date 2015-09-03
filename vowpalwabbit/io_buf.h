@@ -63,6 +63,7 @@ class io_buf {
 	{
 #ifdef _WIN32
 	  // _O_SEQUENTIAL hints to OS that we'll be reading sequentially, so cache aggressively.
+
 	  _sopen_s(&ret, name, _O_RDONLY|_O_BINARY|_O_SEQUENTIAL, _SH_DENYWR, 0);
 #else
 	  ret = open(name, O_RDONLY|O_LARGEFILE);

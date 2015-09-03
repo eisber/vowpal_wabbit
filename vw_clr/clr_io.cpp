@@ -58,12 +58,7 @@ namespace VW
 	{
 		return false;
 	}
-
-	void clr_io_buf::flush()
-	{
-		m_stream->Flush();
-	}
-
+	
 	bool clr_io_buf::close_file()
 	{
 		m_stream->Close();

@@ -273,12 +273,14 @@ namespace VW
 		/// <remarks>
 		/// Avoiding if-else for hash function selection. Delegates outperform function pointers according to http://stackoverflow.com/questions/13443250/performance-of-c-cli-function-pointers-versus-net-delegates
 		/// </remarks>
-		initonly Func<String^, unsigned long, size_t>^ m_hasher;
+		Func<String^, unsigned long, size_t>^ m_hasher;
 
 		/// <summary>
 		/// Select the right hash method based on args.
 		/// </summary>
 		Func<String^, unsigned long, size_t>^ GetHasher();
+
+		void InitializeFromModel(string args, io_buf& model);
 
 	internal:
 		/// <summary>
@@ -344,6 +346,8 @@ namespace VW
 		/// </summary>
 		/// <param name="filename">The destination filename for the model.</param>
 		void SaveModel(String^ filename);
+
+		void Reload();
 
 		/// <summary>
 		/// Gets Collected performance statistics.

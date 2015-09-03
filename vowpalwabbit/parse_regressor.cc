@@ -348,6 +348,12 @@ void save_load_header(vw& all, io_buf& model_file, bool read, bool text)
 
 }
 
+void dump_regressor(vw& all, io_buf& buf, bool as_text)
+{
+	save_load_header(all, buf, false, as_text);
+	all.l->save_load(buf, false, as_text);
+}
+
 void dump_regressor(vw& all, string reg_name, bool as_text)
 {
   if (reg_name == string(""))
@@ -357,8 +363,7 @@ void dump_regressor(vw& all, string reg_name, bool as_text)
 
   io_temp.open_file(start_name.c_str(), all.stdin_off, io_buf::WRITE);
   
-  save_load_header(all, io_temp, false, as_text);
-  all.l->save_load(io_temp, false, as_text);
+  dump_regressor(all, io_temp, as_text);
 
   io_temp.flush(); // close_file() should do this for me ...
   io_temp.close_file();
@@ -460,6 +465,11 @@ namespace VW
 	void save_predictor(vw& all, string reg_name)
 	{
 		dump_regressor(all, reg_name, false);
+	}
+
+	void save_predictor(vw& all, io_buf& buf)
+	{
+		dump_regressor(all, buf, false);
 	}
 }
 
