@@ -53,7 +53,7 @@ namespace VW.Serializer.Visitors
         /// <param name="namespaceDense">The dense namespace.</param>
         public void Visit<T>(INamespaceDense<T> namespaceDense)
         {
-            this.featureGroup = namespaceDense.FeatureGroup ?? '\0';
+            this.featureGroup = namespaceDense.FeatureGroup ?? ' ';
 
             this.namespaceHash = namespaceDense.Name == null ? 
                 this.vw.HashSpace(this.featureGroup.ToString()) :
@@ -91,7 +91,7 @@ namespace VW.Serializer.Visitors
                 this.vw.HashSpace(namespaceSparse.FeatureGroup.ToString()) :
                 this.vw.HashSpace(namespaceSparse.FeatureGroup + namespaceSparse.Name);
 
-            this.featureGroup = namespaceSparse.FeatureGroup ?? '\0';
+            this.featureGroup = namespaceSparse.FeatureGroup ?? ' ';
 
             this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup);
 
@@ -172,6 +172,14 @@ namespace VW.Serializer.Visitors
             {
                 this.namespaceBuilder.AddFeature(this.vw.HashFeature(value, this.namespaceHash), 1f);
             }
+        }
+
+        public void Visit(IFeature<string> feature)
+        {
+            if (string.IsNullOrWhiteSpace(feature.Value))
+                return;
+
+            this.namespaceBuilder.AddFeature(this.vw.HashFeature(feature.Value, this.namespaceHash), 1f);
         }
 
         /// <summary>

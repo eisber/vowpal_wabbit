@@ -40,7 +40,7 @@ namespace VW.Serializer.Visitors
         /// <param name="namespaceDense">The dense namespace.</param>
         public void Visit(INamespaceDense<System.Byte> namespaceDense)
         {
-            this.featureGroup = namespaceDense.FeatureGroup ?? '\0';
+            this.featureGroup = namespaceDense.FeatureGroup ?? ' ';
 
             this.namespaceHash = namespaceDense.Name == null ? 
                 this.vw.HashSpace(this.featureGroup.ToString()) :
@@ -87,7 +87,7 @@ namespace VW.Serializer.Visitors
         /// <param name="namespaceDense">The dense namespace.</param>
         public void Visit(INamespaceDense<System.SByte> namespaceDense)
         {
-            this.featureGroup = namespaceDense.FeatureGroup ?? '\0';
+            this.featureGroup = namespaceDense.FeatureGroup ?? ' ';
 
             this.namespaceHash = namespaceDense.Name == null ? 
                 this.vw.HashSpace(this.featureGroup.ToString()) :
@@ -134,7 +134,7 @@ namespace VW.Serializer.Visitors
         /// <param name="namespaceDense">The dense namespace.</param>
         public void Visit(INamespaceDense<System.Int16> namespaceDense)
         {
-            this.featureGroup = namespaceDense.FeatureGroup ?? '\0';
+            this.featureGroup = namespaceDense.FeatureGroup ?? ' ';
 
             this.namespaceHash = namespaceDense.Name == null ? 
                 this.vw.HashSpace(this.featureGroup.ToString()) :
@@ -181,7 +181,7 @@ namespace VW.Serializer.Visitors
         /// <param name="namespaceDense">The dense namespace.</param>
         public void Visit(INamespaceDense<System.Int32> namespaceDense)
         {
-            this.featureGroup = namespaceDense.FeatureGroup ?? '\0';
+            this.featureGroup = namespaceDense.FeatureGroup ?? ' ';
 
             this.namespaceHash = namespaceDense.Name == null ? 
                 this.vw.HashSpace(this.featureGroup.ToString()) :
@@ -228,7 +228,7 @@ namespace VW.Serializer.Visitors
         /// <param name="namespaceDense">The dense namespace.</param>
         public void Visit(INamespaceDense<System.UInt16> namespaceDense)
         {
-            this.featureGroup = namespaceDense.FeatureGroup ?? '\0';
+            this.featureGroup = namespaceDense.FeatureGroup ?? ' ';
 
             this.namespaceHash = namespaceDense.Name == null ? 
                 this.vw.HashSpace(this.featureGroup.ToString()) :
@@ -275,7 +275,7 @@ namespace VW.Serializer.Visitors
         /// <param name="namespaceDense">The dense namespace.</param>
         public void Visit(INamespaceDense<System.UInt32> namespaceDense)
         {
-            this.featureGroup = namespaceDense.FeatureGroup ?? '\0';
+            this.featureGroup = namespaceDense.FeatureGroup ?? ' ';
 
             this.namespaceHash = namespaceDense.Name == null ? 
                 this.vw.HashSpace(this.featureGroup.ToString()) :
@@ -322,7 +322,7 @@ namespace VW.Serializer.Visitors
         /// <param name="namespaceDense">The dense namespace.</param>
         public void Visit(INamespaceDense<System.Single> namespaceDense)
         {
-            this.featureGroup = namespaceDense.FeatureGroup ?? '\0';
+            this.featureGroup = namespaceDense.FeatureGroup ?? ' ';
 
             this.namespaceHash = namespaceDense.Name == null ? 
                 this.vw.HashSpace(this.featureGroup.ToString()) :
@@ -394,7 +394,7 @@ namespace VW.Serializer.Visitors
         /// <param name="namespaceDense">The dense namespace.</param>
         public void Visit(INamespaceDense<System.Int64> namespaceDense)
         {
-            this.featureGroup = namespaceDense.FeatureGroup ?? '\0';
+            this.featureGroup = namespaceDense.FeatureGroup ?? ' ';
 
             this.namespaceHash = namespaceDense.Name == null ? 
                 this.vw.HashSpace(this.featureGroup.ToString()) :
@@ -464,7 +464,7 @@ namespace VW.Serializer.Visitors
         /// <param name="namespaceDense">The dense namespace.</param>
         public void Visit(INamespaceDense<System.UInt64> namespaceDense)
         {
-            this.featureGroup = namespaceDense.FeatureGroup ?? '\0';
+            this.featureGroup = namespaceDense.FeatureGroup ?? ' ';
 
             this.namespaceHash = namespaceDense.Name == null ? 
                 this.vw.HashSpace(this.featureGroup.ToString()) :
@@ -534,7 +534,7 @@ namespace VW.Serializer.Visitors
         /// <param name="namespaceDense">The dense namespace.</param>
         public void Visit(INamespaceDense<System.Double> namespaceDense)
         {
-            this.featureGroup = namespaceDense.FeatureGroup ?? '\0';
+            this.featureGroup = namespaceDense.FeatureGroup ?? ' ';
 
             this.namespaceHash = namespaceDense.Name == null ? 
                 this.vw.HashSpace(this.featureGroup.ToString()) :
