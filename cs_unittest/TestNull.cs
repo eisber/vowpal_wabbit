@@ -22,6 +22,7 @@ namespace cs_unittest
                 var ctx = new Context()
                 {
                     ID = 25,
+                    Vector = null,
                     ActionDependentFeatures = new [] { 
                         new ADF {
                             ADFID = 23,
@@ -37,6 +38,31 @@ namespace cs_unittest
                 vw.Learn(ctx);
                 vw.Predict(ctx);
             }
+        }
+
+        [TestMethod]
+        public void TestNull2()
+        {
+            try
+            {
+                using (var vw = new VowpalWabbit<Context, ADF>("--cb_adf --rank_all --interact ab"))
+                {
+                    var ctx = new Context()
+                    {
+                        ID = 25,
+                        Vector = null,
+                        ActionDependentFeatures = null
+                    };
+
+                    vw.Learn(ctx);
+                    vw.Predict(ctx);
+                }
+            }
+            catch (NullReferenceException)
+            {
+                // NullRef is expected
+            }
+            
         }
     }
 
