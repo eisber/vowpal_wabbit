@@ -25,7 +25,7 @@ namespace cs_unittest
                     Vector = null,
                     ActionDependentFeatures = new [] { 
                         new ADF {
-                            ADFID = 23,
+                            ADFID = "23",
                             Label = new ContextualBanditLabel() {
                                 Action = 1,
                                 Cost= 1,
@@ -62,14 +62,46 @@ namespace cs_unittest
             {
                 // NullRef is expected
             }
-            
+        }
+
+        [TestMethod]
+        public void TestNull3()
+        {
+            try
+            {
+                using (var vw = new VowpalWabbit<Context, ADF>("--cb_adf --rank_all --interact ab"))
+                {
+                    var ctx = new Context()
+                    {
+                        ID = 25,
+                        Vector = null,
+                        ActionDependentFeatures = new[] { 
+                        new ADF {
+                            ADFID = null,
+                            Label = new ContextualBanditLabel() {
+                                Action = 1,
+                                Cost= 1,
+                                Probability = 0.2f
+                            }
+                        }
+                    }.ToList()
+                    };
+
+                    vw.Learn(ctx);
+                    vw.Predict(ctx);
+                }
+            }
+            catch (NullReferenceException)
+            {
+                // NullRef is expected
+            }
         }
     }
 
     public class ADF : IExample
     {
         [Feature]
-        public int ADFID { get; set; }
+        public string ADFID { get; set; }
 
         [Feature(FeatureGroup = 'b', AddAnchor = true)]
         public float[] Vector {get ;set;}
