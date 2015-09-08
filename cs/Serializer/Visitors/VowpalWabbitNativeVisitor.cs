@@ -60,6 +60,17 @@ namespace VW.Serializer.Visitors
                 this.vw.HashSpace(this.featureGroup + namespaceDense.Name);
 
             this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup);
+
+            if (namespaceDense.DenseFeature.Value == null)
+            {
+                if (namespaceDense.DenseFeature.AddAnchor)
+                {
+                    this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
+                }
+
+                return;
+            }
+
             this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
 
             var i = 0;
