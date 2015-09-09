@@ -99,12 +99,13 @@ namespace VW.Serializer.Visitors
 
             this.featureGroup = namespaceSparse.FeatureGroup ?? ' ';
 
-            this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup);
-
-            // Visit each feature
-            foreach (var element in namespaceSparse.Features)
+            using (this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup))
             {
-                element.Visit();
+                // Visit each feature
+                foreach (var element in namespaceSparse.Features)
+                {
+                    element.Visit();
+                }
             }
         }
 

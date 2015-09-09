@@ -17,6 +17,29 @@ struct interact {
   size_t num_features;
 };
 
+bool contains_valid_namespaces(v_array<feature>& f_src1, v_array<feature>& f_src2, interact& in)
+{
+	// first feature must be 1 so we're sure that the anchor feature is present
+	if (f_src1.size() == 0 || f_src2.size() == 0)
+	{
+		return false;
+	}
+
+	if (f_src1[0].x != 1)
+	{
+		cerr << "Namespace '" << (char)in.n1 << "' misses anchor feature with value 1";
+		return false;
+	}
+
+	if (f_src2[0].x != 1)
+	{
+		cerr << "Namespace '" << (char)in.n2 << "' misses anchor feature with value 1";
+		return false;
+	}
+
+	return true;
+}
+
 float multiply(v_array<feature>& f_dest, v_array<feature>& f_src2, interact& in) {
   f_dest.erase();
   v_array<feature> f_src1 = in.feat_store;
@@ -24,22 +47,6 @@ float multiply(v_array<feature>& f_dest, v_array<feature>& f_src2, interact& in)
   size_t weight_mask = all->reg.weight_mask;
   size_t base_id1 = f_src1[0].weight_index & weight_mask;
   size_t base_id2 = f_src2[0].weight_index & weight_mask;
-  
-  // first feature must be 1 so we're sure that the anchor feature is present
-  if (f_src1.size() == 0 || f_src2.size() == 0)
-  {
-	  return 0;
-  }
-
-  if (f_src1[0].x != 1)
-  {
-	  THROW("Namespace '" << (char)in.n1 << "' misses anchor feature with value 1");
-  }
-
-  if (f_src2[0].x != 1)
-  {
-	  THROW("Namespace '" << (char)in.n2 << "' misses anchor feature with value 1");
-  }
 
   feature f;
   f.weight_index = f_src1[0].weight_index;
@@ -73,6 +80,15 @@ void predict_or_learn(interact& in, LEARNER::base_learner& base, example& ec) {
   v_array<feature>* f1 = &ec.atomics[in.n1];
   v_array<feature>* f2 = &ec.atomics[in.n2];
 
+  if (!contains_valid_namespaces(*f1, *f2, in))
+  {
+	  base.predict(ec);
+	  if (is_learn)
+		  base.learn(ec);
+
+	  return;
+  }
+
   in.num_features = ec.num_features;
   in.total_sum_feat_sq = ec.total_sum_feat_sq;
   in.n1_feat_sq = ec.sum_feat_sq[in.n1];
@@ -102,7 +118,6 @@ void predict_or_learn(interact& in, LEARNER::base_learner& base, example& ec) {
 		  break;
 	  } 
   }
-  assert(n2_i >= 0);
 
   base.predict(ec);
   if(is_learn)

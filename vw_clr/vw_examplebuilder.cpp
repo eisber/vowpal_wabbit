@@ -83,14 +83,28 @@ namespace VW
 	VowpalWabbitNamespaceBuilder^ VowpalWabbitExampleBuilder::AddNamespace(Byte featureGroup)
 	{
 		uint32_t index = featureGroup;
-		m_example->indices.push_back(index);
 
-		return gcnew VowpalWabbitNamespaceBuilder(m_example->sum_feat_sq + index, m_example->atomics + index);
+		return gcnew VowpalWabbitNamespaceBuilder(m_example->sum_feat_sq + index, m_example->atomics + index, index, m_example);
 	}
 
-	VowpalWabbitNamespaceBuilder::VowpalWabbitNamespaceBuilder(float* sum_feat_sq, v_array<feature>* atomic)
-		: m_sum_feat_sq(sum_feat_sq), m_atomic(atomic)
+	VowpalWabbitNamespaceBuilder::VowpalWabbitNamespaceBuilder(float* sum_feat_sq, v_array<feature>* atomic, 
+		unsigned char index, example* example)
+		: m_sum_feat_sq(sum_feat_sq), m_atomic(atomic), m_index(index), m_example(example)
 	{
+	}
+
+	VowpalWabbitNamespaceBuilder::~VowpalWabbitNamespaceBuilder()
+	{
+		this->!VowpalWabbitNamespaceBuilder();
+	}
+
+	VowpalWabbitNamespaceBuilder::!VowpalWabbitNamespaceBuilder()
+	{
+		if (m_atomic->size() > 0)
+		{
+			unsigned char temp = m_index;
+			m_example->indices.push_back(temp);
+		}
 	}
 
 	void VowpalWabbitNamespaceBuilder::AddFeature(uint32_t weight_index, float x)

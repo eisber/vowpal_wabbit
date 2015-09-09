@@ -25,7 +25,7 @@ namespace cs_unittest
                     Vector = null,
                     ActionDependentFeatures = new [] { 
                         new ADF {
-                            ADFID = 23,
+                            ADFID = "23",
                             Label = new ContextualBanditLabel() {
                                 Action = 1,
                                 Cost= 1,
@@ -43,15 +43,15 @@ namespace cs_unittest
         [TestMethod]
         public void TestNull2()
         {
-            using (var vw = new VowpalWabbit<Context, ADF>("--cb_adf --rank_all --interact ab"))
-            {
-                var ctx = new Context()
+                using (var vw = new VowpalWabbit<Context, ADF>("--cb_adf --rank_all --interact ab"))
                 {
-                    ID = 25,
-                    Vector = null,
+                    var ctx = new Context()
+                    {
+                        ID = 25,
+                        Vector = null,
                     ActionDependentFeatures = new[] { 
                         new ADF {
-                            ADFID = 23,
+                            ADFID = "23",
                             Label = new ContextualBanditLabel() {
                                 Action = 1,
                                 Cost= 1,
@@ -59,9 +59,9 @@ namespace cs_unittest
                             }
                         }
                     }.ToList()
-                };
+                    };
 
-                vw.Learn(ctx);
+                    vw.Learn(ctx);
             }
         }
 
@@ -77,28 +77,19 @@ namespace cs_unittest
                     VectorC = new float[] { 2, 2, 3 },
                     ActionDependentFeatures = new[] { 
                         new ADF {
-                            ADFID = 23,
+                            ADFID = "23",
                             Label = new ContextualBanditLabel() {
                                 Action = 1,
                                 Cost= 1,
                                 Probability = 0.2f
                             },
-                        }
+                }
                     }.ToList()
                 }; 
 
-                try 
-                {
-                    vw.Learn(ctx);
-                    Assert.Fail("Expected exception");
-                }
-                catch (VowpalWabbitException vwe)
-                {
-                    Assert.IsTrue(vwe.Message.Contains("misses anchor feature with"));
-                }
-
-
-                ctx.Vector = null;
+                vw.Learn(ctx);
+            
+                ctx.Vector = null; 
                 vw.Learn(ctx);
 
                 ctx.Vector = new float[] { 2 };
@@ -109,12 +100,51 @@ namespace cs_unittest
                 vw.Learn(ctx);
             }
         }
+
+        [TestMethod]
+        public void TestNull4()
+        {
+            try
+            {
+                using (var vw = new VowpalWabbit<Context, ADF>("--cb_adf --rank_all --interact ab"))
+                {
+                    var ctx = new Context()
+                    {
+                        ID = 25,
+                        Vector = null,
+                        ActionDependentFeatures = new[] { 
+                        new ADF {
+                            ADFID = null,
+                            Label = new ContextualBanditLabel() {
+                                Action = 1,
+                                Cost= 1,
+                                Probability = 0.2f
+                            }
+                        }
+                    }.ToList()
+                    };
+
+                    vw.Learn(ctx);
+                    vw.Predict(ctx);
+
+                    ctx.ID = null;
+                    //ctx.ActionDependentFeatures[0].ADFID = "foo";
+
+                    vw.Learn(ctx);
+                    vw.Predict(ctx);
+                }
+            }
+            catch (NullReferenceException)
+            {
+                // NullRef is expected
+            }
+        }
     }
 
     public class ADF : IExample
     {
         [Feature]
-        public int ADFID { get; set; }
+        public string ADFID { get; set; }
 
         [Feature(FeatureGroup = 'b', AddAnchor = true)]
         public float[] Vector {get ;set;}
@@ -125,7 +155,7 @@ namespace cs_unittest
     public class Context : SharedExample, IActionDependentFeatureExample<ADF>
     {
         [Feature]
-        public int ID { get; set; }
+        public int? ID { get; set; }
 
         [Feature(FeatureGroup = 'a', AddAnchor = true)]
         public float[] Vector { get; set; }
