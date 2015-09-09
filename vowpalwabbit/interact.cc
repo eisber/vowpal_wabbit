@@ -26,8 +26,20 @@ float multiply(v_array<feature>& f_dest, v_array<feature>& f_src2, interact& in)
   size_t base_id2 = f_src2[0].weight_index & weight_mask;
   
   // first feature must be 1 so we're sure that the anchor feature is present
-  assert(f_src1[0].x == 1);
-  assert(f_src2[0].x == 1);
+  if (f_src1.size() == 0 || f_src2.size() == 0)
+  {
+	  return 0;
+  }
+
+  if (f_src1[0].x != 1)
+  {
+	  THROW("Namespace '" << (char)in.n1 << "' misses anchor feature with value 1");
+  }
+
+  if (f_src2[0].x != 1)
+  {
+	  THROW("Namespace '" << (char)in.n2 << "' misses anchor feature with value 1");
+  }
 
   feature f;
   f.weight_index = f_src1[0].weight_index;

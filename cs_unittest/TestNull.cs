@@ -43,26 +43,71 @@ namespace cs_unittest
         [TestMethod]
         public void TestNull2()
         {
-            try
+            using (var vw = new VowpalWabbit<Context, ADF>("--cb_adf --rank_all --interact ab"))
             {
-                using (var vw = new VowpalWabbit<Context, ADF>("--cb_adf --rank_all --interact ab"))
+                var ctx = new Context()
                 {
-                    var ctx = new Context()
-                    {
-                        ID = 25,
-                        Vector = null,
-                        ActionDependentFeatures = null
-                    };
+                    ID = 25,
+                    Vector = null,
+                    ActionDependentFeatures = new[] { 
+                        new ADF {
+                            ADFID = 23,
+                            Label = new ContextualBanditLabel() {
+                                Action = 1,
+                                Cost= 1,
+                                Probability = 0.2f
+                            }
+                        }
+                    }.ToList()
+                };
 
-                    vw.Learn(ctx);
-                    vw.Predict(ctx);
-                }
+                vw.Learn(ctx);
             }
-            catch (NullReferenceException)
+        }
+
+        [TestMethod]
+        public void TestNull3()
+        {
+            using (var vw = new VowpalWabbit<Context, ADF>("--cb_adf --rank_all --interact ac"))
             {
-                // NullRef is expected
+                var ctx = new Context()
+                {
+                    ID = 25,
+                    Vector = new float [] { 3 },
+                    VectorC = new float[] { 2, 2, 3 },
+                    ActionDependentFeatures = new[] { 
+                        new ADF {
+                            ADFID = 23,
+                            Label = new ContextualBanditLabel() {
+                                Action = 1,
+                                Cost= 1,
+                                Probability = 0.2f
+                            },
+                        }
+                    }.ToList()
+                }; 
+
+                try 
+                {
+                    vw.Learn(ctx);
+                    Assert.Fail("Expected exception");
+                }
+                catch (VowpalWabbitException vwe)
+                {
+                    Assert.IsTrue(vwe.Message.Contains("misses anchor feature with"));
+                }
+
+
+                ctx.Vector = null;
+                vw.Learn(ctx);
+
+                ctx.Vector = new float[] { 2 };
+                ctx.VectorC = null;
+                vw.Learn(ctx);
+
+                ctx.Vector = null;
+                vw.Learn(ctx);
             }
-            
         }
     }
 
@@ -84,6 +129,9 @@ namespace cs_unittest
 
         [Feature(FeatureGroup = 'a', AddAnchor = true)]
         public float[] Vector { get; set; }
+
+        [Feature(FeatureGroup = 'c')]
+        public float[] VectorC { get; set; }
 
         public IReadOnlyList<ADF> ActionDependentFeatures { get; set;}
     }
