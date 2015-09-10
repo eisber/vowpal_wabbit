@@ -71,5 +71,10 @@ namespace VW.Serializer
         {
             return this.example.Predict<TPrediction>();
         }
+
+        bool IVowpalWabbitExample.IsNewLine
+        {
+            get { return this.example.IsNewLine; }
+        }
     }
 }

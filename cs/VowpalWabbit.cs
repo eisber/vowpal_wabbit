@@ -173,6 +173,7 @@ namespace VW
             // `doc2 |lda :.2 :.3 [2]
             // <new line>
             var examples = new List<IVowpalWabbitExample>();
+            bool atLeastOneNonEmptyExample = false;
 
             try
             {
@@ -182,16 +183,33 @@ namespace VW
                 if (sharedExample != null)
                 {
                     examples.Add(sharedExample);
-                    sharedExample.PredictAndDiscard();
+
+                    if (!sharedExample.IsNewLine)
+                    {
+                        sharedExample.PredictAndDiscard();
+                    }
                 }
 
                 // leave as loop (vs. linq) so if the serializer throws an exception, anything allocated so far can be free'd
                 foreach (var actionDependentFeature in example.ActionDependentFeatures)
                 {
                     var adfExample = this.actionDependentFeatureSerializer.Serialize(actionDependentFeature);
-                    examples.Add(adfExample);
 
-                    adfExample.PredictAndDiscard();
+                    if (adfExample != null)
+                    {
+                        examples.Add(adfExample);
+
+                        if (!adfExample.IsNewLine)
+                        {
+                            adfExample.PredictAndDiscard();
+                            atLeastOneNonEmptyExample = true;
+                        }
+                    }
+                }
+
+                if (!atLeastOneNonEmptyExample)
+                {
+                    return new int[0];
                 }
 
                 // signal we're finished using an empty example
@@ -202,7 +220,7 @@ namespace VW
                 var firstExample = examples.FirstOrDefault();
                 if (firstExample == null)
                 {
-                    return null;
+                    return new int[0];
                 }
 
                 var prediction = new VowpalWabbitMultilabelPrediction();
@@ -281,6 +299,7 @@ namespace VW
         public void Learn(TExample example)
         {
             var examples = new List<IVowpalWabbitExample>();
+            bool atLeastOneNonEmptyExample = false;
 
             try
             {
@@ -290,20 +309,35 @@ namespace VW
                 if (sharedExample != null)
                 {
                     examples.Add(sharedExample);
-                    sharedExample.Learn();
+
+                    if (!sharedExample.IsNewLine)
+                    {
+                        sharedExample.Learn();
+                    }
                 }
 
                 // leave as loop (vs. linq) so if the serializer throws an exception, anything allocated so far can be free'd
                 foreach (var actionDependentFeature in example.ActionDependentFeatures)
                 {
                     var adfExample = this.actionDependentFeatureSerializer.Serialize(actionDependentFeature);
-                    examples.Add(adfExample);
 
-                    adfExample.Learn();
+                    if (adfExample != null)
+                    {
+                        examples.Add(adfExample);
+
+                        if (!adfExample.IsNewLine)
+                        {
+                            adfExample.Learn();
+                            atLeastOneNonEmptyExample = true;
+                        }
+                    }
                 }
 
                 // signal we're finished using an empty example
-                this.emptyExample.Learn();
+                if (atLeastOneNonEmptyExample)
+                {
+                    this.emptyExample.Learn();
+                }
             }
             finally
             {
@@ -338,6 +372,7 @@ namespace VW
         public int[] LearnAndPredictIndex(TExample example)
         {
             var examples = new List<IVowpalWabbitExample>();
+            bool atLeastOneNonEmptyExample = false;
 
             try
             {
@@ -347,19 +382,36 @@ namespace VW
                 if (sharedExample != null)
                 {
                     examples.Add(sharedExample);
-                    sharedExample.Learn();
+
+                    if (!sharedExample.IsNewLine)
+                    {
+                        sharedExample.Learn();
+                    }
                 }
 
                 // leave as loop (vs. linq) so if the serializer throws an exception, anything allocated so far can be free'd
                 foreach (var actionDependentFeature in example.ActionDependentFeatures)
                 {
                     var adfExample = this.actionDependentFeatureSerializer.Serialize(actionDependentFeature);
-                    examples.Add(adfExample);
 
-                    adfExample.Learn();
+                    if (adfExample != null)
+                    {
+                        examples.Add(adfExample);
+
+                        if (!adfExample.IsNewLine)
+                        {
+                            adfExample.Learn();
+                            atLeastOneNonEmptyExample = true;
+                        }
+                    }
                 }
 
                 // signal we're finished using an empty example
+                if (!atLeastOneNonEmptyExample)
+                {
+                    return new int[0];
+                }
+
                 this.emptyExample.Learn();
 
                 // Nasty workaround. Since the prediction result is stored in the first example
@@ -367,7 +419,7 @@ namespace VW
                 var firstExample = examples.FirstOrDefault();
                 if (firstExample == null)
                 {
-                    return null;
+                    return new int[0];
                 }
 
                 var prediction = new VowpalWabbitMultilabelPrediction();

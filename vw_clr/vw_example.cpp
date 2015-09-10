@@ -97,4 +97,10 @@ namespace VW
 	{
 		return this;
 	}
+
+
+	bool VowpalWabbitExample::IsNewLine::get()
+	{
+		return example_is_newline(*m_example);
+	}
 }

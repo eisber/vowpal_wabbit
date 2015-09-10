@@ -152,6 +152,11 @@ namespace VW
 		{
 			VowpalWabbitExample^ get() = 0;
 		}
+
+		virtual property bool IsNewLine
+		{
+			bool get() = 0;
+		}
 	};
 
 	/// <summary>
@@ -228,6 +233,11 @@ namespace VW
 		virtual property VowpalWabbitExample^ UnderlyingExample
 		{
 			VowpalWabbitExample^ get();
+		}
+
+		virtual property bool IsNewLine
+		{
+			bool get();
 		}
 	};
 			
