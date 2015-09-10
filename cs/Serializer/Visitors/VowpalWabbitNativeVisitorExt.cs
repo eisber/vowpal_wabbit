@@ -17,7 +17,8 @@ namespace VW.Serializer.Visitors
 {
     public sealed partial class VowpalWabbitInterfaceVisitor : IVowpalWabbitVisitor<VowpalWabbitExample>
     {
-			    /// <summary>
+		
+	    /// <summary>
         /// Transfers feature data to native space.
         /// </summary>
         /// <param name="feature">The feature.</param>
@@ -46,30 +47,33 @@ namespace VW.Serializer.Visitors
                 this.vw.HashSpace(this.featureGroup.ToString()) :
                 this.vw.HashSpace(this.featureGroup + namespaceDense.Name);
 
-			if (namespaceDense.DenseFeature.Value == null)
-			{     
-				return;
-			}
+			      if (namespaceDense.DenseFeature.Value == null)
+			      {     
+				      return;
+			      }
 
-            this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup);
-            this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
-
-            var i = 0;
-
-            // support anchor feature
-            if(namespaceDense.DenseFeature.AddAnchor)
+            using (this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup))
             {
-                this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
-                i++;
-            }
+              this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
 
-            foreach (var v in namespaceDense.DenseFeature.Value)
-            {
-                this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), v);
-                i++;
+              var i = 0;
+
+              // support anchor feature
+              if(namespaceDense.DenseFeature.AddAnchor)
+              {
+                  this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
+                  i++;
+              }
+
+              foreach (var v in namespaceDense.DenseFeature.Value)
+              {
+                  this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), v);
+                  i++;
+              }
             }
         }
-			    /// <summary>
+		
+	    /// <summary>
         /// Transfers feature data to native space.
         /// </summary>
         /// <param name="feature">The feature.</param>
@@ -98,30 +102,33 @@ namespace VW.Serializer.Visitors
                 this.vw.HashSpace(this.featureGroup.ToString()) :
                 this.vw.HashSpace(this.featureGroup + namespaceDense.Name);
 
-			if (namespaceDense.DenseFeature.Value == null)
-			{     
-				return;
-			}
+			      if (namespaceDense.DenseFeature.Value == null)
+			      {     
+				      return;
+			      }
 
-            this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup);
-            this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
-
-            var i = 0;
-
-            // support anchor feature
-            if(namespaceDense.DenseFeature.AddAnchor)
+            using (this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup))
             {
-                this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
-                i++;
-            }
+              this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
 
-            foreach (var v in namespaceDense.DenseFeature.Value)
-            {
-                this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), v);
-                i++;
+              var i = 0;
+
+              // support anchor feature
+              if(namespaceDense.DenseFeature.AddAnchor)
+              {
+                  this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
+                  i++;
+              }
+
+              foreach (var v in namespaceDense.DenseFeature.Value)
+              {
+                  this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), v);
+                  i++;
+              }
             }
         }
-			    /// <summary>
+		
+	    /// <summary>
         /// Transfers feature data to native space.
         /// </summary>
         /// <param name="feature">The feature.</param>
@@ -150,30 +157,33 @@ namespace VW.Serializer.Visitors
                 this.vw.HashSpace(this.featureGroup.ToString()) :
                 this.vw.HashSpace(this.featureGroup + namespaceDense.Name);
 
-			if (namespaceDense.DenseFeature.Value == null)
-			{     
-				return;
-			}
+			      if (namespaceDense.DenseFeature.Value == null)
+			      {     
+				      return;
+			      }
 
-            this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup);
-            this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
-
-            var i = 0;
-
-            // support anchor feature
-            if(namespaceDense.DenseFeature.AddAnchor)
+            using (this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup))
             {
-                this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
-                i++;
-            }
+              this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
 
-            foreach (var v in namespaceDense.DenseFeature.Value)
-            {
-                this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), v);
-                i++;
+              var i = 0;
+
+              // support anchor feature
+              if(namespaceDense.DenseFeature.AddAnchor)
+              {
+                  this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
+                  i++;
+              }
+
+              foreach (var v in namespaceDense.DenseFeature.Value)
+              {
+                  this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), v);
+                  i++;
+              }
             }
         }
-			    /// <summary>
+		
+	    /// <summary>
         /// Transfers feature data to native space.
         /// </summary>
         /// <param name="feature">The feature.</param>
@@ -202,30 +212,33 @@ namespace VW.Serializer.Visitors
                 this.vw.HashSpace(this.featureGroup.ToString()) :
                 this.vw.HashSpace(this.featureGroup + namespaceDense.Name);
 
-			if (namespaceDense.DenseFeature.Value == null)
-			{     
-				return;
-			}
+			      if (namespaceDense.DenseFeature.Value == null)
+			      {     
+				      return;
+			      }
 
-            this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup);
-            this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
-
-            var i = 0;
-
-            // support anchor feature
-            if(namespaceDense.DenseFeature.AddAnchor)
+            using (this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup))
             {
-                this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
-                i++;
-            }
+              this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
 
-            foreach (var v in namespaceDense.DenseFeature.Value)
-            {
-                this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), v);
-                i++;
+              var i = 0;
+
+              // support anchor feature
+              if(namespaceDense.DenseFeature.AddAnchor)
+              {
+                  this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
+                  i++;
+              }
+
+              foreach (var v in namespaceDense.DenseFeature.Value)
+              {
+                  this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), v);
+                  i++;
+              }
             }
         }
-			    /// <summary>
+		
+	    /// <summary>
         /// Transfers feature data to native space.
         /// </summary>
         /// <param name="feature">The feature.</param>
@@ -254,30 +267,33 @@ namespace VW.Serializer.Visitors
                 this.vw.HashSpace(this.featureGroup.ToString()) :
                 this.vw.HashSpace(this.featureGroup + namespaceDense.Name);
 
-			if (namespaceDense.DenseFeature.Value == null)
-			{     
-				return;
-			}
+			      if (namespaceDense.DenseFeature.Value == null)
+			      {     
+				      return;
+			      }
 
-            this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup);
-            this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
-
-            var i = 0;
-
-            // support anchor feature
-            if(namespaceDense.DenseFeature.AddAnchor)
+            using (this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup))
             {
-                this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
-                i++;
-            }
+              this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
 
-            foreach (var v in namespaceDense.DenseFeature.Value)
-            {
-                this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), v);
-                i++;
+              var i = 0;
+
+              // support anchor feature
+              if(namespaceDense.DenseFeature.AddAnchor)
+              {
+                  this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
+                  i++;
+              }
+
+              foreach (var v in namespaceDense.DenseFeature.Value)
+              {
+                  this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), v);
+                  i++;
+              }
             }
         }
-			    /// <summary>
+		
+	    /// <summary>
         /// Transfers feature data to native space.
         /// </summary>
         /// <param name="feature">The feature.</param>
@@ -306,30 +322,33 @@ namespace VW.Serializer.Visitors
                 this.vw.HashSpace(this.featureGroup.ToString()) :
                 this.vw.HashSpace(this.featureGroup + namespaceDense.Name);
 
-			if (namespaceDense.DenseFeature.Value == null)
-			{     
-				return;
-			}
+			      if (namespaceDense.DenseFeature.Value == null)
+			      {     
+				      return;
+			      }
 
-            this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup);
-            this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
-
-            var i = 0;
-
-            // support anchor feature
-            if(namespaceDense.DenseFeature.AddAnchor)
+            using (this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup))
             {
-                this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
-                i++;
-            }
+              this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
 
-            foreach (var v in namespaceDense.DenseFeature.Value)
-            {
-                this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), v);
-                i++;
+              var i = 0;
+
+              // support anchor feature
+              if(namespaceDense.DenseFeature.AddAnchor)
+              {
+                  this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
+                  i++;
+              }
+
+              foreach (var v in namespaceDense.DenseFeature.Value)
+              {
+                  this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), v);
+                  i++;
+              }
             }
         }
-			    /// <summary>
+		
+	    /// <summary>
         /// Transfers feature data to native space.
         /// </summary>
         /// <param name="feature">The feature.</param>
@@ -358,31 +377,35 @@ namespace VW.Serializer.Visitors
                 this.vw.HashSpace(this.featureGroup.ToString()) :
                 this.vw.HashSpace(this.featureGroup + namespaceDense.Name);
 
-			if (namespaceDense.DenseFeature.Value == null)
-			{     
-				return;
-			}
+			      if (namespaceDense.DenseFeature.Value == null)
+			      {     
+				      return;
+			      }
 
-            this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup);
-            this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
-
-            var i = 0;
-
-            // support anchor feature
-            if(namespaceDense.DenseFeature.AddAnchor)
+            using (this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup))
             {
-                this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
-                i++;
-            }
+              this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
 
-            foreach (var v in namespaceDense.DenseFeature.Value)
-            {
-                this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), v);
-                i++;
+              var i = 0;
+
+              // support anchor feature
+              if(namespaceDense.DenseFeature.AddAnchor)
+              {
+                  this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
+                  i++;
+              }
+
+              foreach (var v in namespaceDense.DenseFeature.Value)
+              {
+                  this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), v);
+                  i++;
+              }
             }
         }
 		
-			    /// <summary>
+
+		
+	    /// <summary>
         /// Transfers feature data to native space.
         /// </summary>
         /// <param name="feature">The feature.</param>
@@ -435,37 +458,39 @@ namespace VW.Serializer.Visitors
                 this.vw.HashSpace(this.featureGroup.ToString()) :
                 this.vw.HashSpace(this.featureGroup + namespaceDense.Name);
 
-			if (namespaceDense.DenseFeature.Value == null)
-			{
-				return;
-			}
+			      if (namespaceDense.DenseFeature.Value == null)
+			      {
+				      return;
+			      }
 
-            this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup);
-            this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
-
-			var i = 0;
-
-            // support anchor feature
-            if(namespaceDense.DenseFeature.AddAnchor)
+            using (this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup))
             {
-                this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
-                i++;
-            }
+              this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
 
-            foreach (var v in namespaceDense.DenseFeature.Value)
-            {
-				#if DEBUG
-				if (v > float.MaxValue || v < float.MinValue)
-				{
-					Trace.TraceWarning("Precision lost for feature value: " + v);
-				}
-				#endif
+			        var i = 0;
 
-                this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), (float)v);
-                i++;
+              // support anchor feature
+              if(namespaceDense.DenseFeature.AddAnchor)
+              {
+                  this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
+                  i++;
+              }
+
+              foreach (var v in namespaceDense.DenseFeature.Value)
+              {
+				          #if DEBUG
+				          if (v > float.MaxValue || v < float.MinValue)
+				          {
+					          Trace.TraceWarning("Precision lost for feature value: " + v);
+				          }
+				          #endif
+                  this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), (float)v);
+                  i++;
+              }
             }
         }
-			    /// <summary>
+		
+	    /// <summary>
         /// Transfers feature data to native space.
         /// </summary>
         /// <param name="feature">The feature.</param>
@@ -518,37 +543,39 @@ namespace VW.Serializer.Visitors
                 this.vw.HashSpace(this.featureGroup.ToString()) :
                 this.vw.HashSpace(this.featureGroup + namespaceDense.Name);
 
-			if (namespaceDense.DenseFeature.Value == null)
-			{
-				return;
-			}
+			      if (namespaceDense.DenseFeature.Value == null)
+			      {
+				      return;
+			      }
 
-            this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup);
-            this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
-
-			var i = 0;
-
-            // support anchor feature
-            if(namespaceDense.DenseFeature.AddAnchor)
+            using (this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup))
             {
-                this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
-                i++;
-            }
+              this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
 
-            foreach (var v in namespaceDense.DenseFeature.Value)
-            {
-				#if DEBUG
-				if (v > float.MaxValue || v < float.MinValue)
-				{
-					Trace.TraceWarning("Precision lost for feature value: " + v);
-				}
-				#endif
+			        var i = 0;
 
-                this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), (float)v);
-                i++;
+              // support anchor feature
+              if(namespaceDense.DenseFeature.AddAnchor)
+              {
+                  this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
+                  i++;
+              }
+
+              foreach (var v in namespaceDense.DenseFeature.Value)
+              {
+				          #if DEBUG
+				          if (v > float.MaxValue || v < float.MinValue)
+				          {
+					          Trace.TraceWarning("Precision lost for feature value: " + v);
+				          }
+				          #endif
+                  this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), (float)v);
+                  i++;
+              }
             }
         }
-			    /// <summary>
+		
+	    /// <summary>
         /// Transfers feature data to native space.
         /// </summary>
         /// <param name="feature">The feature.</param>
@@ -601,38 +628,41 @@ namespace VW.Serializer.Visitors
                 this.vw.HashSpace(this.featureGroup.ToString()) :
                 this.vw.HashSpace(this.featureGroup + namespaceDense.Name);
 
-			if (namespaceDense.DenseFeature.Value == null)
-			{
-				return;
-			}
+			      if (namespaceDense.DenseFeature.Value == null)
+			      {
+				      return;
+			      }
 
-            this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup);
-            this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
-
-			var i = 0;
-
-            // support anchor feature
-            if(namespaceDense.DenseFeature.AddAnchor)
+            using (this.namespaceBuilder = this.builder.AddNamespace(this.featureGroup))
             {
-                this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
-                i++;
-            }
+              this.namespaceBuilder.PreAllocate(namespaceDense.DenseFeature.Value.Count);
 
-            foreach (var v in namespaceDense.DenseFeature.Value)
-            {
-				#if DEBUG
-				if (v > float.MaxValue || v < float.MinValue)
-				{
-					Trace.TraceWarning("Precision lost for feature value: " + v);
-				}
-				#endif
+			        var i = 0;
 
-                this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), (float)v);
-                i++;
+              // support anchor feature
+              if(namespaceDense.DenseFeature.AddAnchor)
+              {
+                  this.namespaceBuilder.AddFeature(this.namespaceHash, 1);
+                  i++;
+              }
+
+              foreach (var v in namespaceDense.DenseFeature.Value)
+              {
+				          #if DEBUG
+				          if (v > float.MaxValue || v < float.MinValue)
+				          {
+					          Trace.TraceWarning("Precision lost for feature value: " + v);
+				          }
+				          #endif
+                  this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + i), (float)v);
+                  i++;
+              }
             }
         }
 		
-				 
+
+		
+		 
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -645,7 +675,8 @@ namespace VW.Serializer.Visitors
             }
         }
 
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -657,7 +688,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), kvp.Value);
             }
         }
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -669,7 +701,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), kvp.Value);
             }
         }
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -681,7 +714,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), kvp.Value);
             }
         }
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -694,7 +728,9 @@ namespace VW.Serializer.Visitors
             }
         }
 		
-						
+
+		
+				
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -713,7 +749,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), (float)kvp.Value);
             }
         }
-						
+		
+				
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -733,7 +770,9 @@ namespace VW.Serializer.Visitors
             }
         }
 		
-				 
+
+		
+		 
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -746,7 +785,8 @@ namespace VW.Serializer.Visitors
             }
         }
 
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -758,7 +798,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), kvp.Value);
             }
         }
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -770,7 +811,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), kvp.Value);
             }
         }
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -782,7 +824,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), kvp.Value);
             }
         }
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -795,7 +838,9 @@ namespace VW.Serializer.Visitors
             }
         }
 		
-						
+
+		
+				
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -814,7 +859,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), (float)kvp.Value);
             }
         }
-						
+		
+				
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -834,7 +880,9 @@ namespace VW.Serializer.Visitors
             }
         }
 		
-				 
+
+		
+		 
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -847,7 +895,8 @@ namespace VW.Serializer.Visitors
             }
         }
 
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -859,7 +908,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), kvp.Value);
             }
         }
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -871,7 +921,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), kvp.Value);
             }
         }
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -883,7 +934,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), kvp.Value);
             }
         }
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -896,7 +948,9 @@ namespace VW.Serializer.Visitors
             }
         }
 		
-						
+
+		
+				
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -915,7 +969,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), (float)kvp.Value);
             }
         }
-						
+		
+				
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -935,7 +990,9 @@ namespace VW.Serializer.Visitors
             }
         }
 		
-				 
+
+		
+		 
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -948,7 +1005,8 @@ namespace VW.Serializer.Visitors
             }
         }
 
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -960,7 +1018,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), kvp.Value);
             }
         }
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -972,7 +1031,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), kvp.Value);
             }
         }
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -984,7 +1044,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), kvp.Value);
             }
         }
-				
+		
+		
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -997,7 +1058,9 @@ namespace VW.Serializer.Visitors
             }
         }
 		
-						
+
+		
+				
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -1016,7 +1079,8 @@ namespace VW.Serializer.Visitors
                 this.namespaceBuilder.AddFeature((uint)(this.namespaceHash + kvp.Key), (float)kvp.Value);
             }
         }
-						
+		
+				
 		/// <summary>
         /// Transfers feature data to native space.
         /// </summary>
@@ -1036,5 +1100,7 @@ namespace VW.Serializer.Visitors
             }
         }
 		
-		    }
+
+		
+    }
 }
