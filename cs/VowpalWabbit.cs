@@ -173,7 +173,7 @@ namespace VW
             // `doc2 |lda :.2 :.3 [2]
             // <new line>
             var examples = new List<IVowpalWabbitExample>();
-            bool atLeastOneNonEmptyExample = false;
+            var numNonEmptyExamples = 0;
 
             try
             {
@@ -202,14 +202,14 @@ namespace VW
                         if (!adfExample.IsNewLine)
                         {
                             adfExample.PredictAndDiscard();
-                            atLeastOneNonEmptyExample = true;
+                            numNonEmptyExamples++;
                         }
                     }
                 }
 
-                if (!atLeastOneNonEmptyExample)
+                if (numNonEmptyExamples == 0)
                 {
-                    return new int[0];
+                    return Enumerable.Range(0, example.ActionDependentFeatures.Count).ToArray();
                 }
 
                 // signal we're finished using an empty example
@@ -220,13 +220,48 @@ namespace VW
                 var firstExample = examples.FirstOrDefault(e => !e.IsNewLine);
                 if (firstExample == null)
                 {
-                    return new int[0];
+                    return Enumerable.Range(0, example.ActionDependentFeatures.Count).ToArray();
                 }
 
                 var prediction = new VowpalWabbitMultilabelPrediction();
                 prediction.ReadFromExample(firstExample.UnderlyingExample);
                 
-                return prediction.Values;
+                if (prediction.Values.Length == example.ActionDependentFeatures.Count)
+                {
+                    return prediction.Values;
+                }
+                else
+                {
+                    if (prediction.Values.Length != numNonEmptyExamples)
+                    {
+                        throw new InvalidOperationException("Number of predictions returned unequal number of examples fed");
+                    }
+
+                    // defaults to false
+                    var present = new bool[prediction.Values.Length];
+                    // mark elements present in "bitset"
+                    foreach (var index in prediction.Values)
+	                {
+	                    present[index] = true;	 
+    	            }
+
+                    // copy existing predictions to enlarged array
+                    var result = new int[example.ActionDependentFeatures.Count];
+                    Array.Copy(prediction.Values, result, prediction.Values.Length);
+
+                    // append the ones that are not present in the prediction list
+                    var startIndex = prediction.Values.Length;
+                    for (int i = 0; i < present.Length; i++)
+                    {
+                        if (!present[i])
+                        {
+                            result[startIndex++] = i;
+                        }
+                    }
+
+                    return result;
+                }
+
             }
             finally
             {
@@ -372,7 +407,7 @@ namespace VW
         public int[] LearnAndPredictIndex(TExample example)
         {
             var examples = new List<IVowpalWabbitExample>();
-            bool atLeastOneNonEmptyExample = false;
+            var numNonEmptyExamples = 0;
 
             try
             {
@@ -401,15 +436,15 @@ namespace VW
                         if (!adfExample.IsNewLine)
                         {
                             adfExample.Learn();
-                            atLeastOneNonEmptyExample = true;
+                            numNonEmptyExamples++;
                         }
                     }
                 }
 
                 // signal we're finished using an empty example
-                if (!atLeastOneNonEmptyExample)
+                if (numNonEmptyExamples == 0)
                 {
-                    return new int[0];
+                    return Enumerable.Range(0, example.ActionDependentFeatures.Count).ToArray();
                 }
 
                 this.emptyExample.Learn();
@@ -419,13 +454,47 @@ namespace VW
                 var firstExample = examples.FirstOrDefault(e => !e.IsNewLine);
                 if (firstExample == null)
                 {
-                    return new int[0];
+                    return Enumerable.Range(0, example.ActionDependentFeatures.Count).ToArray();
                 }
 
                 var prediction = new VowpalWabbitMultilabelPrediction();
                 prediction.ReadFromExample(firstExample.UnderlyingExample);
 
-                return prediction.Values;
+                if (prediction.Values.Length == example.ActionDependentFeatures.Count)
+                {
+                    return prediction.Values;
+                }
+                else
+                {
+                    if (prediction.Values.Length != numNonEmptyExamples)
+                    {
+                        throw new InvalidOperationException("Number of predictions returned unequal number of examples fed");
+                    }
+
+                    // defaults to false
+                    var present = new bool[prediction.Values.Length];
+                    // mark elements present in "bitset"
+                    foreach (var index in prediction.Values)
+	                {
+	                    present[index] = true;	 
+    	            }
+
+                    // copy existing predictions to enlarged array
+                    var result = new int[example.ActionDependentFeatures.Count];
+                    Array.Copy(prediction.Values, result, prediction.Values.Length);
+
+                    // append the ones that are not present in the prediction list
+                    var startIndex = prediction.Values.Length;
+                    for (int i = 0; i < present.Length; i++)
+                    {
+                        if (!present[i])
+                        {
+                            result[startIndex++] = i;
+                        }
+                    }
+
+                    return result;
+                }
             }
             finally
             {

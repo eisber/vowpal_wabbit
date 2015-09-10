@@ -36,7 +36,8 @@ namespace cs_unittest
                 };
 
                 vw.Learn(ctx);
-                vw.Predict(ctx);
+                var result = vw.Predict(ctx);
+                Assert.AreEqual(1, result.Length);
             }
         }
 
@@ -104,39 +105,69 @@ namespace cs_unittest
         [TestMethod]
         public void TestNull4()
         {
-            try
+            using (var vw = new VowpalWabbit<Context, ADF>("--cb_adf --rank_all --interact ab"))
             {
-                using (var vw = new VowpalWabbit<Context, ADF>("--cb_adf --rank_all --interact ab"))
+                var ctx = new Context()
                 {
-                    var ctx = new Context()
-                    {
-                        ID = 25,
-                        Vector = null,
-                        ActionDependentFeatures = new[] { 
+                    ID = 25,
+                    Vector = null,
+                    ActionDependentFeatures = new[] { 
+                    new ADF {
+                        ADFID = null,
+                        Label = new ContextualBanditLabel() {
+                            Action = 1,
+                            Cost= 1,
+                            Probability = 0.2f
+                        }
+                    }
+                }.ToList()
+                };
+
+                vw.Learn(ctx);
+                var result = vw.Predict(ctx);
+                Assert.AreEqual(1, result.Length);
+
+                ctx.ID = null;
+                //ctx.ActionDependentFeatures[0].ADFID = "foo";
+
+                vw.Learn(ctx);
+                result = vw.Predict(ctx);
+                Assert.AreEqual(1, result.Length);
+            }
+        }
+
+        [TestMethod]
+        public void TestNull5()
+        {
+            using (var vw = new VowpalWabbit<Context, ADF>("--cb_adf --rank_all --interact ab"))
+            {
+                var ctx = new Context()
+                {
+                    ID = 25,
+                    ActionDependentFeatures = new[] { 
                         new ADF {
-                            ADFID = null,
+                            ADFID = "123",
                             Label = new ContextualBanditLabel() {
                                 Action = 1,
                                 Cost= 1,
                                 Probability = 0.2f
-                            }
-                        }
+                            },
+                        },
+                        new ADF(),
+                        new ADF(),
+                        new ADF { ADFID = "4"}
                     }.ToList()
-                    };
+                };
 
-                    vw.Learn(ctx);
-                    vw.Predict(ctx);
+                vw.Learn(ctx);
+                var result = vw.Predict(ctx);
+                Assert.AreEqual(4, result.Length);
 
-                    ctx.ID = null;
-                    //ctx.ActionDependentFeatures[0].ADFID = "foo";
+                ctx.ActionDependentFeatures[0].ADFID = null;
+                ctx.ActionDependentFeatures[3].ADFID = null;
 
-                    vw.Learn(ctx);
-                    vw.Predict(ctx);
-                }
-            }
-            catch (NullReferenceException)
-            {
-                // NullRef is expected
+                result = vw.Predict(ctx);
+                Assert.AreEqual(4, result.Length);
             }
         }
     }
