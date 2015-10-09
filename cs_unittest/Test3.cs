@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TrainSet0002Dat;
@@ -90,7 +90,7 @@ namespace cs_unittest
                     var index = d.ActionDependentFeatures.IndexOf(a => a.Label != null);
                     var label = d.ActionDependentFeatures[index].Label;
 
-                    vw.Learn(d, d.ActionDependentFeatures, index, label); 
+                    vw.Learn(d, d.ActionDependentFeatures, index, label);
                 }
 
                 vw.Native.RunMultiPass();

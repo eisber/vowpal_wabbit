@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="VowpalWabbitAsync.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -108,7 +108,7 @@ namespace VW
             Contract.Requires(example != null);
             Contract.Requires(label != null);
             Contract.Requires(predictionFactory != null);
-            
+
             return manager.Post(vw =>
             {
                 using (var ex = this.serializers[vw.Settings.Node].Serialize(vw, example, label))
@@ -247,12 +247,12 @@ namespace VW
             Contract.Requires(label != null);
 
             manager.Post(vw => VowpalWabbitMultiLine.Learn(
-                vw, 
-                this.serializers[vw.Settings.Node], 
-                this.actionDependentFeatureSerializers[vw.Settings.Node], 
-                example, 
-                actionDependentFeatures, 
-                index, 
+                vw,
+                this.serializers[vw.Settings.Node],
+                this.actionDependentFeatureSerializers[vw.Settings.Node],
+                example,
+                actionDependentFeatures,
+                index,
                 label));
         }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -143,7 +143,7 @@ namespace cs_unittest
 
         public class Disposable : IDisposable
         {
-            public Disposable() 
+            public Disposable()
             {
                 this.Children = new List<Disposable>();
             }

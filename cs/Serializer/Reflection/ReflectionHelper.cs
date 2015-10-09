@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ReflectionHelper.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -32,7 +32,7 @@ namespace VW.Serializer.Reflection
             Contract.Ensures(valueType != null);
 
             // let's find the "best" match:
-            // order by 
+            // order by
             //  1. distance (0 = assignable, 1 = using generic) --> ascending
             //  2. # of interfaces implemented. the more the better (the more specific we are) --> descending
             //  3. # of open generics. the less the better (the more specific we are) --> ascending
@@ -99,8 +99,8 @@ namespace VW.Serializer.Reflection
 
             if (candidate.IsGenericType)
             {
-                // try to find a match that is assignable... 
-                // 
+                // try to find a match that is assignable...
+                //
                 var genericCandidate = candidate.GetGenericTypeDefinition();
 
                 var bestMatches =
@@ -167,10 +167,10 @@ namespace VW.Serializer.Reflection
                 {
                     return binaryExpression.Method;
                 }
-                
+
                 throw new NotSupportedException();
             }
-            
+
             var methodExpression = expression as MemberExpression;
             if (methodExpression != null)
             {

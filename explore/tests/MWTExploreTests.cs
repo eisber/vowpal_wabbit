@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MultiWorldTesting;
@@ -10,7 +10,7 @@ namespace ExploreTests
     [TestClass]
     public class MWTExploreTests
     {
-        /* 
+        /*
         ** C# Tests do not need to be as extensive as those for C++. These tests should ensure
         ** the interactions between managed and native code are as expected.
         */
@@ -155,7 +155,7 @@ namespace ExploreTests
             mwtt.ChooseAction(explorer, rand.NextDouble().ToString(), new TestContext() { Id = 102 });
 
             var interactions = recorder.GetAllInteractions();
-            
+
             Assert.AreEqual(3, interactions.Count);
 
             for (int i = 0; i < interactions.Count; i++)
@@ -197,14 +197,14 @@ namespace ExploreTests
     }
 
     struct TestInteraction<Ctx>
-    { 
-        public Ctx Context; 
+    {
+        public Ctx Context;
         public UInt32 Action;
         public float Probability;
         public string UniqueKey;
     }
 
-    class TestContext 
+    class TestContext
     {
         private int id;
 
@@ -220,7 +220,7 @@ namespace ExploreTests
         public void Record(Ctx context, UInt32 action, float probability, string uniqueKey)
         {
             interactions.Add(new TestInteraction<Ctx>()
-            { 
+            {
                 Context = context,
                 Action = action,
                 Probability = probability,

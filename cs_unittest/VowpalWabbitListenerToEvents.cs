@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using VW.Interfaces;
 
 namespace cs_unittest

@@ -1,4 +1,4 @@
-﻿using cs_unittest.cbadf;
+using cs_unittest.cbadf;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -91,7 +91,7 @@ namespace cs_unittest
                 parallelOptions: new ParallelOptions
                 {
                     MaxDegreeOfParallelism = 2
-                }, 
+                },
                 exampleCountPerRun: 2000,
                 exampleDistribution: VowpalWabbitExampleDistribution.RoundRobin);
 

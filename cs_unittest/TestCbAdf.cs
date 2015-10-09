@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -153,7 +153,7 @@ namespace cs_unittest
             //| b_1 c_1 d_1
             //0:0.0:0.5 | b_2 c_2 d_2
 
-            //| a_1 b_1 c_1 
+            //| a_1 b_1 c_1
             //| a_3 b_3 c_3
 
             sampleData[0] = new DataString
@@ -163,7 +163,7 @@ namespace cs_unittest
                         new DataStringADF
                         {
                             Features = new[] { "a_1", "b_1", "c_1" },
-                            
+
                         },
                         new DataStringADF { Features = new [] { "a_2","b_2","c_2" } },
                         new DataStringADF { Features = new [] { "a_3","b_3","c_3" } },
@@ -180,8 +180,8 @@ namespace cs_unittest
             {
                 ActionDependentFeatures = new[] {
                         new DataStringADF { Features = new [] { "b_1","c_1","d_1" } },
-                        new DataStringADF 
-                        { 
+                        new DataStringADF
+                        {
                             Features = new [] { "b_2", "c_2", "d_2" }
                         },
                     },
@@ -218,8 +218,8 @@ namespace cs_unittest
                 var features = new string[numActions][];
                 for (int j = 0; j < numActions; j++)
                 {
-                    features[j] = new string[] 
-                    { 
+                    features[j] = new string[]
+                    {
                         "a_" + fIndex[j],
                         "b_" + fIndex[j],
                         "c_" + fIndex[j],
@@ -263,8 +263,8 @@ namespace cs_unittest
                 var features = new float[numActions][];
                 for (int j = 0; j < numActions; j++)
                 {
-                    features[j] = new float[] 
-                    { 
+                    features[j] = new float[]
+                    {
                         (fIndex[j] + 0) / (float)numActions,
                         (fIndex[j] + 1) / (float)numActions,
                         (fIndex[j] + 2) / (float)numActions,

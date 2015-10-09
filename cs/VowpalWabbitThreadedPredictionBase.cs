@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="VowpalWabbitThreadedPredictionBase.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -12,7 +12,7 @@ using System.Diagnostics.Contracts;
 namespace VW
 {
     /// <summary>
-    /// Enables multi-threaded prediction by utilizing a pool of <see cref="VowpalWabbit"/> instances.  
+    /// Enables multi-threaded prediction by utilizing a pool of <see cref="VowpalWabbit"/> instances.
     /// </summary>
     /// <typeparam name="TVowpalWabbit">The VowpalWabbit wrapper type used.</typeparam>
     public abstract class VowpalWabbitThreadedPredictionBase<TVowpalWabbit> : IDisposable

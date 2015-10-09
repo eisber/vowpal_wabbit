@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="VowpalWabbitStringVisitor.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -22,7 +22,7 @@ namespace VW.Serializer.Visitors
     /// <summary>
     /// Front-end to serialize data into Vowpal Wabbit string format.
     /// </summary>
-    public struct VowpalWabbitStringVisitor 
+    public struct VowpalWabbitStringVisitor
     {
         private StringBuilder builder;
 
@@ -169,7 +169,7 @@ namespace VW.Serializer.Visitors
         {
             Contract.Requires(namespaces != null);
 
-            // see https://github.com/JohnLangford/vowpal_wabbit/wiki/Input-format 
+            // see https://github.com/JohnLangford/vowpal_wabbit/wiki/Input-format
             // prefix with label
             this.builder = new StringBuilder();
             if (label != null)

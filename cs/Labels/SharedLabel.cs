@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="SharedLabel.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -11,7 +11,7 @@ using VW.Interfaces;
 namespace VW.Labels
 {
     /// <summary>
-    /// In multi-line scenarios the first example can contain a set of shared features. This first example must be 
+    /// In multi-line scenarios the first example can contain a set of shared features. This first example must be
     /// marked using a 'shared' label.
     /// </summary>
     public sealed class SharedLabel : ILabel

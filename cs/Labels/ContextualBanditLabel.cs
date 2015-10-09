@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="IVowpalWabbitVisitor.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -38,13 +38,13 @@ namespace VW.Labels
         public string ToVowpalWabbitFormat()
         {
             var sb = new StringBuilder();
-            
+
             sb.Append(this.Action.ToString(CultureInfo.InvariantCulture));
             sb.Append(':');
             sb.Append(this.Cost.ToString(CultureInfo.InvariantCulture));
             sb.Append(':');
             sb.Append(this.Probability.ToString(CultureInfo.InvariantCulture));
-            
+
             return sb.ToString();
         }
     }

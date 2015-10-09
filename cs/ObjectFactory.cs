@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ObjectFactory.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -14,7 +14,7 @@ namespace VW
     /// Helper to conveniently create <see cref="ObjectFactory{TSource,TObject}"/>.
     /// </summary>
     public static class ObjectFactory
-    {   
+    {
         /// <summary>
         /// Disposable object factory.
         /// </summary>
@@ -36,7 +36,7 @@ namespace VW
         where TSource : IDisposable
     {
         private readonly Func<TSource, TObject> creator;
-        
+
         private TSource source;
 
         private bool disposed;

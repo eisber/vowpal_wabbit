@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="VowpalWabbitMultiLine.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -22,15 +22,15 @@ namespace VW
     public static class VowpalWabbitMultiLine
     {
         /// <summary>
-        /// Simplify learning of examples with action dependent features. 
+        /// Simplify learning of examples with action dependent features.
         /// </summary>
         public static void Learn<TExample, TActionDependentFeature>(
-            VowpalWabbit vw, 
+            VowpalWabbit vw,
             VowpalWabbitSerializer<TExample> serializer,
             VowpalWabbitSerializer<TActionDependentFeature> actionDependentFeatureSerializer,
-            TExample example, 
-            IEnumerable<TActionDependentFeature> actionDependentFeatures, 
-            int index, 
+            TExample example,
+            IEnumerable<TActionDependentFeature> actionDependentFeatures,
+            int index,
             ILabel label)
         {
             Contract.Requires(vw != null);
@@ -67,7 +67,7 @@ namespace VW
                 {
                     var adfExample = actionDependentFeatureSerializer.Serialize(vw, actionDependentFeature, i == index ? label : null);
                     Contract.Assert(adfExample != null);
-                    
+
                     examples.Add(adfExample);
 
                     vw.Learn(adfExample);
@@ -90,7 +90,7 @@ namespace VW
             {
                 // dispose examples
                 // Note: must not dispose examples before final example
-                // as the learning algorithm (such as cbf) keeps a reference 
+                // as the learning algorithm (such as cbf) keeps a reference
                 // to the example
                 foreach (var e in examples)
                 {
@@ -100,7 +100,7 @@ namespace VW
         }
 
         /// <summary>
-        /// Simplify learning of examples with action dependent features. 
+        /// Simplify learning of examples with action dependent features.
         /// </summary>
         /// <typeparam name="TExample">The type of the user example.</typeparam>
         /// <typeparam name="TActionDependentFeature">The type of the user action dependent features.</typeparam>
@@ -115,10 +115,10 @@ namespace VW
         public static int[] LearnAndPredictIndex<TExample, TActionDependentFeature>(
             VowpalWabbit vw,
             VowpalWabbitSerializer<TExample> serializer,
-            VowpalWabbitSerializer<TActionDependentFeature> actionDependentFeatureSerializer, 
-            TExample example, 
-            IEnumerable<TActionDependentFeature> actionDependentFeatures, 
-            int index, 
+            VowpalWabbitSerializer<TActionDependentFeature> actionDependentFeatureSerializer,
+            TExample example,
+            IEnumerable<TActionDependentFeature> actionDependentFeatures,
+            int index,
             ILabel label)
         {
             Contract.Requires(vw != null);
@@ -182,7 +182,7 @@ namespace VW
             {
                 // dispose examples
                 // Note: must not dispose examples before final example
-                // as the learning algorithm (such as cbf) keeps a reference 
+                // as the learning algorithm (such as cbf) keeps a reference
                 // to the example
                 foreach (var e in examples)
                 {
@@ -192,7 +192,7 @@ namespace VW
         }
 
         /// <summary>
-        /// Simplify learning of examples with action dependent features. 
+        /// Simplify learning of examples with action dependent features.
         /// </summary>
         /// <typeparam name="TExample">The type of the user example.</typeparam>
         /// <typeparam name="TActionDependentFeature">The type of the user action dependent features.</typeparam>
@@ -208,9 +208,9 @@ namespace VW
             VowpalWabbit vw,
             VowpalWabbitSerializer<TExample> serializer,
             VowpalWabbitSerializer<TActionDependentFeature> actionDependentFeatureSerializer,
-            TExample example, 
-            IEnumerable<TActionDependentFeature> actionDependentFeatures, 
-            int index, 
+            TExample example,
+            IEnumerable<TActionDependentFeature> actionDependentFeatures,
+            int index,
             ILabel label)
         {
             Contract.Requires(vw != null);
@@ -247,8 +247,8 @@ namespace VW
         public static int[] PredictIndex<TExample, TActionDependentFeature>(
             VowpalWabbit vw,
             VowpalWabbitSerializer<TExample> serializer,
-            VowpalWabbitSerializer<TActionDependentFeature> actionDependentFeatureSerializer, 
-            TExample example, 
+            VowpalWabbitSerializer<TActionDependentFeature> actionDependentFeatureSerializer,
+            TExample example,
             IEnumerable<TActionDependentFeature> actionDependentFeatures)
         {
             Contract.Requires(vw != null);
@@ -257,7 +257,7 @@ namespace VW
             Contract.Requires(example != null);
             Contract.Requires(actionDependentFeatures != null);
 
-            // shared |userlda :.1 |che a:.1 
+            // shared |userlda :.1 |che a:.1
             // `doc1 |lda :.1 :.2 [1]
             // `doc2 |lda :.2 :.3 [2]
             // <new line>
@@ -304,7 +304,7 @@ namespace VW
             {
                 // dispose examples
                 // Note: must not dispose examples before final example
-                // as the learning algorithm (such as cbf) keeps a reference 
+                // as the learning algorithm (such as cbf) keeps a reference
                 // to the example
                 foreach (var e in examples)
                 {
@@ -327,7 +327,7 @@ namespace VW
         public static TActionDependentFeature[] Predict<TExample, TActionDependentFeature>(
             VowpalWabbit vw,
             VowpalWabbitSerializer<TExample> serializer,
-            VowpalWabbitSerializer<TActionDependentFeature> actionDependentFeatureSerializer, 
+            VowpalWabbitSerializer<TActionDependentFeature> actionDependentFeatureSerializer,
             TExample example,
             IEnumerable<TActionDependentFeature> actionDependentFeatures)
         {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -65,7 +65,7 @@ namespace cs_test
             using (var vwNative = new VowpalWabbit("-k -t -i models/0001.model --invariant"))
             using (var vw = new VowpalWabbit<Test1>("-k -t -i models/0001.model --invariant"))
             using (var vwModel2 = new VowpalWabbitModel("-k -t --invariant -i models/0001.model"))
-            using (var vwInMemoryShared3 = new VowpalWabbit<Test1>(new VowpalWabbitSettings(model: vwModel2)))  
+            using (var vwInMemoryShared3 = new VowpalWabbit<Test1>(new VowpalWabbitSettings(model: vwModel2)))
             {
                 for (var i = 0; i < input.Count; i++)
                 {
@@ -115,7 +115,7 @@ namespace cs_test
         //            var data = new Rcv1CbEval()
         //            {
         //                Words = parts[1].Split(' ')
-        //            }; 
+        //            };
 
         //            using(var example = vw.ReadExample(data))
         //            {
@@ -125,7 +125,7 @@ namespace cs_test
         //        }
         //    }
         //}
-        
+
 
     }
 
@@ -147,7 +147,7 @@ namespace cs_test
     public class Rcv1CbEval
     {
         [Feature]
-        public string[] Words { get; set; } 
+        public string[] Words { get; set; }
     }
 
     public class MyListener : VowpalWabbitBaseListener

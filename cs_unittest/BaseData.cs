@@ -1,4 +1,4 @@
-﻿namespace cs_unittest
+namespace cs_unittest
 {
     public class BaseData
     {

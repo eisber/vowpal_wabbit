@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -50,7 +50,7 @@ namespace cs_unittest
             using (var vw = new VowpalWabbit<T>(args))
             {
                 var listener = new TListener();
-                listener.Created = (data, label) => 
+                listener.Created = (data, label) =>
                 {
                     if (data == null)
                     {
@@ -69,7 +69,7 @@ namespace cs_unittest
             where TData : BaseData
             where TListener : VowpalWabbitListenerToEvents<TData>, new()
         {
-            float[] references = null; 
+            float[] references = null;
             var index = 0;
 
             if (referenceFile != null)
@@ -88,7 +88,7 @@ namespace cs_unittest
                 {
                     var expected = vwRef.Predict(x.Line, VowpalWabbitPredictionType.Scalar);
 
-                    var actual = vwInMemoryShared2.Predict(x, VowpalWabbitPredictionType.Scalar, label); 
+                    var actual = vwInMemoryShared2.Predict(x, VowpalWabbitPredictionType.Scalar, label);
 
                     Assert.AreEqual(expected, actual, 1e-5);
 
@@ -156,7 +156,7 @@ namespace cs_unittest
             var ret = 0.0;
             if (double.TryParse(candidate.Substring(label.Length), NumberStyles.Float, CultureInfo.InvariantCulture, out ret))
             {
-                return ret;   
+                return ret;
             }
 
             return 0.0;

@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ILabel.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -14,7 +14,7 @@ namespace VW.Interfaces
     public interface ILabel
     {
         /// <summary>
-        /// Serialize to Vowpal Wabbit string format. 
+        /// Serialize to Vowpal Wabbit string format.
         /// </summary>
         string ToVowpalWabbitFormat();
     }

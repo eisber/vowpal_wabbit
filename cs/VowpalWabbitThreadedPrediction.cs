@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="VowpalWabbitThreadedPrediction.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -17,7 +17,7 @@ using VW.Serializer;
 namespace VW
 {
     /// <summary>
-    /// Enables multi-threaded prediction by utilizing a pool of <see cref="VowpalWabbit"/> instances.  
+    /// Enables multi-threaded prediction by utilizing a pool of <see cref="VowpalWabbit"/> instances.
     /// </summary>
     /// <typeparam name="TExample">The type use for providing data to VW using the serializer infrastructure.</typeparam>
     public class VowpalWabbitThreadedPrediction<TExample> : VowpalWabbitThreadedPredictionBase<VowpalWabbit<TExample>>
@@ -42,7 +42,7 @@ namespace VW
     }
 
     /// <summary>
-    /// Enables multi-threaded prediction by utilizing a pool of <see cref="VowpalWabbit"/> instances.  
+    /// Enables multi-threaded prediction by utilizing a pool of <see cref="VowpalWabbit"/> instances.
     /// </summary>
     /// <typeparam name="TExample">The type use for providing data to VW using the serializer infrastructure.</typeparam>
     /// <typeparam name="TActionDependentFeature">The type use for providing action dependent data to VW using the serializer infrastructure.</typeparam>

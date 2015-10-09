@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -110,10 +110,10 @@ namespace cs_test
             if (exploration_type == "greedy")
             {
                 // Initialize Epsilon-Greedy explore algorithm using built-in StringRecorder and SimpleContext types
-                
+
                 // Creates a recorder of built-in StringRecorder type for string serialization
                 StringRecorder<SimpleContext> recorder = new StringRecorder<SimpleContext>();
-                
+
                 // Creates an MwtExplorer instance using the recorder above
                 MwtExplorer<SimpleContext> mwtt = new MwtExplorer<SimpleContext>("mwt", recorder);
 
@@ -126,7 +126,7 @@ namespace cs_test
                 EpsilonGreedyExplorer<SimpleContext> explorer = new EpsilonGreedyExplorer<SimpleContext>(policy, epsilon, numActions);
 
                 // Creates a context of built-in SimpleContext type
-                SimpleContext context = new SimpleContext(new Feature[] { 
+                SimpleContext context = new SimpleContext(new Feature[] {
                     new Feature() { Id = 1, Value = 0.5f },
                     new Feature() { Id = 4, Value = 1.3f },
                     new Feature() { Id = 9, Value = -0.5f },

@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;
 using TrainSet0002Dat;
@@ -123,7 +123,7 @@ namespace cs_unittest
                         stopWatchNative.Start();
                         var nativeHash = vw.HashSpaceNative(item);
                         stopWatchNative.Stop();
-                         
+
                         stopWatchManaged.Start();
                         var managedHash = vw.HashSpace(item);
                         stopWatchManaged.Stop();

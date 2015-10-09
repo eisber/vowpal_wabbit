@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="TypeMatch.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -30,7 +30,7 @@ namespace VW.Serializer.Reflection
             Contract.Requires(genericType != null);
             Contract.Requires(actualType != null);
 
-            this.GenericTypes = new Dictionary<Type, Type> 
+            this.GenericTypes = new Dictionary<Type, Type>
                 {
                     { genericType, actualType }
                 };

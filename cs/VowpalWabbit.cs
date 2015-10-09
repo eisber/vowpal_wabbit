@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="VowpalWabbit.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -46,7 +46,7 @@ namespace VW
         /// </summary>
         /// <param name="args">Command line arguments passed to native instance.</param>
         public VowpalWabbit(String args) : this(new VowpalWabbit(args))
-        { 
+        {
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace VW
         /// <param name="settings">Arguments passed to native instance.</param>
         public VowpalWabbit(VowpalWabbitSettings settings)
             : this(new VowpalWabbit(settings))
-        { 
+        {
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace VW
         public void Predict(TExample example, ILabel label = null)
         {
             Contract.Requires(example != null);
-            
+
             using (var ex = this.serializer.Serialize(this.vw, example, label))
             {
                 this.vw.Learn(ex);

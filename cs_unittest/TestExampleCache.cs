@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -98,9 +98,9 @@ namespace cs_unittest
             }
         }
     }
-     
+
     [Cacheable]
-    public class CachedData 
+    public class CachedData
     {
         [Feature]
         public double Feature { get; set; }

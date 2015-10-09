@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="VowpalWabbitSerializer.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -136,7 +136,7 @@ namespace VW.Serializer
             }
             else
             {
-                result = new CacheEntry 
+                result = new CacheEntry
                 {
                     Example =  new VowpalWabbitExample(owner: this, example: this.serializer(vw, example, label)),
                     LastRecentUse = DateTime.UtcNow

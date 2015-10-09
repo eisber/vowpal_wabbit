@@ -216,7 +216,7 @@ void parse_dictionary_argument(vw&all, string str) {
   io->close_file();
   VW::dealloc_example(all.p->lp.delete_label, *ec);
   free(ec);
-  
+
   if (! all.quiet)
     cerr << "dictionary " << s << " contains " << map->size() << " item" << (map->size() == 1 ? "\n" : "s\n");
 
@@ -504,8 +504,8 @@ void parse_feature_tweaks(vw& all)
 
       for (vector<string>::const_iterator i = vec_arg.begin(); i != vec_arg.end(); ++i)
       {
-	if (!all.quiet)
-	  cerr << *i << " ";
+  if (!all.quiet)
+    cerr << *i << " ";
         *all.file_options << " --quadratic " << *i;
       }
 
@@ -1046,19 +1046,19 @@ vw& parse_args(int argc, char *argv[])
   new_options(all, "Parallelization options")
     ("span_server", po::value<string>(), "Location of server for setting up spanning tree")
     ("threads", "Enable multi-threading")
-		("unique_id", po::value<size_t>()->default_value(0), "unique id used for cluster parallel jobs")
-		("total", po::value<size_t>()->default_value(1), "total number of nodes used in cluster parallel job")
-		("node", po::value<size_t>()->default_value(0), "node number in cluster parallel job");
+    ("unique_id", po::value<size_t>()->default_value(0), "unique id used for cluster parallel jobs")
+    ("total", po::value<size_t>()->default_value(1), "total number of nodes used in cluster parallel job")
+    ("node", po::value<size_t>()->default_value(0), "node number in cluster parallel job");
   add_options(all);
 
   po::variables_map& vm = all.vm;
   if (vm.count("span_server")) {
-	  all.all_reduce_type = AllReduceType::Socket;
-	  all.all_reduce = new AllReduceSockets(
-		  vm["span_server"].as<string>(),
-		  vm["unique_id"].as<size_t>(),
-		  vm["total"].as<size_t>(),
-		  vm["node"].as<size_t>());
+    all.all_reduce_type = AllReduceType::Socket;
+    all.all_reduce = new AllReduceSockets(
+      vm["span_server"].as<string>(),
+      vm["unique_id"].as<size_t>(),
+      vm["total"].as<size_t>(),
+      vm["node"].as<size_t>());
   }
 
   msrand48(all.random_seed);
@@ -1272,20 +1272,20 @@ void delete_dictionary_entry(substring ss, v_array<feature>*A) {
 
   void sync_stats(vw& all)
   {
-	  if (all.all_reduce != nullptr) {
-		  float loss = (float)all.sd->sum_loss;
-		  all.sd->sum_loss = (double)accumulate_scalar(all, loss);
-		  float weighted_examples = (float)all.sd->weighted_examples;
-		  all.sd->weighted_examples = (double)accumulate_scalar(all, weighted_examples);
-		  float weighted_labels = (float)all.sd->weighted_labels;
-		  all.sd->weighted_labels = (double)accumulate_scalar(all, weighted_labels);
-		  float weighted_unlabeled_examples = (float)all.sd->weighted_unlabeled_examples;
-		  all.sd->weighted_unlabeled_examples = (double)accumulate_scalar(all, weighted_unlabeled_examples);
-		  float example_number = (float)all.sd->example_number;
-		  all.sd->example_number = (uint64_t)accumulate_scalar(all, example_number);
-		  float total_features = (float)all.sd->total_features;
-		  all.sd->total_features = (uint64_t)accumulate_scalar(all, total_features);
-	  }
+    if (all.all_reduce != nullptr) {
+      float loss = (float)all.sd->sum_loss;
+      all.sd->sum_loss = (double)accumulate_scalar(all, loss);
+      float weighted_examples = (float)all.sd->weighted_examples;
+      all.sd->weighted_examples = (double)accumulate_scalar(all, weighted_examples);
+      float weighted_labels = (float)all.sd->weighted_labels;
+      all.sd->weighted_labels = (double)accumulate_scalar(all, weighted_labels);
+      float weighted_unlabeled_examples = (float)all.sd->weighted_unlabeled_examples;
+      all.sd->weighted_unlabeled_examples = (double)accumulate_scalar(all, weighted_unlabeled_examples);
+      float example_number = (float)all.sd->example_number;
+      all.sd->example_number = (uint64_t)accumulate_scalar(all, example_number);
+      float total_features = (float)all.sd->total_features;
+      all.sd->total_features = (uint64_t)accumulate_scalar(all, total_features);
+    }
   }
 
 void finish(vw& all, bool delete_all)
@@ -1363,7 +1363,7 @@ void finish(vw& all, bool delete_all)
   }
   delete all.loss;
 
-	delete all.all_reduce;
+  delete all.all_reduce;
 
   // destroy all interactions and array of them
   for (v_string* i = all.interactions.begin; i != all.interactions.end; ++i) i->delete_v();

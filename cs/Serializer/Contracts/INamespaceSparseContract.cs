@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="INamespaceSparseContract.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -16,7 +16,7 @@ namespace VW.Serializer.Contracts
     {
         public IVisitableFeature[] Features
         {
-            get 
+            get
             {
                 Contract.Ensures(Contract.Result<IVisitableFeature[]>() != null);
                 return null;

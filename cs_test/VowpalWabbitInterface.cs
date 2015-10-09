@@ -66,7 +66,7 @@ namespace VW
 
         [DllImport(LIBVW, EntryPoint = "VW_GetTopicPrediction")]
         public static extern float GetTopicPrediction(VwExample example, SizeT i);
-        
+
         [DllImport(LIBVW, EntryPoint = "VW_GetLabel")]
         public static extern float GetLabel(VwExample example);
 

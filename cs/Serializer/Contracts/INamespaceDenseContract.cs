@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="INamespaceDenseContract.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -17,7 +17,7 @@ namespace VW.Serializer.Contracts
     {
         public IFeature<IReadOnlyCollection<T>> DenseFeature
         {
-	        get 
+	        get
             {
                 Contract.Ensures(Contract.Result<IFeature<IReadOnlyCollection<T>>>() != null);
                 return null;

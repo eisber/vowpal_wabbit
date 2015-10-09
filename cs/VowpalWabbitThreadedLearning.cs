@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="VowpalWabbitThreadedLearning.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -45,7 +45,7 @@ namespace VW
         private readonly ActionBlock<Action<VowpalWabbit>>[] actionBlocks;
 
         /// <summary>
-        /// The <see cref="actionBlocks"/> only offer non-blocking methods. Getting observers and calling OnNext() enables 
+        /// The <see cref="actionBlocks"/> only offer non-blocking methods. Getting observers and calling OnNext() enables
         /// blocking once the queue is full.
         /// </summary>
         private readonly IObserver<Action<VowpalWabbit>>[] observers;
@@ -193,7 +193,7 @@ namespace VW
         private uint CheckEndOfPass()
         {
             var exampleCount = (uint)Interlocked.Increment(ref this.exampleCount);
-            
+
             if (exampleCount % this.Settings.ExampleCountPerRun == 0)
             {
                 this.observers[0].OnNext(vw =>
@@ -242,9 +242,9 @@ namespace VW
             var completionSource = new TaskCompletionSource<T>();
 
             // dispatch
-            this.observers[this.exampleDistributor(exampleCount)].OnNext(vw => 
+            this.observers[this.exampleDistributor(exampleCount)].OnNext(vw =>
             {
-                try 
+                try
 	            {
                     completionSource.SetResult(func(vw));
 	            }
@@ -285,7 +285,7 @@ namespace VW
         /// <remarks>The task is only completed after synchronization of all instances, triggered <see cref="VowpalWabbitSettings.ExampleCountPerRun"/> example.</remarks>
         public Task<VowpalWabbitPerformanceStatistics> PerformanceStatistics
         {
-            get 
+            get
             {
                 var completionSource = new TaskCompletionSource<VowpalWabbitPerformanceStatistics>();
 
@@ -321,7 +321,7 @@ namespace VW
         {
             var completionSource = new TaskCompletionSource<bool>();
 
-            this.syncActions.Add(vw => 
+            this.syncActions.Add(vw =>
             {
                 vw.SaveModel();
                 completionSource.SetResult(true);
@@ -340,7 +340,7 @@ namespace VW
 
             var completionSource = new TaskCompletionSource<bool>();
 
-            this.syncActions.Add(vw => 
+            this.syncActions.Add(vw =>
             {
                 vw.SaveModel(filename);
                 completionSource.SetResult(true);

@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="INamespace.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -19,7 +19,7 @@ namespace VW.Serializer.Interfaces
         string Name { get; }
 
         /// <summary>
-        /// The regular VW string interface interprets the first character of the namespace as the feature group. 
+        /// The regular VW string interface interprets the first character of the namespace as the feature group.
         /// </summary>
         char? FeatureGroup { get; }
     }

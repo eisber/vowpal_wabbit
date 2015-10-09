@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="IVisitableFeatureContract.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -18,7 +18,7 @@ namespace VW.Serializer.Contracts
     {
         public Action Visit
         {
-            get 
+            get
             {
                 Contract.Ensures(Contract.Result<Action>() != null);
                 return null;

@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="VowpalWabbitInterfaceVisitor.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -67,7 +67,7 @@ namespace VW.Serializer.Visitors
 
             this.featureGroup = namespaceDense.FeatureGroup ?? '\0';
 
-            this.namespaceHash = namespaceDense.Name == null ? 
+            this.namespaceHash = namespaceDense.Name == null ?
                 this.vw.HashSpace(this.featureGroup.ToString()) :
                 this.vw.HashSpace(this.featureGroup + namespaceDense.Name);
 
@@ -101,7 +101,7 @@ namespace VW.Serializer.Visitors
             Contract.Requires(namespaceSparse != null);
 
             // compute shared namespace hash
-            this.namespaceHash = namespaceSparse.Name == null ? 
+            this.namespaceHash = namespaceSparse.Name == null ?
                 this.vw.HashSpace(namespaceSparse.FeatureGroup.ToString()) :
                 this.vw.HashSpace(namespaceSparse.FeatureGroup + namespaceSparse.Name);
 
@@ -210,7 +210,7 @@ namespace VW.Serializer.Visitors
         {
             Contract.Requires(feature != null);
 
-            var strValue = typeof(T).IsEnum ? 
+            var strValue = typeof(T).IsEnum ?
                 Enum.GetName(typeof(T), feature.Value) : Convert.ToString(feature.Value);
 
             this.namespaceBuilder.AddFeature(this.vw.HashFeature(feature.Name + strValue, this.namespaceHash), 1f);

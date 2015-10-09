@@ -60,17 +60,17 @@ float multiply(v_array<feature>& f_dest, v_array<feature>& f_src2, interact& in)
 #endif
 
   for(size_t i1 = 1, i2 = 1; i1 < f_src1.size() && i2 < f_src2.size();) {
-	  // calculating the relative offset from the namespace offset used to match features
+    // calculating the relative offset from the namespace offset used to match features
     size_t cur_id1 = (size_t)(((f_src1[i1].weight_index & weight_mask) - base_id1) & weight_mask);
     size_t cur_id2 = (size_t)(((f_src2[i2].weight_index & weight_mask) - base_id2) & weight_mask);
 
 #ifdef _DEBUG
-	// checking for sorting requirement
-	assert(cur_id1 >= prev_id1);
-	assert(cur_id2 >= prev_id2);
+  // checking for sorting requirement
+  assert(cur_id1 >= prev_id1);
+  assert(cur_id2 >= prev_id2);
 
-	prev_id1 = cur_id1;
-	prev_id2 = cur_id2;
+  prev_id1 = cur_id1;
+  prev_id2 = cur_id2;
 #endif
 
     if(cur_id1 == cur_id2) {
@@ -127,12 +127,12 @@ void predict_or_learn(interact& in, LEARNER::base_learner& base, example& ec) {
   // remove 2nd namespace
   int n2_i = -1;
   for (size_t i = 0; i < ec.indices.size(); i++) {
-	  if (ec.indices[i] == in.n2) {
-		  n2_i = (int)i;
-		  memmove(&ec.indices[n2_i], &ec.indices[n2_i+1], sizeof(unsigned char) * (ec.indices.size() - n2_i - 1));
-		  ec.indices.decr();
-		  break;
-	  }
+    if (ec.indices[i] == in.n2) {
+      n2_i = (int)i;
+      memmove(&ec.indices[n2_i], &ec.indices[n2_i+1], sizeof(unsigned char) * (ec.indices.size() - n2_i - 1));
+      ec.indices.decr();
+      break;
+    }
   }
 
   base.predict(ec);

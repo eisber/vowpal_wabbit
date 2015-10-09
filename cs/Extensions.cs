@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Extensions.cs">
 //   Copyright (c) by respective owners including Yahoo!, Microsoft, and
 //   individual contributors. All rights reserved.  Released under a BSD
@@ -37,7 +37,7 @@ namespace VW
             var i = 0;
             foreach (var item in source)
 	        {
-               result[indicies[i]] = item; 
+               result[indicies[i]] = item;
                i++;
 	        }
 

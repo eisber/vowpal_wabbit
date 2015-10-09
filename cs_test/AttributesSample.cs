@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -92,7 +92,7 @@ namespace cs_test
 
             var vw = new VowpalWabbit<FeatureTestContext>("-q st --noconstant --quiet");
 
-            vw.Native.Learn("1 |s p^the_man w^the w^man |t p^un_homme w^un w^homme"); 
+            vw.Native.Learn("1 |s p^the_man w^the w^man |t p^un_homme w^un w^homme");
 
             var prediction = vw.Learn(context, new SimpleLabel { Label = 1f }, VowpalWabbitPredictionType.Scalar);
 

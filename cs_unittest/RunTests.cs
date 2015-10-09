@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -54,7 +54,7 @@ namespace cs_unittest
 
                     // execute test case
                     var argsBuilder = new StringBuilder(args);
-                   
+
                     var dataFile = ExtractArgument(argsBuilder, @"-d\s+(\S+)");
                     var testing = false;
 
@@ -63,7 +63,7 @@ namespace cs_unittest
                         dataFile = ExtractArgument(argsBuilder, @"-t\s+(\S+)");
                         testing = dataFile != null;
                     }
-                    
+
                     if (dataFile == null)
                     {
                         dataFile = ExtractArgument(argsBuilder, @"(\S+)$");
@@ -122,9 +122,9 @@ namespace cs_unittest
                                 }
 
                                 //Assert.AreEqual(
-                                //    expectedValue, 
-                                //    actualValue, 
-                                //    1e-5, 
+                                //    expectedValue,
+                                //    actualValue,
+                                //    1e-5,
                                 //    string.Format("Test {0}", nr));
                             }
                             else

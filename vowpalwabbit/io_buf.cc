@@ -20,22 +20,22 @@ size_t buf_read(io_buf &i, char* &pointer, size_t n)
   else // out of bytes, so refill.
     {
       if (i.space.end != i.space.begin) //There exists room to shift.
-	{ // Out of buffer so swap to beginning.
-	  size_t left = i.endloaded - i.space.end;
-	  memmove(i.space.begin, i.space.end, left);
-	  i.space.end = i.space.begin;
+  { // Out of buffer so swap to beginning.
+    size_t left = i.endloaded - i.space.end;
+    memmove(i.space.begin, i.space.end, left);
+    i.space.end = i.space.begin;
             i.endloaded = i.space.begin + left;
-	}
+  }
       if (i.fill(i.files[i.current]) > 0)
             return buf_read(i, pointer, n);// more bytes are read.
-      else if (++i.current < i.files.size()) 
+      else if (++i.current < i.files.size())
             return buf_read(i, pointer, n);// No more bytes, so go to next file and try again.
       else
     { //no more bytes to read, return all that we have left.
-	  pointer = i.space.end;
-	  i.space.end = i.endloaded;
-	  return i.endloaded - pointer;
-	}
+    pointer = i.space.end;
+    i.space.end = i.endloaded;
+    return i.endloaded - pointer;
+  }
     }
 }
 
@@ -66,24 +66,24 @@ size_t readto(io_buf &i, char* &pointer, char terminal)
   else
     {
       if (i.endloaded == i.space.end_array)
-	{
-	  size_t left = i.endloaded - i.space.end;
-	  memmove(i.space.begin, i.space.end, left);
-	  i.space.end = i.space.begin;
-	  i.endloaded = i.space.begin+left;
-	  pointer = i.endloaded;
-	}
+  {
+    size_t left = i.endloaded - i.space.end;
+    memmove(i.space.begin, i.space.end, left);
+    i.space.end = i.space.begin;
+    i.endloaded = i.space.begin+left;
+    pointer = i.endloaded;
+  }
       if (i.current < i.files.size() && i.fill(i.files[i.current]) > 0)// more bytes are read.
-	return readto(i,pointer,terminal);
+  return readto(i,pointer,terminal);
       else if (++i.current < i.files.size())  //no more bytes, so go to next file.
-	return readto(i,pointer,terminal);
+  return readto(i,pointer,terminal);
       else //no more bytes to read, return everything we have.
-	{
-	  size_t n = pointer - i.space.end;
-	  i.space.end = pointer;
-	  pointer -= n;
-	  return n;
-	}
+  {
+    size_t n = pointer - i.space.end;
+    i.space.end = pointer;
+    pointer -= n;
+    return n;
+  }
     }
 }
 
@@ -97,12 +97,12 @@ void buf_write(io_buf &o, char* &pointer, size_t n)
   else // Time to dump the file
     {
       if (o.space.end != o.space.begin)
-	o.flush();
+  o.flush();
       else // Array is short, so increase size.
-	{
-	  o.space.resize(2*(o.space.end_array - o.space.begin));
-	  o.endloaded = o.space.begin;
-	}
+  {
+    o.space.resize(2*(o.space.end_array - o.space.begin));
+    o.endloaded = o.space.begin;
+  }
       buf_write (o, pointer,n);
     }
 }
@@ -115,21 +115,21 @@ bool io_buf::is_socket(int f)
 
 ssize_t io_buf::read_file_or_socket(int f, void* buf, size_t nbytes) {
 #ifdef _WIN32
-  if (is_socket(f)) 
+  if (is_socket(f))
     return recv(f, reinterpret_cast<char*>(buf), static_cast<int>(nbytes), 0);
-  else 
-    return _read(f, buf, (unsigned int)nbytes); 
+  else
+    return _read(f, buf, (unsigned int)nbytes);
 #else
-  return read(f, buf, (unsigned int)nbytes); 
+  return read(f, buf, (unsigned int)nbytes);
 #endif
 }
 
 ssize_t io_buf::write_file_or_socket(int f, const void* buf, size_t nbytes)
 {
 #ifdef _WIN32
-  if (is_socket(f)) 
+  if (is_socket(f))
     return send(f, reinterpret_cast<const char*>(buf), static_cast<int>(nbytes), 0);
-  else 
+  else
     return _write(f, buf, (unsigned int)nbytes);
 #else
   return write(f, buf, (unsigned int)nbytes);
@@ -139,9 +139,9 @@ ssize_t io_buf::write_file_or_socket(int f, const void* buf, size_t nbytes)
 void io_buf::close_file_or_socket(int f)
 {
 #ifdef _WIN32
-  if (io_buf::is_socket(f)) 
+  if (io_buf::is_socket(f))
     closesocket(f);
-  else 
+  else
     _close(f);
 #else
   close(f);
