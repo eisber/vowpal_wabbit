@@ -345,12 +345,14 @@
       <FileType>CppHeader</FileType>
     </ClCompile>
     <ClInclude Include="active_cover.h" />
+    <ClCompile Include="autolink2.cc" />
     <ClCompile Include="primitives.cc" />
     <ClCompile Include="vw_validate.cc" />
     <ClInclude Include="autolink.h" />
     <ClInclude Include="accumulate.h" />
     <ClInclude Include="active.h" />
     <ClInclude Include="allreduce.h" />
+    <ClInclude Include="autolink2.h" />
     <ClInclude Include="bfgs.h" />
     <ClInclude Include="binary.h" />
     <ClInclude Include="cache.h" />
