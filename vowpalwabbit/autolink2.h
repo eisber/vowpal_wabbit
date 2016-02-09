@@ -5,7 +5,7 @@
 #define SETUP_VTABLE(TREDUCTION) \
   virtual void GetVTable(LearnMethod<TREDUCTION::Label>& learnMethod, PredictMethod<TREDUCTION::Label>& predictMethod) \
     { learnMethod = (LearnMethod<Label>)&TREDUCTION::learn; \
-    predictMethod = (LearnMethod<Label>)&TREDUCTION::predict; \
+      predictMethod = (LearnMethod<Label>)&TREDUCTION::predict; \
     }
 
 // if implementor wants to get single predict_or_learn method
@@ -21,6 +21,8 @@
   \
   SETUP_VTABLE(TREDUCTION)
 
+BaseReduction* CreateAutoLink();
+
 class AutoLink : public BaseReduction<Label, Label>
 {
 private:
@@ -28,7 +30,7 @@ private:
   uint32_t _stride_shift;
 
 public:
-  AutoLink(vw& all, ILearner<Label>* base_learner);
+  AutoLink(ILearner<Label>* base_learner);
 
   virtual bool setup(vw& all);
 

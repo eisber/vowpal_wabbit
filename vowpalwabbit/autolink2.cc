@@ -1,5 +1,10 @@
 #include "autolink2.h"
 
+BaseReduction* CreateAutoLink()
+{
+  return new AutoLink(nullptr);
+}
+
 const int autoconstant = 524267083;
 
 AutoLink::AutoLink(ILearner<Label>* base_learner)
