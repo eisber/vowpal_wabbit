@@ -5,14 +5,18 @@ license as described in the file LICENSE.
 */
 
 #include <msclr\marshal_cppstd.h>
-#include "clr_io.h"
+
+// avoid using std leakage
+//namespace clr_io { 
+#include "clr_io.h" 
+//}
 
 using namespace System;
 using namespace System::Runtime::InteropServices;
 
 namespace VW
 {
-    clr_io_buf::clr_io_buf(Stream^ stream) : m_stream(stream)
+	clr_io_buf::clr_io_buf(Stream^ stream) : m_stream(stream)
     {
         if (stream == nullptr)
             throw gcnew ArgumentNullException("stream");
@@ -35,7 +39,7 @@ namespace VW
 
     ssize_t clr_io_buf::read_file(int f, void* buf, size_t nbytes)
     {
-        auto buffer = gcnew array<unsigned char>((int)nbytes);
+        auto buffer = gcnew cli::array<unsigned char>((int)nbytes);
         int readBytes = m_stream->Read(buffer, 0, (int)nbytes);
 
         Marshal::Copy(buffer, 0, IntPtr(buf), (int)nbytes);
@@ -50,7 +54,7 @@ namespace VW
 
     ssize_t clr_io_buf::write_file(int file, const void* buf, size_t nbytes)
     {
-        auto buffer = gcnew array<unsigned char>((int)nbytes);
+        auto buffer = gcnew cli::array<unsigned char>((int)nbytes);
         Marshal::Copy(IntPtr((void*)buf), buffer, 0, (int)nbytes);
 
         m_stream->Write(buffer, 0, (int)nbytes);
