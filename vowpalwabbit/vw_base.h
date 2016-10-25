@@ -24,7 +24,7 @@ public:
 template<typename TPrediction, typename TLabel>
 class TypedLearner: public Learner
 {
-protected:
+public:
 	typedef void (*PredictOrLearnMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, TPrediction& pred, TLabel& label);
 
 private:
@@ -61,15 +61,17 @@ public:
 template<typename TPrediction, typename TLabel, typename TPredictionOfBase, typename TLabelOfBase>
 class TypedReduction : public TypedLearner<TPrediction, TLabel>, public IReduction
 {
-public:
+private:
 	typedef TypedLearner<TPredictionOfBase, TLabelOfBase> TBaseLearner;
 
-private:
+	// need to re-declare as gcc can't find the base class typedef
+	typedef void(*PredictOrLearnMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, TPrediction& pred, TLabel& label);
+
 	TBaseLearner* _base;
 
 protected:
 	TypedReduction(PredictOrLearnMethod learn_method, PredictOrLearnMethod predict_method)
-		: TypedLearner(learn_method, predict_method)
+		: TypedLearner<TPrediction, TLabel>(learn_method, predict_method)
 	{ }
 
 	template<bool is_learn>
@@ -110,12 +112,12 @@ private:
 	{
 		// invoke the most derived implementation of predict_or_learn_impl
 		// this method is only called from the base class and "that" == "this"
-		static_cast<TDerived&>(that).predict_or_learn<is_learn>(ec, pred, label);
+		static_cast<TDerived&>(that).template predict_or_learn<is_learn>(ec, pred, label);
 	}
 
 protected:
 	// get most derived implementation of Learn & Predict
 	Reduction()
-		: TypedReduction(&predict_or_learn_dispatch<true>, &predict_or_learn_dispatch<false>)
+		: TypedReduction<TPrediction, TLabel, TPredictionOfBase, TLabelOfBase>(&predict_or_learn_dispatch<true>, &predict_or_learn_dispatch<false>)
 	{ }
 };
