@@ -7,6 +7,10 @@
 
 class Learner
 {
+protected:
+	size_t weights; //this stores the number of "weight vectors" required by the learner.
+	size_t increment;
+
 public:
 	// optional dependencies
 	virtual const char** dependencies()
@@ -18,6 +22,18 @@ public:
 	virtual po::options_description* options() = 0;
 
 	virtual void init(vw& all)
+	{ }
+
+	virtual void save_load(io_buf& buf, bool read, bool text)
+	{ }
+
+	virtual void finish_example(example& ec)
+	{ }
+
+	virtual void end_pass()
+	{ }
+
+	virtual void end_examples()
 	{ }
 };
 
@@ -38,24 +54,51 @@ protected:
 	{ }
 
 public:
-	// optimized dispatch
-	inline void learn(example &ec, TPrediction& pred, TLabel& label)
-	{
-		// needs to be function pointer as the TypedLearner cannot declare member method pointers to derived classes
-		// TypedLearner::* are only methods on TypedLearner and above, not on subclasses
-		(*_learn_method)(*this, ec, pred, label);
-	} 
+	PredictOrLearnMethod learn_method() { return _learn_method; }
 
-	inline void predict(example &ec, TPrediction& pred, TLabel& label)
-	{
-		(*_predict_method)(*this, ec, pred, label);
-	}
+	PredictOrLearnMethod predict_method() { return _predict_method; }
+
+	//// optimized dispatch
+	//inline void learn(example &ec, TPrediction& pred, TLabel& label)
+	//{
+	//	// needs to be function pointer as the TypedLearner cannot declare member method pointers to derived classes
+	//	// TypedLearner::* are only methods on TypedLearner and above, not on subclasses
+	//	(*_learn_method)(*this, ec, pred, label);
+	//} 
+
+	//inline void predict(example &ec, TPrediction& pred, TLabel& label)
+	//{
+	//	(*_predict_method)(*this, ec, pred, label);
+	//}
 };
 
 class IReduction
 {
 public:
 	virtual bool try_link(Learner& learner) = 0;
+};
+
+template<typename T>
+class RestoreValueOnReturn
+{
+private:
+	T _value_initial;
+	T& _value;
+
+public:
+	RestoreValueOnReturn(T& value) : _value(value), _value_initial(value)
+	{ }
+
+	template<typename S>
+	T operator+=(S val)
+	{
+		return _value += val;
+	}
+
+	~RestoreValueOnReturn()
+	{
+		_value = _value_initial;
+	}
 };
 
 template<typename TPrediction, typename TLabel, typename TPredictionOfBase, typename TLabelOfBase>
@@ -65,9 +108,12 @@ private:
 	typedef TypedLearner<TPredictionOfBase, TLabelOfBase> TBaseLearner;
 
 	// need to re-declare as gcc can't find the base class typedef
-	typedef void(*PredictOrLearnMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, TPrediction& pred, TLabel& label);
+	typedef void(*PredictOrLearnMethod)(TBaseLearner&, example& ec, TPrediction& pred, TLabel& label);
+	typedef void(*BasePredictOrLearnMethod)(TBaseLearner&, example& ec, TPrediction& pred, TLabel& label);
 
-	TBaseLearner* _base;
+	TBaseLearner* _base = nullptr;
+	BasePredictOrLearnMethod _base_learn_method = nullptr;
+	BasePredictOrLearnMethod _base_predict_method = nullptr;
 
 protected:
 	TypedReduction(PredictOrLearnMethod learn_method, PredictOrLearnMethod predict_method)
@@ -75,22 +121,32 @@ protected:
 	{ }
 
 	template<bool is_learn>
-	void base_predict_or_learn(example& ec, TPredictionOfBase& pred, TLabelOfBase& label)
+	void base_predict_or_learn(example& ec, TPredictionOfBase& pred, TLabelOfBase& label, size_t i=0)
 	{
 		if (is_learn)
-			base_learn(ec, pred, label);
+			base_learn(ec, pred, label, i);
 		else
-			base_predict(ec, pred, label);
+			base_predict(ec, pred, label, i);
 	}
 
-	void base_learn(example& ec, TPredictionOfBase& pred, TLabel& label)
+	inline void base_learn(example& ec, TPredictionOfBase& pred, TLabel& label, size_t i = 0)
 	{
-		_base->learn(ec, pred, label);
+		// increment gets reversed on return even in case of exception
+		// EXPLAIN: ec.ft_offset += (uint32_t)(increment*i);
+		ValueGuard<decltype(ec.ft_offset)> ft_offset(ec.ft_offset);
+		ft_offset += increment * i;
+		
+		(*_base_learn_method)(*_base, ec, pred, label);
 	}
 
-	void base_predict(example& ec, TPredictionOfBase& pred, TLabel& label)
+	inline void base_predict(example& ec, TPredictionOfBase& pred, TLabel& label, size_t i = 0)
 	{
-		_base->predict(ec, pred, label);
+		// increment gets reversed on return even in case of exception
+		// EXPLAIN: ec.ft_offset += (uint32_t)(increment*i);
+		RestoreValueOnReturn<decltype(ec.ft_offset)> ft_offset(ec.ft_offset);
+		ft_offset += increment * i;
+
+		(*_base_predict_method)(*_base, ec, pred, label);
 	}
 
 public:
@@ -99,7 +155,14 @@ public:
 		// verify type match
 		_base = dynamic_cast<TBaseLearner*>(&learner);
 
-		return _base != nullptr;
+		// TODO: exception?
+		if (_base == nullptr)
+			return false;
+
+		_base_learn_method = _base->learn_method();
+		_base_predict_method = _base->predict_method();
+
+		return true;
 	}
 };
 
