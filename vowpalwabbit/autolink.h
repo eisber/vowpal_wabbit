@@ -4,4 +4,4 @@
 
 LEARNER::base_learner* autolink_setup(vw& all);
 
-Learner* autolink_create();
+Learner* autolink_create(vw& all);

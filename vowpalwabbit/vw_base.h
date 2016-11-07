@@ -5,13 +5,36 @@
 #include <vector>
 #include <functional>
 
+class ILearnerFactory
+{
+public:
+	virtual po::options_description* options() = 0;
+
+	virtual Learner* create() = 0;
+};
+
 class Learner
 {
 protected:
-	size_t weights; //this stores the number of "weight vectors" required by the learner.
-	size_t increment;
+	vw& _all;
+	size_t _weights; //this stores the number of "weight vectors" required by the learner.
+	size_t _increment;
+
+	Learner(vw& all, size_t weights, size_t increment)
+		: _all(all), _weights(weights), _increment(increment)
+	{
+		// move to learner impl.
+		// learner
+		//ret.weights = 1;
+		//ret.increment = params_per_weight;
+	}
 
 public:
+	size_t increment()
+	{
+		return _increment;
+	}
+
 	// optional dependencies
 	virtual const char** dependencies()
 	{ 
@@ -21,61 +44,144 @@ public:
 	// options object
 	virtual po::options_description* options() = 0;
 
-	virtual void init(vw& all)
-	{ }
-
 	virtual void save_load(io_buf& buf, bool read, bool text)
 	{ }
 
 	virtual void finish_example(example& ec)
+	{ 
+		output_and_account_example(_all, ec);
+		VW::finish_example(_all, &ec);
+	}
+
+	virtual void end_pass() 
 	{ }
 
-	virtual void end_pass()
-	{ }
-
+	// TODO: document call sequence
 	virtual void end_examples()
 	{ }
+
+	// TODO: unclear what this does (compare to init()
+	virtual void init_driver()
+	{ }
+
+	// returns reduction-base
+	virtual Learner* base() = 0;
+};
+
+template<typename TPrediction, typename TLabel>
+struct TypedLearnerVTable
+{
+	typedef void(*PredictOrLearnMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, TPrediction& pred, TLabel& label);
+	typedef void(*MultiPredictMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, size_t lo, size_t count, TPrediction* pred, TLabel& label, bool finalize_predictions);
+	typedef void(*UpdateMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, size_t i = 0);
+	typedef float(*SensitivityMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, size_t i = 0);
+
+	PredictOrLearnMethod learn_method = nullptr;
+	PredictOrLearnMethod predict_method = nullptr;
+	MultiPredictMethod multi_predict_method = nullptr;
+	UpdateMethod update_method = nullptr;
+	SensitivityMethod sensitivity_method = nullptr;
 };
 
 template<typename TPrediction, typename TLabel>
 class TypedLearner: public Learner
 {
-public:
-	typedef void (*PredictOrLearnMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, TPrediction& pred, TLabel& label);
-
 private:
-	// function pointer to avoid double vtable dispatch
-	PredictOrLearnMethod _learn_method;
-	PredictOrLearnMethod _predict_method;
+	TypedLearnerVTable<TPrediction, TLabel> _vtable;
 
 protected:
-	TypedLearner(PredictOrLearnMethod learn_method, PredictOrLearnMethod predict_method)
-		: _learn_method(learn_method), _predict_method(predict_method)
+	TypedLearner(vw& all, size_t weights, TypedLearnerVTable<TPrediction, TLabel> vtable) :
+		Learner(all, weights),
+		_vtable(vtable)
 	{ }
 
 public:
-	PredictOrLearnMethod learn_method() { return _learn_method; }
+	TypedLearnerVTable<TPrediction, TLabel> vtable() { return _vtable; }
+};
 
-	PredictOrLearnMethod predict_method() { return _predict_method; }
 
-	//// optimized dispatch
-	//inline void learn(example &ec, TPrediction& pred, TLabel& label)
-	//{
-	//	// needs to be function pointer as the TypedLearner cannot declare member method pointers to derived classes
-	//	// TypedLearner::* are only methods on TypedLearner and above, not on subclasses
-	//	(*_learn_method)(*this, ec, pred, label);
-	//} 
+template<typename TDerived, typename TPrediction, typename TLabel>
+class LearnerBase : public TypedLearner<TPrediction, TLabel>
+{
+private:
+	template<bool is_learn>
+	static inline void predict_or_learn_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, TPrediction& pred, TLabel& label)
+	{
+		// invoke the most derived implementation of predict_or_learn_impl
+		// this method is only called from the base class and "that" == "this"
+		static_cast<TDerived&>(that).template predict_or_learn<is_learn>(ec, pred, label);
+	}
 
-	//inline void predict(example &ec, TPrediction& pred, TLabel& label)
-	//{
-	//	(*_predict_method)(*this, ec, pred, label);
-	//}
+	// TODO: template specialization for is_learn = false (predict) -> learn
+
+	static inline void multi_predict_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, size_t lo, size_t count, TPrediction* pred, TLabel& label, bool finalize_predictions)
+	{
+		// invoke the most derived implementation of predict_or_learn_impl
+		// this method is only called from the base class and "that" == "this"
+		static_cast<TDerived&>(that).multi_predict(ec, lo, count, pred, label, finalize_predictions);
+	}
+
+	void multi_predict(example& ec, size_t lo, size_t count, TPrediction* pred, TLabel& label, bool finalize_predictions)
+	{
+		for (size_t c = 0; c<count; c++)
+		{
+			// TODO: look into more detail on how to structure pred returning
+			TPrediction temp_pred;
+			static_cast<TDerived&>(*this).template predict_or_learn<false>(ec, temp_pred, label);
+			// learn_fd.predict_f(learn_fd.data, *learn_fd.base, ec);
+
+			// TODO: the below is just broken!!!!
+			assert(false);
+			//if (finalize_predictions) pred[c] = ec.pred; // TODO: this breaks for complex labels because = doesn't do deep copy!
+			//else                      pred[c].scalar = ec.partial_prediction;
+			ec.ft_offset += (uint32_t)increment;
+		}
+	}
+
+	static inline void update_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, size_t i)
+	{
+		// invoke the most derived implementation of predict_or_learn_impl
+		// this method is only called from the base class and "that" == "this"
+		static_cast<TDerived&>(that).update(ec, i);
+	}
+
+	void update(example& ec, size_t i)
+	{ 
+		// TODO: defaults to learn
+	}
+
+	static inline float sensitivity_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, size_t i)
+	{
+		// invoke the most derived implementation of predict_or_learn_impl
+		// this method is only called from the base class and "that" == "this"
+		return static_cast<TDerived&>(that).sensitivity(ec, i);
+	}
+
+	float sensitivity(example& ec, size_t i)
+	{
+		return 0.; // see noop_sensitivity
+	}
+protected:
+	// get most derived implementation of Learn & Predict
+	LearnerBase(vw& all, size_t weights = 1, size_t increment = 0)
+		: TypedLearner<TPrediction, TLabel>(
+			all, weights, increment
+		{
+			&predict_or_learn_dispatch<true>,
+			&predict_or_learn_dispatch<false>,
+			&multi_predict_dispatch,
+			&update_dispatch,
+			&sensitivity_dispatch
+		})
+	{ }
 };
 
 class IReduction
 {
 public:
 	virtual bool try_link(Learner& learner) = 0;
+
+	virtual Learner* base() = 0;
 };
 
 template<typename T>
@@ -89,35 +195,26 @@ public:
 	RestoreValueOnReturn(T& value) : _value(value), _value_initial(value)
 	{ }
 
-	template<typename S>
-	T operator+=(S val)
-	{
-		return _value += val;
-	}
-
 	~RestoreValueOnReturn()
 	{
 		_value = _value_initial;
 	}
 };
 
-template<typename TPrediction, typename TLabel, typename TPredictionOfBase, typename TLabelOfBase>
-class TypedReduction : public TypedLearner<TPrediction, TLabel>, public IReduction
+#define RESTORE_VALUE_ON_RETURN(x) RestoreValueOnReturn<decltype(x)> rvor_##__LINE__(x)
+
+template<typename TDerived, typename TPrediction, typename TLabel, typename TPredictionOfBase, typename TLabelOfBase>
+class Reduction : public LearnerBase<TDerived, TPrediction, TLabel>, public IReduction
 {
 private:
 	typedef TypedLearner<TPredictionOfBase, TLabelOfBase> TBaseLearner;
-
-	// need to re-declare as gcc can't find the base class typedef
-	typedef void(*PredictOrLearnMethod)(TBaseLearner&, example& ec, TPrediction& pred, TLabel& label);
-	typedef void(*BasePredictOrLearnMethod)(TBaseLearner&, example& ec, TPrediction& pred, TLabel& label);
-
 	TBaseLearner* _base = nullptr;
-	BasePredictOrLearnMethod _base_learn_method = nullptr;
-	BasePredictOrLearnMethod _base_predict_method = nullptr;
+	
+	TypedLearnerVTable<TPredictionOfBase, TLabelOfBase> _base_vtable;
 
 protected:
-	TypedReduction(PredictOrLearnMethod learn_method, PredictOrLearnMethod predict_method)
-		: TypedLearner<TPrediction, TLabel>(learn_method, predict_method)
+	Reduction(vw& all, size_t weights = 1, size_t increment = 0)
+		: LearnerBase<TDerived, TPrediction, TLabel>(all, weights, increment)
 	{ }
 
 	template<bool is_learn>
@@ -131,24 +228,38 @@ protected:
 
 	inline void base_learn(example& ec, TPredictionOfBase& pred, TLabel& label, size_t i = 0)
 	{
-		// increment gets reversed on return even in case of exception
-		// EXPLAIN: ec.ft_offset += (uint32_t)(increment*i);
-		ValueGuard<decltype(ec.ft_offset)> ft_offset(ec.ft_offset);
-		ft_offset += increment * i;
-		
-		(*_base_learn_method)(*_base, ec, pred, label);
+		RESTORE_VALUE_ON_RETURN(ec.ft_offset);
+		ec.ft_offset += increment * i;
+		(*_base_vtable.learn_method)(*_base, ec, pred, label);
 	}
 
 	inline void base_predict(example& ec, TPredictionOfBase& pred, TLabel& label, size_t i = 0)
 	{
-		// increment gets reversed on return even in case of exception
-		// EXPLAIN: ec.ft_offset += (uint32_t)(increment*i);
-		RestoreValueOnReturn<decltype(ec.ft_offset)> ft_offset(ec.ft_offset);
-		ft_offset += increment * i;
-
-		(*_base_predict_method)(*_base, ec, pred, label);
+		RESTORE_VALUE_ON_RETURN(ec.ft_offset);
+		ec.ft_offset += increment * i;
+		(*_base_vtable.predict_method)(*_base, ec, pred, label);
 	}
 
+	inline void base_multi_predict(TBaseLearner&, example& ec, size_t lo, size_t count, TPrediction* pred, TLabel& label, bool finalize_predictions)
+	{
+		RESTORE_VALUE_ON_RETURN(ec.ft_offset);
+		ec.ft_offset += increment * lo;
+		(*_base_vtable.multi_predict_method)(*_base, ec, lo, count, pred, label, finalize_predictions);
+	}
+
+	inline void base_update(TBaseLearner&, example& ec, size_t i = 0)
+	{
+		RESTORE_VALUE_ON_RETURN(ec.ft_offset);
+		ec.ft_offset += increment * lo;
+		(*_base_vtable.update_method)(*_base, ec, i);
+	}
+
+	inline float base_sensitivity(TBaseLearner&, example& ec, size_t i = 0)
+	{
+		RESTORE_VALUE_ON_RETURN(ec.ft_offset);
+		ec.ft_offset += increment * lo;
+		return (*_base_vtable.sensitivity_method)(*_base, ec, i);
+	}
 public:
 	bool try_link(Learner& learner)
 	{
@@ -159,28 +270,20 @@ public:
 		if (_base == nullptr)
 			return false;
 
-		_base_learn_method = _base->learn_method();
-		_base_predict_method = _base->predict_method();
+		_base_vtable = _base->vtable();
+
+		// REMOVEME: as done in init_learner()
+		_increment = base->increment() * _weights;
 
 		return true;
 	}
-};
 
-template<typename TDerived, typename TPrediction, typename TLabel, typename TPredictionOfBase, typename TLabelOfBase>
-class Reduction : public TypedReduction<TPrediction, TLabel, TPredictionOfBase, TLabelOfBase>
-{
-private:
-	template<bool is_learn>
-	static inline void predict_or_learn_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, TPrediction& pred, TLabel& label)
+	virtual Learner* base()
 	{
-		// invoke the most derived implementation of predict_or_learn_impl
-		// this method is only called from the base class and "that" == "this"
-		static_cast<TDerived&>(that).template predict_or_learn<is_learn>(ec, pred, label);
+		// Note: instead of recursing up through calling the base member impl
+		// and therfore relying on implementation to call Reduction::end_pass()
+		// let the driver code iterate through the reduction stack.
+		// TODO: we could expose the function pointers and build a shortcut loop
+		return _base;
 	}
-
-protected:
-	// get most derived implementation of Learn & Predict
-	Reduction()
-		: TypedReduction<TPrediction, TLabel, TPredictionOfBase, TLabelOfBase>(&predict_or_learn_dispatch<true>, &predict_or_learn_dispatch<false>)
-	{ }
 };

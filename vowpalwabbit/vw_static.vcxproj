@@ -458,6 +458,7 @@
     <ClCompile Include="example.cc" />
     <ClCompile Include="explore_eval.cc" />
     <ClCompile Include="gd.cc" />
+    <ClCompile Include="gd2.cc" />
     <ClCompile Include="interactions.cc" />
     <ClCompile Include="audit_regressor.cc" />
     <ClCompile Include="ftrl.cc" />
