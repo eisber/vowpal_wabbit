@@ -18,7 +18,7 @@ class Learner
 protected:
 	vw& _all;
 	size_t _weights; //this stores the number of "weight vectors" required by the learner.
-	size_t _increment;
+	size_t _increment; // TODO: both uint64_t
 
 	Learner(vw& all, size_t weights, size_t increment)
 		: _all(all), _weights(weights), _increment(increment)
@@ -47,6 +47,7 @@ public:
 	virtual void save_load(io_buf& buf, bool read, bool text)
 	{ }
 
+	// note: this is not auto-recursion
 	virtual void finish_example(example& ec)
 	{ 
 		output_and_account_example(_all, ec);
@@ -65,9 +66,16 @@ public:
 	{ }
 
 	// returns reduction-base
+	// TODO: maybe move to Reduction
 	virtual Learner* base() = 0;
 };
 
+// convention
+// method name: _
+// class names: _, lower case
+// private/protected: prefix with _
+// template paramters uppercase with _
+// typed_learner_explicit_vtable
 template<typename TPrediction, typename TLabel>
 struct TypedLearnerVTable
 {
@@ -86,6 +94,8 @@ struct TypedLearnerVTable
 template<typename TPrediction, typename TLabel>
 class TypedLearner: public Learner
 {
+public:
+	// typedef 
 private:
 	TypedLearnerVTable<TPrediction, TLabel> _vtable;
 
@@ -98,7 +108,6 @@ protected:
 public:
 	TypedLearnerVTable<TPrediction, TLabel> vtable() { return _vtable; }
 };
-
 
 template<typename TDerived, typename TPrediction, typename TLabel>
 class LearnerBase : public TypedLearner<TPrediction, TLabel>
@@ -123,6 +132,7 @@ private:
 
 	void multi_predict(example& ec, size_t lo, size_t count, TPrediction* pred, TLabel& label, bool finalize_predictions)
 	{
+		// TODO: undo ft_offset increment
 		for (size_t c = 0; c<count; c++)
 		{
 			// TODO: look into more detail on how to structure pred returning
@@ -174,6 +184,42 @@ protected:
 			&sensitivity_dispatch
 		})
 	{ }
+
+	// iterate through one namespace (or its part), callback function T(some_data_R, feature_value_x, feature_weight)
+	template <class R, void(Derived::*T)(R&, const float, float&)>
+	inline void foreach_feature(weight_parameters& weights, features& fs, R& dat, uint64_t offset = 0, float mult = 1.)
+	{
+		for (features::iterator& f : fs)
+			T(dat, mult*f.value(), weights[(f.index() + offset)]);
+	}
+
+	// iterate through one namespace (or its part), callback function T(some_data_R, feature_value_x, feature_index)
+	template <class R, void(Derived::*T)(R&, float, uint64_t)>
+	void foreach_feature(features& fs, R&dat, uint64_t offset = 0, float mult = 1.)
+	{
+		for (features::iterator& f : fs)
+			T(dat, mult*f.value(), f.index() + offset);
+	}
+
+	// iterate through all namespaces and quadratic&cubic features, callback function T(some_data_R, feature_value_x, S)
+	// where S is EITHER float& feature_weight OR uint64_t feature_index
+	template <class R, class S, void(Derived::*T)(R&, float, S)>
+	inline void foreach_feature(example& ec, R& dat)
+	{
+		uint64_t offset = ec.ft_offset;
+
+		for (features& f : ec)
+			foreach_feature<R, T>(f, dat, offset);
+
+		INTERACTIONS::generate_interactions<R, S, T>(ec, dat);
+	}
+
+	// iterate through all namespaces and quadratic&cubic features, callback function T(some_data_R, feature_value_x, feature_weight)
+	template <class R, void(Derived::*T)(R&, float, float&)>
+	inline void foreach_feature(example& ec, R& dat)
+	{
+		foreach_feature<R, float&, T>(ec, dat);
+	}
 };
 
 class IReduction
@@ -201,6 +247,7 @@ public:
 	}
 };
 
+// TODO: name, save in scope, 
 #define RESTORE_VALUE_ON_RETURN(x) RestoreValueOnReturn<decltype(x)> rvor_##__LINE__(x)
 
 template<typename TDerived, typename TPrediction, typename TLabel, typename TPredictionOfBase, typename TLabelOfBase>
@@ -228,6 +275,7 @@ protected:
 
 	inline void base_learn(example& ec, TPredictionOfBase& pred, TLabel& label, size_t i = 0)
 	{
+		// RestoreValueOnReturn<uint64_t> x(ec.ft_offset);
 		RESTORE_VALUE_ON_RETURN(ec.ft_offset);
 		ec.ft_offset += increment * i;
 		(*_base_vtable.learn_method)(*_base, ec, pred, label);
