@@ -338,6 +338,7 @@ public:
 
 
 #include <utility>
+#include "vw_exception.h"
 
 // helper to support template parameter expansion from dynamic variables
 // 
@@ -345,22 +346,84 @@ template<typename T, typename TFactory, bool ...ArgsGrow>
 class template_expansion
 {
 public:
-	// terminate expansion
 	template<typename S>
-	static T* expand(S condition)
+	static T* expand(TFactory& factory, S cond)
 	{
-		if (condition)
-			return TFactory::template create<true, ArgsGrow...>();
+		if (cond)
+			return factory.template create<ArgsGrow..., true>();
 		else
-			return TFactory::template create<false, ArgsGrow...>();
+			return factory.template create<ArgsGrow..., false>();
 	}
 
-	template<typename ...ArgsShrink>
-	static T* expand(bool condition, ArgsShrink... args)
+	template<typename ...Arguments>
+	static T* expand(TFactory& factory, bool cond, Arguments... args)
 	{
-		if (condition)
-			return template_expansion<T, TFactory, true, ArgsGrow...>::template expand<ArgsShrink...>(std::forward<ArgsShrink>(args)...);
+		if (cond)
+			return template_expansion<T, TFactory, ArgsGrow..., true>::template expand<Arguments...>(factory, std::forward<Arguments>(args)...);
 		else
-			return template_expansion<T, TFactory, false, ArgsGrow...>::template expand<ArgsShrink...>(std::forward<ArgsShrink>(args)...);
+			return template_expansion<T, TFactory, ArgsGrow..., false>::template expand<Arguments...>(factory, std::forward<Arguments>(args)...);
 	}
+};
+
+
+template<typename T, typename TFactory, int N, int ...ArgsN>
+class template_expansion_int
+{
+public:
+	template<int ...ArgsGrow>
+	class inner
+	{
+	public:
+		template<typename S>
+		static T* expand(TFactory& factory, S value)
+		{
+			if (value == N)
+				return factory.template create<ArgsGrow..., N>();
+			else if (value < N)
+				return template_expansion_int<T, TFactory, ArgsN..., N - 1>::inner<ArgsGrow...>::template expand<S>(factory, value);
+			else
+				return nullptr;
+		}
+
+		template<typename ...Arguments>
+		static T* expand(TFactory& factory, int value, Arguments... args)
+		{
+			if (value == N)
+				return template_expansion_int<T, TFactory, ArgsN...>::inner<N, ArgsGrow...>::template expand<Arguments...>(factory, std::forward<Arguments>(args)...);
+			else if (value < N)
+				return template_expansion_int<T, TFactory, ArgsN..., N - 1>::inner<ArgsGrow...>::template expand<Arguments...>(factory, value, std::forward<Arguments>(args)...);
+			else
+				return nullptr;
+		}
+	};
+
+	template<typename ...Arguments>
+	static T* expand(TFactory& factory, Arguments... args)
+	{
+		return inner<>::template expand<int>(factory, std::forward<Arguments>(args)...);
+	}
+};
+
+template<typename T, typename TFactory, int ...ArgsN>
+class template_expansion_int<T, TFactory, -1, ArgsN...>
+{
+public:
+	template<int ...ArgsGrow>
+	class inner
+	{
+	public:
+		template<typename S>
+		static T* expand(TFactory& factory, S b)
+		{
+			// throw exception
+			return nullptr;
+		}
+
+		template<typename ...Arguments>
+		static T* expand(TFactory& factory, int a, Arguments... args)
+		{
+			// throw exception
+			return nullptr;
+		}
+	};
 };
