@@ -43,6 +43,55 @@ private:
 	bool normalized = false;
 	vw& _all;
 
+	template<typename T, typename TFactory, typename ...BoolArgs>
+	class BoolIntFactory
+	{
+		template<typename ...IntArgs>
+		class Inner
+		{
+		private:
+			template<typename ...BoolArgs>
+			class InnerFactory
+			{
+			public:
+				template<...IntArgs>
+				T* create()
+				{
+					return TFactory::template create<BoolArgs..., IntArgs...>();
+				}
+			};
+
+		public:
+			template<typename ...BoolArgs>
+			T* create()
+			{
+				InnerFactory<BoolArgs...> factory;
+				return template_expansion_int<T, decltype(factory), IntArgs...>::expand(x, a, )
+			}
+		};
+	};
+
+	template<uint64_t adaptive, uint64_t normalized, uint64_t spare, uint64_t next>
+	class IntFactory
+	{
+		Learner* create()
+		{
+
+		}
+	};
+
+	template<bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, bool stateless>
+	class BoolFactory
+	{
+	public:
+		IntFactory* _factory;
+
+		Learner* create()
+		{
+
+		}
+	};
+
 public:
 	GDLearnerFactory(vw& all) : _all(all)
 	{ }
@@ -63,12 +112,15 @@ public:
 
 	Learner* create()
 	{
+		// TODO: create Arguments class
+		// user template_expansion to create GD<....>
+		return 
 
 	}
 };
 
 // TODO: write down what LearnerBase<TDerived> somewhere else
-template<bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, uint64_t adaptive, uint64_t normalized, uint64_t spare, uint64_t next, bool stateless>
+template<bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, bool stateless, uint64_t adaptive, uint64_t normalized, uint64_t spare, uint64_t next>
 class GD : LearnerBase<GD<sparse_l2, invariant, sqrt_rate, adapative, normalized, spare, next>, float, float>
 {
 private:
