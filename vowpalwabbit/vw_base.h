@@ -335,3 +335,32 @@ public:
 		return _base;
 	}
 };
+
+
+#include <utility>
+
+// helper to support template parameter expansion from dynamic variables
+// 
+template<typename T, typename TFactory, bool ...ArgsGrow>
+class template_expansion
+{
+public:
+	// terminate expansion
+	template<typename S>
+	static T* expand(S condition)
+	{
+		if (condition)
+			return TFactory::template create<true, ArgsGrow...>();
+		else
+			return TFactory::template create<false, ArgsGrow...>();
+	}
+
+	template<typename ...ArgsShrink>
+	static T* expand(bool condition, ArgsShrink... args)
+	{
+		if (condition)
+			return template_expansion<T, TFactory, true, ArgsGrow...>::template expand<ArgsShrink...>(std::forward<ArgsShrink>(args)...);
+		else
+			return template_expansion<T, TFactory, false, ArgsGrow...>::template expand<ArgsShrink...>(std::forward<ArgsShrink>(args)...);
+	}
+};

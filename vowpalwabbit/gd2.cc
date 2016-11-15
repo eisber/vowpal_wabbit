@@ -63,12 +63,13 @@ public:
 
 	Learner* create()
 	{
-
+		// TODO: create Arguments class
+		// user template_expansion to create GD<....>
 	}
 };
 
 // TODO: write down what LearnerBase<TDerived> somewhere else
-template<bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, uint64_t adaptive, uint64_t normalized, uint64_t spare, uint64_t next, bool stateless>
+template<bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, bool stateless, uint64_t adaptive, uint64_t normalized, uint64_t spare, uint64_t next>
 class GD : LearnerBase<GD<sparse_l2, invariant, sqrt_rate, adapative, normalized, spare, next>, float, float>
 {
 private:
