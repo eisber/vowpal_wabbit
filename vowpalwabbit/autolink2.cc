@@ -2,13 +2,22 @@
 
 #include "vw_base.h"
 
+
+class AutoLinkArgs : public Arguments<AutoLink>
+{
+public:
+	uint32_t d = 0; // degree of the polynomial
+	uint32_t stride_shift = 0;
+};
+
 class AutoLink : public Reduction<AutoLink, float, polylabel, float, polylabel>
 {
 private:
 	const int autoconstant = 524267083;
 	
-	uint32_t d = 0; // degree of the polynomial
-	uint32_t stride_shift = 0; 
+	//uint32_t d = 0; // degree of the polynomial
+	//uint32_t stride_shift = 0; 
+	AutoLinkArgs args;
 
 public:
 	template<bool is_learn>
