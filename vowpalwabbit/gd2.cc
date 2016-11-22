@@ -33,97 +33,59 @@ license as described in the file LICENSE.
 using namespace std;
 using namespace LEARNER;
 
-class GDLearnerFactory : public ILearnerFactory
+class GDArgs : public IArguments
 {
-private:
+public:
+	// need to have an intermediate type to capture the actual create call passing in the runtime int-variables
+	template<typename T> 
+	class GDFactory : public BoolIntFactory<GDFactory<T>, T, TFactory>
+	{
+	private:
+		vw& _all;
+		GDArgs& _args;
+
+	public:
+		GDFactory(vw& all, GDArgs& args) : _all(all), _args(args)
+		{ }
+
+		template<bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, uint64_t adaptive, uint64_t normalized, uint64_t spare, uint64_t next>
+		Learner* create()
+		{
+			return new GDLearner<sparse_l2, invariant, sqrt_rate, feature_mask_off, adaptive, normalized, sparse, next>(_args, _all);
+		}
+
+		template<bool ...BoolArgs>
+		T* dynamic_create()
+		{
+			uint64_t adaptive = 0, spare = 0;
+			if (_all.adaptive)
+			{
+				adaptive = 1;
+				spare = 2;
+			}
+
+			uint64_t normalized = 0, next = spare + 1;
+			if (_all.normalized_updates)
+			{
+				normalized = adaptive + 1;
+				next = adaptive + 3;
+			}
+			_all.normalized_idx = normalized;
+
+			// TODO: compress  the range of spare/next to generate less code
+
+			// 1, 2, 2, 4 are the max-values that adapative, normalized, spare and next can take
+			// BoolArgs..., 1, 2, 2, 4
+			return Inner<1,2,2,4>::Inner2<BoolArgs...>::create(*this, (int)adaptive, (int)normalized, (int)spare, (int)next);
+		}
+	};
+
+public:
 	float sparse_l2 = 0.;
 	bool sgd = false;
 	bool adaptive = false;
 	bool invariant = false;
 	bool normalized = false;
-	vw& _all;
-
-	template<typename T, typename TFactory, typename ...BoolArgs>
-	class BoolIntFactory
-	{
-		template<typename ...IntArgs>
-		class Inner
-		{
-		private:
-			template<typename ...BoolArgs>
-			class InnerFactory
-			{
-			public:
-				template<...IntArgs>
-				T* create()
-				{
-					return TFactory::template create<BoolArgs..., IntArgs...>();
-				}
-			};
-
-		public:
-			template<typename ...BoolArgs>
-			T* create()
-			{
-				InnerFactory<BoolArgs...> factory;
-				return template_expansion_int<T, decltype(factory), IntArgs...>::expand(x, a, )
-			}
-		};
-	};
-
-	template<uint64_t adaptive, uint64_t normalized, uint64_t spare, uint64_t next>
-	class IntFactory
-	{
-		Learner* create()
-		{
-
-		}
-	};
-
-	template<bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, bool stateless>
-	class BoolFactory
-	{
-	public:
-		IntFactory* _factory;
-
-		Learner* create()
-		{
-
-		}
-	};
-
-public:
-	GDLearnerFactory(vw& all) : _all(all)
-	{ }
-
-	po::options_description* options()
-	{
-		auto opts = new po::options_description("Gradient Descent options");
-
-		opts->add_options()
-			("sgd", po::value<decltype(sgd)>(&sgd), "use regular stochastic gradient descent update.")
-			("adaptive", po::value<decltype(adaptive)>(&adaptive)->default_value(_all.adaptive), "use adaptive, individual learning rates.")
-			("invariant", po::value<decltype(invariant)>(&invariant)->default_value(false), "use safe/importance aware updates.")
-			("normalized", po::value<decltype(normalized)>(&normalized)->default_value(_all.normalized_updates), "use per feature normalized updates")
-			("sparse_l2", po::value<decltype(sparse_l2)>(&sparse_l2)->default_value(0.f), "use per feature normalized updates");
-
-		return opts;
-	}
-
-	Learner* create()
-	{
-		// TODO: create Arguments class
-		// user template_expansion to create GD<....>
-		return 
-
-	}
-};
-
-// TODO: write down what LearnerBase<TDerived> somewhere else
-template<bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, bool stateless, uint64_t adaptive, uint64_t normalized, uint64_t spare, uint64_t next>
-class GD : LearnerBase<GD<sparse_l2, invariant, sqrt_rate, adapative, normalized, spare, next>, float, float>
-{
-private:
 	//double normalized_sum_norm_x;
 	double total_weight = 0;
 	size_t no_win_counter = 0;
@@ -133,11 +95,150 @@ private:
 	float neg_power_t = 0.;
 	float update_multiplier = 0.;
 
-public:
-	GD(vw& all)
-	{ 
-		all.normalized_sum_norm_x = 0;
+	po::options_description* options()
+	{
+		auto opts = new po::options_description();
+		opts->add_options()
+			("sgd", po::value<decltype(sgd)>(&sgd), "use regular stochastic gradient descent update.")
+			("adaptive", po::value<decltype(adaptive)>(&adaptive), "use adaptive, individual learning rates.")
+			("invariant", po::value<decltype(invariant)>(&invariant)->default_value(false), "use safe/importance aware updates.")
+			("normalized", po::value<decltype(normalized)>(&normalized), "use per feature normalized updates")
+			("sparse_l2", po::value<decltype(sparse_l2)>(&sparse_l2)->default_value(0.f), "use per feature normalized updates");
 
+		return opts;
+	}
+
+	Learner* create(vw& all)
+	{
+		all.normalized_sum_norm_x = 0;
+		no_win_counter = 0;
+		total_weight = 0.;
+		early_stop_thres = 3;
+		// sparse_l2 = vm["sparse_l2"].as<float>();
+		neg_norm_power = (all.adaptive ? (all.power_t - 1.f) : -1.f);
+		neg_power_t = -all.power_t;
+		adaptive = all.adaptive;
+		normalized = all.normalized_updates; // TODO validate if this is not already set
+
+		if (all.initial_t > 0)//for the normalized update: if initial_t is bigger than 1 we interpret this as if we had seen (all.initial_t) previous fake datapoints all with norm 1
+		{
+			all.normalized_sum_norm_x = all.initial_t;
+			total_weight = all.initial_t;
+		}
+
+		// TODO: maybe move to options on top?
+		po::variables_map& vm = all.vm;
+
+		bool feature_mask_off = true;
+		if (vm.count("feature_mask"))
+			feature_mask_off = false;
+
+		if (!all.holdout_set_off)
+		{
+			all.sd->holdout_best_loss = FLT_MAX;
+			if (vm.count("early_terminate"))
+				early_stop_thres = vm["early_terminate"].as< size_t>();
+		}
+
+		if (vm.count("constant"))
+		{
+			initial_constant = vm["constant"].as<float>();
+		}
+
+		if (vm.count("sgd") || vm.count("adaptive") || vm.count("invariant") || vm.count("normalized"))
+		{ //nondefault
+			all.adaptive = all.training && vm.count("adaptive");
+			all.invariant_updates = all.training && vm.count("invariant");
+			all.normalized_updates = all.training && vm.count("normalized");
+
+			if (!vm.count("learning_rate") && !vm.count("l") && !(all.adaptive && all.normalized_updates))
+				all.eta = 10; //default learning rate to 10 for non default update rule
+
+							  //if not using normalized or adaptive, default initial_t to 1 instead of 0
+			if (!all.adaptive && !all.normalized_updates)
+			{
+				if (!vm.count("initial_t"))
+				{
+					all.sd->t = 1.f;
+					all.sd->weighted_unlabeled_examples = 1.f;
+					all.initial_t = 1.f;
+				}
+				all.eta *= powf((float)(all.sd->t), all.power_t);
+			}
+		}
+		else
+		{
+			all.adaptive = all.training;
+			all.invariant_updates = all.training;
+			all.normalized_updates = all.training;
+		}
+
+		if (pow((double)all.eta_decay_rate, (double)all.numpasses) < 0.0001)
+			cerr << "Warning: the learning rate for the last pass is multiplied by: " << pow((double)all.eta_decay_rate, (double)all.numpasses)
+			<< " adjust --decay_learning_rate larger to avoid this." << endl;
+
+		bool l1 = false, audit = false;
+		if (all.reg_mode % 2)
+			if (all.audit || all.hash_inv)
+			{
+				l1 = true;
+				audit = true;
+			}
+			else
+			{
+				l1 = true;
+				audit = false;
+			}
+		else if (all.audit || all.hash_inv)
+		{
+			l1 = false;
+			audit = true;
+		}
+
+		bool sqrt_rate = all.power_t == 0.5;
+		
+
+
+		// invariant = all.invariant_updates
+		bool sparse_l2_t = sparse_l2 > 0.f;
+
+		
+		// TODO: all.weights.stride_shift((uint32_t)ceil_log_2(stride - 1));
+
+		GDFactory<Learner, GDArgs> factory(all, *this);
+		return template_expansion<Learner, GDFactory<Learner, GDArgs>>
+			::template expand(factory, sparse_l2_t, all.invariant_updates, sqrt_rate, feature_mask_off);
+	}
+};
+
+#include <algorithm>
+
+struct string_value
+{
+	float v;
+	string s;
+	friend bool operator<(const string_value& first, const string_value& second);
+};
+
+bool operator<(const string_value& first, const string_value& second)
+{
+	return fabsf(first.v) > fabsf(second.v);
+}
+
+struct multipredict_info { size_t count; size_t step; polyprediction* pred; weight_parameters& weights; /* & for l1: */ float gravity; };
+
+
+template<bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, uint64_t adaptive, uint64_t normalized, uint64_t spare, uint64_t next>
+class GDLearner : LearnerBase<GDLearner<sparse_l2, invariant, sqrt_rate, feature_mask_off, adaptive, normalized, spare, next>, float, float>
+{
+private:
+	vw& all;
+	GDArgs& _args;
+
+public:
+	GDLearner(GDArgs& args, vw& _all) : all(_all), _args(args)
+	{ 
+		_all.normalized_sum_norm_x = 0;
 	}
 
 private:
@@ -244,19 +345,6 @@ private:
 	//	}
 	//}
 
-#include <algorithm>
-
-	struct string_value
-	{
-		float v;
-		string s;
-		friend bool operator<(const string_value& first, const string_value& second);
-	};
-
-	bool operator<(const string_value& first, const string_value& second)
-	{
-		return fabsf(first.v) > fabsf(second.v);
-	}
 
 	struct audit_results
 	{
@@ -466,7 +554,7 @@ private:
 		}
 	}
 	
-	void multi_predict(example& ec, size_t lo, size_t count, TPrediction* pred, TLabel& label, bool finalize_predictions)
+	void multi_predict(example& ec, size_t lo, size_t count, float* pred, float& label, bool finalize_predictions)
 	//template<bool l1, bool audit>
 	//void multipredict(gd& g, base_learner&, example& ec, size_t count, size_t step, polyprediction*pred, bool finalize_predictions)
 	{
@@ -541,6 +629,7 @@ private:
 	const float x2_max = FLT_MAX;
 
 	//template<bool sqrt_rate, bool feature_mask_off, size_t adaptive, size_t normalized, size_t spare, bool stateless>
+	template<bool stateless>
 	inline void pred_per_update_feature(norm_data& nd, float x, float& fw)
 	{
 		if (feature_mask_off || fw != 0.)
@@ -578,7 +667,7 @@ private:
 				}
 				nd.norm_x += x2 / (w[normalized] * w[normalized]);
 			}
-			w[spare] = compute_rate_decay<sqrt_rate, adaptive, normalized>(nd.pd, fw);
+			w[spare] = compute_rate_decay(nd.pd, fw);
 			nd.pred_per_update += x2 * w[spare];
 		}
 	}
@@ -601,23 +690,24 @@ private:
 				_all->normalized_sum_norm_x += ec.weight * nd.norm_x;
 				total_weight += ec.weight;
 			}
-			update_multiplier = average_update<sqrt_rate, adaptive, normalized>(g);
+			update_multiplier = average_update(g);
 			nd.pred_per_update *= update_multiplier;
 		}
 		return nd.pred_per_update;
 	}
 
 	//template<bool sqrt_rate, bool feature_mask_off, size_t adaptive, size_t normalized, size_t spare, bool stateless>
-	float sensitivity(gd& g, example& ec)
+	template<bool stateless>
+	float sensitivity(example& ec)
 	{
 		if (adaptive || normalized)
-			return get_pred_per_update<sqrt_rate, feature_mask_off, adaptive, normalized, spare, stateless>(g, ec);
+			return get_pred_per_update<stateless>(ec);
 		else
 			return ec.total_sum_feat_sq;
 	}
 
 	//template<size_t adaptive>
-	float get_scale(gd& g, example& ec, float weight)
+	float get_scale(example& ec, float weight)
 	{
 		float update_scale = _all->eta * weight;
 		if (!adaptive)
@@ -629,14 +719,14 @@ private:
 	}
 
 	//template<bool sqrt_rate, bool feature_mask_off, size_t adaptive, size_t normalized, size_t spare>
-	float sensitivity(gd& g, base_learner& base, example& ec)
+	float sensitivity(base_learner& base, example& ec)
 	{
-		return get_scale<adaptive>(g, ec, 1.)
-			* sensitivity<sqrt_rate, feature_mask_off, adaptive, normalized, spare, true>(g, ec);
+		return get_scale(ec, 1.)
+			* sensitivity<true>(ec);
 	}
 
 	//template<bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, size_t adaptive, size_t normalized, size_t spare>
-	float compute_update(gd& g, example& ec)
+	float compute_update(example& ec)
 	{ //invariant: not a test label, importance weight > 0
 		label_data& ld = ec.l.simple;
 
@@ -644,8 +734,8 @@ private:
 		ec.updated_prediction = ec.pred.scalar;
 		if (_all.loss->getLoss(_all.sd, ec.pred.scalar, ld.label) > 0.)
 		{
-			float pred_per_update = sensitivity<sqrt_rate, feature_mask_off, adaptive, normalized, spare, false>(g, ec);
-			float update_scale = get_scale<adaptive>(g, ec, ec.weight);
+			float pred_per_update = sensitivity<false>(g, ec);
+			float update_scale = get_scale(g, ec, ec.weight);
 			if (invariant)
 				update = _all.loss->getUpdate(ec.pred.scalar, ld.label, update_scale, pred_per_update);
 			else
@@ -671,11 +761,11 @@ private:
 	}
 
 	//template<bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, size_t adaptive, size_t normalized, size_t spare>
-	void update(gd& g, base_learner&, example& ec)
+	void update(base_learner&, example& ec)
 	{ //invariant: not a test label, importance weight > 0
 		float update;
-		if ((update = compute_update<sparse_l2, invariant, sqrt_rate, feature_mask_off, adaptive, normalized, spare>(g, ec)) != 0.)
-			train<sqrt_rate, feature_mask_off, adaptive, normalized, spare>(g, ec, update);
+		if ((update = compute_update(g, ec)) != 0.)
+			train(g, ec, update);
 
 		if (_all->sd->contraction < 1e-10)  // updating weights now to avoid numerical instability
 			sync_weights(*_all);
@@ -717,11 +807,8 @@ private:
 	}
 };
 
-
 // 2 step creation process
 // - create factory first
 // - factory creates actual learn instance, allows for templatization of learner based on command args
 
-ILearnerFactory* gd_createfactory(vw& all) {
-	return new GDLearnerFactory(all); 
-}
+IArguments* gd_create() { return new GDArgs; }
