@@ -137,7 +137,7 @@ protected:
 	{
 		// invoke the most derived implementation of predict_or_learn_impl
 		// this method is only called from the base class and "that" == "this"
-		static_cast<TDerived&>(that).template predict_or_learn<is_learn>(ec, pred, label);
+		// TODO: static_cast<TDerived&>(that).template predict_or_learn<is_learn>(ec, pred, label);
 	}
 
 	// TODO: template specialization for is_learn = false (predict) -> learn
@@ -146,7 +146,7 @@ protected:
 	{
 		// invoke the most derived implementation of predict_or_learn_impl
 		// this method is only called from the base class and "that" == "this"
-		static_cast<TDerived&>(that).multi_predict(ec, lo, count, pred, label, finalize_predictions);
+		// TODO: static_cast<TDerived&>(that).multi_predict(ec, lo, count, pred, label, finalize_predictions);
 	}
 
 	void multi_predict(example& ec, size_t lo, size_t count, TPrediction* pred, TLabel& label, bool finalize_predictions)
@@ -171,14 +171,14 @@ protected:
 	{
 		// invoke the most derived implementation of predict_or_learn_impl
 		// this method is only called from the base class and "that" == "this"
-		static_cast<TDerived&>(that).update(ec, i);
+		// TODO: static_cast<TDerived&>(that).update(ec, i);
 	}
 
 	void update(example& ec, size_t i)
 	{ 
 		// TODO: defaults to learn
 	}
-
+public:
 	template<float(TDerived::*M)(example&, size_t)>
 	static inline float sensitivity_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, size_t i)
 	{
@@ -480,133 +480,203 @@ class template_expansion
 {
 public:
 	template<typename S>
-	static T* expand(TFactory& factory, S cond)
+	static T expand(S cond)
 	{
 		if (cond)
-			return factory.create<ArgsGrow..., true>();
+			return TFactory::template create<ArgsGrow..., true>();
 		else
-			return factory.create<ArgsGrow..., false>();
+			return TFactory::template create<ArgsGrow..., false>();
 	}
 
 	template<typename TB, typename ...Arguments>
-	static T* expand(TFactory& factory, TB cond, Arguments... args)
+	static T expand(TB cond, Arguments... args)
 	{
 		if (cond) // I need to specify count(Arguments) - 1, not Arguments
-			return template_expansion<T, TFactory, ArgsGrow..., true>::template expand<>(factory, std::forward<Arguments>(args)...);
+			return template_expansion<T, TFactory, ArgsGrow..., true>::template expand<>(std::forward<Arguments>(args)...);
 		else
-			return template_expansion<T, TFactory, ArgsGrow..., false>::template expand<>(factory, std::forward<Arguments>(args)...);
+			return template_expansion<T, TFactory, ArgsGrow..., false>::template expand<>(std::forward<Arguments>(args)...);
 	}
 };
 
-template<typename T, typename TFactory, int N, int ...ArgsN>
-class template_expansion_int
-{
-public:
-	template<int ...ArgsGrow>
-	class inner
-	{
-	public:
-		template<typename S>
-		static T* expand(TFactory& factory, S value)
-		{
-			if (value == N)
-				return factory.create<ArgsGrow..., N>();
-			else if (value < N)
-				return template_expansion_int<T, TFactory, ArgsN..., N - 1>::inner<ArgsGrow...>::template expand<S>(factory, value);
-			else
-				return nullptr;
-		}
+//template<typename T, typename TFactory, int N, int ...ArgsN>
+//class template_expansion_int
+//{
+//public:
+//	template<int ...ArgsGrow>
+//	class inner
+//	{
+//	public:
+//		template<typename S>
+//		static T expand(TFactory& factory, S value)
+//		{
+//			if (value == N)
+//				return factory.create<ArgsGrow..., N>();
+//			else if (value < N)
+//				return template_expansion_int<T, TFactory, ArgsN..., N - 1>::inner<ArgsGrow...>::template expand<S>(factory, value);
+//			else
+//				return nullptr;
+//		}
+//
+//		template<typename TI, typename ...Arguments>
+//		static T expand(TFactory& factory, TI value, Arguments... args)
+//		{
+//			if (value == N)
+//				return template_expansion_int<T, TFactory, ArgsN...>::inner<N, ArgsGrow...>::template expand<>(factory, std::forward<Arguments>(args)...);
+//			else if (value < N)
+//				return template_expansion_int<T, TFactory, ArgsN..., N - 1>::inner<ArgsGrow...>::template expand<>(factory, value, std::forward<Arguments>(args)...);
+//			else
+//				return nullptr;
+//		}
+//	};
+//
+//	template<typename ...Arguments>
+//	static T expand(TFactory& factory, Arguments... args)
+//	{
+//		return inner<>::template expand<int>(factory, std::forward<Arguments>(args)...);
+//	}
+//};
+//
+//template<typename T, typename TFactory, int ...ArgsN>
+//class template_expansion_int<T, TFactory, -1, ArgsN...>
+//{
+//public:
+//	template<int ...ArgsGrow>
+//	class inner
+//	{
+//	public:
+//		template<typename S>
+//		static T expand(TFactory& factory, S b)
+//		{
+//			// throw exception
+//			return nullptr;
+//		}
+//
+//		template<typename ...Arguments>
+//		static T expand(TFactory& factory, int a, Arguments... args)
+//		{
+//			// throw exception
+//			return nullptr;
+//		}
+//	};
+//};
+//
+//// expand bool and int at the same time...
+//template<typename TDerived, typename T> 
+//class BoolIntFactory
+//{
+//public:
+//	template<int ...IntArgs>
+//	class Inner
+//	{
+//	public:
+//		template<bool ...BoolArgs>
+//		class Inner2
+//		{
+//			class InnerFactory
+//			{
+//			private:
+//				TDerived& _factory;
+//
+//			public:
+//				InnerFactory(TDerived& factory) : _factory(factory)
+//				{ }
+//
+//				// TODO: rename ArgsFinal to IntArgs, and IntArgs to max int
+//				template<int ...ArgsFinal>
+//				T create()
+//				{
+//					return _factory.template create2<BoolArgs..., ArgsFinal...>();
+//				}
+//			};
+//
+//		public:
+//			template<typename ...Arguments> 
+//			static T create(TDerived& factory, Arguments... args)
+//			{
+//				InnerFactory innerfactory(factory);
+//				return template_expansion_int<T, decltype(innerfactory), IntArgs...>::expand(innerfactory, std::forward<Arguments>(args)...);
+//			}
+//		};
+//	};
+//
+//	// called by template_expansion::expand()
+//	template<bool ...BoolArgs>
+//	T create()
+//	{
+//		// need another level of indirection as we can't generically capture the runtime values
+//		// in variables. Thus we'll dispatch down to a class holding the runtime arguments
+//		// which will call up to create passing in the configuration and runtime values
+//		return static_cast<TDerived&>(*this).dynamic_create<BoolArgs...>();
+//	}
+//};
 
-		template<typename TI, typename ...Arguments>
-		static T* expand(TFactory& factory, TI value, Arguments... args)
-		{
-			if (value == N)
-				return template_expansion_int<T, TFactory, ArgsN...>::inner<N, ArgsGrow...>::template expand<>(factory, std::forward<Arguments>(args)...);
-			else if (value < N)
-				return template_expansion_int<T, TFactory, ArgsN..., N - 1>::inner<ArgsGrow...>::template expand<>(factory, value, std::forward<Arguments>(args)...);
-			else
-				return nullptr;
-		}
-	};
+//#include <tuple>
+//
+//template<typename TMethodFactory, typename T, typename ...Args>
+//class BoolIntFactory2 : public BoolIntFactory<BoolIntFactory2<TMethodFactory, T>, T>
+//{
+//	std::tuple<Args...> _t;
+//
+//	typedef std::tuple<Args...> TupleType;
+//	typedef BoolIntFactory2<TMethodFactory, T, Args...> TThis;
+//public:
+//	BoolIntFactory2(Args... values) : _t(values...)
+//	{ }
+//
+//	template<bool ...BoolArgs>
+//	class A
+//	{
+//	public:
+//		template<typename Tuple, typename ...IntArgs>
+//		class B
+//		{
+//		public:
+//			template<int pos>
+//			static T unpack_tuple(TThis& that, Tuple t, IntArgs... values)
+//			{
+//				return B<Tuple, int, IntArgs...>::unpack_tuple<pos-1>(that, t, std::get<pos - 1>(t), values...);
+//			}
+//
+//			// termination
+//			template<>
+//			static T unpack_tuple<0>(TThis& that, Tuple t, IntArgs... values)
+//			{
+//				return Inner<1, 1, 1, 1>::Inner2<BoolArgs...>::create(that, values...);
+//			}
+//		};
+//	};
+//
+//	template<bool ...BoolArgs>
+//	T dynamic_create()
+//	{
+//		return A<BoolArgs...>::B<TupleType>::unpack_tuple<std::tuple_size<TupleType>::value>(*this, _t);
+//		// return Inner<1, 1, 1, 1>::Inner2<BoolArgs...>::create(*this, (int)adaptive, (int)normalized, (int)spare, (int)next);
+//	}
+//
+//	template<typename ...SomeArgs>
+//	T create2()
+//	{
+//		return TMethodFactory::create2<SomeArgs...>();
+//	}
+//};
+//
+//template<typename TMethodFactory, typename T>
+//class Helper
+//{
+//public:
+//	template<typename ...Args>
+//	static BoolIntFactory2<TMethodFactory, T, Args...> create(Args... values)
+//	{
+//		return BoolIntFactory2<TMethodFactory, T, Args...>(values...);
+//	}
+//};
 
-	template<typename ...Arguments>
-	static T* expand(TFactory& factory, Arguments... args)
-	{
-		return inner<>::template expand<int>(factory, std::forward<Arguments>(args)...);
-	}
-};
+// #define foreach_feature_m(method, ec, ...) foreach_feature<>(*this, __VA_ARGS__).values<&method>(ec, __VA_ARGS__)
 
-template<typename T, typename TFactory, int ...ArgsN>
-class template_expansion_int<T, TFactory, -1, ArgsN...>
-{
-public:
-	template<int ...ArgsGrow>
-	class inner
-	{
-	public:
-		template<typename S>
-		static T* expand(TFactory& factory, S b)
-		{
-			// throw exception
-			return nullptr;
-		}
 
-		template<typename ...Arguments>
-		static T* expand(TFactory& factory, int a, Arguments... args)
-		{
-			// throw exception
-			return nullptr;
-		}
-	};
-};
+// bool a, b, d;
+// int e, f;
+// magic<TFactory>(a, b, d, e, f)
+// magic<>(d, e, f).foo(a, b)
 
-// expand bool and int at the same time...
-template<typename TDerived, typename T> 
-class BoolIntFactory
-{
-public:
-	template<int ...IntArgs>
-	class Inner
-	{
-	public:
-		template<bool ...BoolArgs>
-		class Inner2
-		{
-			class InnerFactory
-			{
-			private:
-				TDerived& _factory;
-
-			public:
-				InnerFactory(TDerived& factory) : _factory(factory)
-				{ }
-
-				// TODO: rename ArgsFinal to IntArgs, and IntArgs to max int
-				template<int ...ArgsFinal>
-				T* create()
-				{
-					return _factory.template create2<BoolArgs..., ArgsFinal...>();
-				}
-			};
-
-		public:
-			template<typename ...Arguments> 
-			static T* create(TDerived& factory, Arguments... args)
-			{
-				InnerFactory innerfactory(factory);
-				return template_expansion_int<T, decltype(innerfactory), IntArgs...>::expand(innerfactory, std::forward<Arguments>(args)...);
-			}
-		};
-	};
-
-	// called by template_expansion::expand()
-	template<bool ...BoolArgs>
-	T* create()
-	{
-		// need another level of indirection as we can't generically capture the runtime values
-		// in variables. Thus we'll dispatch down to a class holding the runtime arguments
-		// which will call up to create passing in the configuration and runtime values
-		return static_cast<TDerived&>(*this).dynamic_create<BoolArgs...>();
-	}
-};
-
+// tuple<>
