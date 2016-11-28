@@ -56,9 +56,33 @@ public:
 	virtual void init_driver()
 	{ }
 
-	// returns reduction-base
-	// TODO: maybe move to Reduction
-	virtual Learner* base() = 0;
+	//// returns reduction-base
+	//// TODO: maybe move to Reduction
+	//virtual Learner* base() = 0;
+};
+
+class IArguments
+{
+public:
+	virtual po::options_description* options() = 0;
+
+	virtual Learner* create(vw& all) = 0;
+
+	// optional dependencies
+	virtual const char** dependencies()
+	{
+		return nullptr;
+	}
+};
+
+template<typename TDerived, typename TLearner>
+class Arguments : public IArguments
+{
+public:
+	Learner* create(vw& all)
+	{
+		return new TLearner(static_cast<TDerived&>(*this), all);
+	}
 };
 
 template<typename TPrediction, typename TLabel>
@@ -104,10 +128,10 @@ public:
 	TypedLearnerVTable<TPrediction, TLabel> vtable() { return _vtable; }
 };
 
-template<typename TDerived, typename TPrediction, typename TLabel>
+template<typename TDerived, typename TArgs, typename TPrediction, typename TLabel>
 class LearnerBase : public TypedLearner<TPrediction, TLabel>
 {
-private:
+protected:
 	template<bool is_learn>
 	static inline void predict_or_learn_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, TPrediction& pred, TLabel& label)
 	{
@@ -155,11 +179,12 @@ private:
 		// TODO: defaults to learn
 	}
 
+	template<float(TDerived::*M)(example&, size_t)>
 	static inline float sensitivity_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, size_t i)
 	{
 		// invoke the most derived implementation of predict_or_learn_impl
 		// this method is only called from the base class and "that" == "this"
-		return static_cast<TDerived&>(that).sensitivity(ec, i);
+		return (static_cast<TDerived&>(that).*M)(ec, i);
 	}
 
 	float sensitivity(example& ec, size_t i)
@@ -174,7 +199,34 @@ private:
 	typedef float(*SensitivityMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, size_t i);
 
 protected:
+	TArgs& _args;
+
+	//template<bool is_learn>
+	//static PredictOrLearnMethod GetPredictOrLearnMethod(TArgs& args)
+	//{
+	//	return static_cast<PredictOrLearnMethod>(&sensitivity_dispatch<&TDerived::sensitivy>);
+	//}
+
+	// provide override hook to set methods based on args
+	static SensitivityMethod GetSensitivityMethod(TArgs& args)
+	{
+		return static_cast<SensitivityMethod>(&sensitivity_dispatch<&TDerived::sensitivity>);
+	}
+
 	// get most derived implementation of Learn & Predict
+	LearnerBase(TArgs& args, vw& all, size_t weights = 1, size_t increment = 0)
+		: TypedLearner<TPrediction, TLabel>(
+			all, weights, increment,
+			{
+				static_cast<PredictOrLearnMethod>(&predict_or_learn_dispatch<true>),
+				static_cast<PredictOrLearnMethod>(&predict_or_learn_dispatch<false>),
+				static_cast<MultiPredictMethod>(&multi_predict_dispatch),
+				static_cast<UpdateMethod>(&update_dispatch),
+				TDerived::GetSensitivityMethod(args)
+			}),
+		_args(args)
+	{ }
+
 	LearnerBase(vw& all, size_t weights = 1, size_t increment = 0)
 		: TypedLearner<TPrediction, TLabel>(
 			all, weights, increment,
@@ -187,41 +239,121 @@ protected:
 			})
 	{ }
 
-	// iterate through one namespace (or its part), callback function T(some_data_R, feature_value_x, feature_weight)
-	template <class R, void(TDerived::*T)(R&, const float, float&)>
-	inline void foreach_feature(weight_parameters& weights, features& fs, R& dat, uint64_t offset = 0, float mult = 1.)
+	//// iterate through one namespace (or its part), callback function T(some_data_R, feature_value_x, feature_weight)
+	//template <class R, void(TDerived::*T)(R&, const float, float&)>
+	//inline void foreach_feature(weight_parameters& weights, features& fs, R& dat, uint64_t offset = 0, float mult = 1.)
+	//{
+	//	for (features::iterator& f : fs)
+	//		// T(dat, mult*f.value(), weights[(f.index() + offset)]);
+	//		(static_cast<TDerived&>(that).T)(dat, mult*f.value(), weights[(f.index() + offset)]);
+	//}
+
+	//// iterate through one namespace (or its part), callback function T(some_data_R, feature_value_x, feature_index)
+	//template <class R, void(TDerived::*T)(R&, float, uint64_t)>
+	//void foreach_feature(features& fs, R&dat, uint64_t offset = 0, float mult = 1.)
+	//{
+	//	for (features::iterator& f : fs)
+	//		(static_cast<TDerived&>(*this).T)(dat, mult*f.value(), f.index() + offset);
+	//		// T(dat, mult*f.value(), f.index() + offset);
+	//}
+
+	//// iterate through all namespaces and quadratic&cubic features, callback function T(some_data_R, feature_value_x, S)
+	//// where S is EITHER float& feature_weight OR uint64_t feature_index
+	//template <class R, class S, void(TDerived::*T)(R&, float, S)>
+	//inline void foreach_feature(example& ec, R& dat)
+	//{
+	//	uint64_t offset = ec.ft_offset;
+
+	//	for (features& f : ec)
+	//		foreach_feature<R, T>(f, dat, offset);
+
+	//	// TODO INTERACTIONS::generate_interactions<R, S, T>(ec, dat);
+	//}
+
+	//// iterate through all namespaces and quadratic&cubic features, callback function T(some_data_R, feature_value_x, feature_weight)
+	//template <class R, void(TDerived::*T)(R&, float, float&)>
+	//inline void foreach_feature(example& ec, R& dat)
+	//{
+	//	foreach_feature<R, float&, T>(ec, dat);
+	//}
+
+
+
+	template<typename ...Args>
+	class foreach_feature_temp
 	{
-		for (features::iterator& f : fs)
-			T(dat, mult*f.value(), weights[(f.index() + offset)]);
+	private:
+		TDerived& _that;
+	public:
+		foreach_feature_temp(TDerived& that) : _that(that)
+		{ } 
+
+		template <void(TDerived::*T)(float, float&, Args...)>
+		inline void values(example& ec, Args... args)
+		{
+			weight_parameters weights = _that._all.weights;
+			float mult = 1.;
+			uint64_t offset = ec.ft_offset;
+
+			for (features& fs : ec)
+				for (features::iterator& f : fs)
+					(_that.*T)(mult*f.value(), weights[(f.index() + offset)], args...);
+		}
+
+		template <void(TDerived::*T)(float, uint64_t, Args...)>
+		inline void inidices(example& ec, Args... args)
+		{
+			weight_parameters weights = _that._all.weights;
+			float mult = 1.;
+			uint64_t offset = ec.ft_offset;
+
+			for (features& fs : ec)
+				for (features::iterator& f : fs)
+					(_that.*T)(mult*f.value(), f.index() + offset, args...);
+		}
+	};
+
+	template<typename ...Args>
+	foreach_feature_temp<Args...> foreach_feature(TDerived& that, Args... args)
+	{
+		return foreach_feature_temp<Args...>(that);
 	}
 
-	// iterate through one namespace (or its part), callback function T(some_data_R, feature_value_x, feature_index)
-	template <class R, void(TDerived::*T)(R&, float, uint64_t)>
-	void foreach_feature(features& fs, R&dat, uint64_t offset = 0, float mult = 1.)
+	// need to use a macro to be able to pass __VA_ARGS__ twice. 
+	// 1. let type inference figure out the types for foreach_feature<>
+	// 2. pass the actual arguments
+#define foreach_feature_m(method, ec, ...) foreach_feature<>(*this, __VA_ARGS__).values<&method>(ec, __VA_ARGS__)
+
+
+	template<typename ...Args>
+	class ff
 	{
-		for (features::iterator& f : fs)
-			T(dat, mult*f.value(), f.index() + offset);
-	}
+	public:
+		template <void(TDerived::*T)(float, float&, Args...)>
+		static inline void foreach_feature(TDerived& that, example& ec, Args... args)
+		{
+			weight_parameters weights = that._all.weights;
+			float mult = 1.;
+			uint64_t offset = ec.ft_offset;
 
-	// iterate through all namespaces and quadratic&cubic features, callback function T(some_data_R, feature_value_x, S)
-	// where S is EITHER float& feature_weight OR uint64_t feature_index
-	template <class R, class S, void(TDerived::*T)(R&, float, S)>
-	inline void foreach_feature(example& ec, R& dat)
-	{
-		uint64_t offset = ec.ft_offset;
+			for (features& fs : ec)
+				for (features::iterator& f : fs)
+					(that.*T)(mult*f.value(), weights[(f.index() + offset)], args...);
+					// Tabc(mult*f.value(), f.index() + offset, std::forward<Arguments>(args)...);
+		}
 
-		for (features& f : ec)
-			foreach_feature<R, T>(f, dat, offset);
+		template <void(TDerived::*T)(float, uint64_t, Args...)>
+		static inline void foreach_feature(TDerived& that, example& ec, Args... args)
+		{
+			float mult = 1.;
+			uint64_t offset = ec.ft_offset;
 
-		INTERACTIONS::generate_interactions<R, S, T>(ec, dat);
-	}
-
-	// iterate through all namespaces and quadratic&cubic features, callback function T(some_data_R, feature_value_x, feature_weight)
-	template <class R, void(TDerived::*T)(R&, float, float&)>
-	inline void foreach_feature(example& ec, R& dat)
-	{
-		foreach_feature<R, float&, T>(ec, dat);
-	}
+			for (features& fs : ec)
+				for (features::iterator& f : fs)
+					(that.*T)(mult*f.value(), f.index() + offset, args...);
+			// Tabc(mult*f.value(), f.index() + offset, std::forward<Arguments>(args)...);
+		}
+	};
 };
 
 class IReduction
@@ -252,8 +384,8 @@ public:
 // TODO: name, save in scope, 
 #define RESTORE_VALUE_ON_RETURN(x) RestoreValueOnReturn<decltype(x)> rvor_##__LINE__(x)
 
-template<typename TDerived, typename TPrediction, typename TLabel, typename TPredictionOfBase, typename TLabelOfBase>
-class Reduction : public LearnerBase<TDerived, TPrediction, TLabel>, public IReduction
+template<typename TDerived, typename TArgs, typename TPrediction, typename TLabel, typename TPredictionOfBase, typename TLabelOfBase>
+class Reduction : public LearnerBase<TDerived, TArgs, TPrediction, TLabel>, public IReduction
 {
 private:
 	typedef TypedLearner<TPredictionOfBase, TLabelOfBase> TBaseLearner;
@@ -262,8 +394,8 @@ private:
 	TypedLearnerVTable<TPredictionOfBase, TLabelOfBase> _base_vtable;
 
 protected:
-	Reduction(vw& all, size_t weights = 1, size_t increment = 0)
-		: LearnerBase<TDerived, TPrediction, TLabel>(all, weights, increment)
+	Reduction(TArgs args, vw& all, size_t weights = 1, size_t increment = 0)
+		: LearnerBase<TDerived, TArgs, TPrediction, TLabel>(args, all, weights, increment)
 	{ }
 
 	template<bool is_learn>
@@ -356,22 +488,13 @@ public:
 			return factory.create<ArgsGrow..., false>();
 	}
 
-	/*GDFactory<Learner, decltype(this)> factory(all, *this);
-	return template_expansion<Learner, GDFactory<Learner, decltype(this)>>
-		::expand<bool, bool, bool>(factory, sparse_l2_t, all.invariant_updates, sqrt_rate, feature_mask_off);
-*/
 	template<typename TB, typename ...Arguments>
 	static T* expand(TFactory& factory, TB cond, Arguments... args)
 	{
 		if (cond) // I need to specify count(Arguments) - 1, not Arguments
 			return template_expansion<T, TFactory, ArgsGrow..., true>::template expand<>(factory, std::forward<Arguments>(args)...);
-			//return template_expansion<T, TFactory, ArgsGrow..., true>::template expand(factory, args...);
 		else
 			return template_expansion<T, TFactory, ArgsGrow..., false>::template expand<>(factory, std::forward<Arguments>(args)...);
-
-		//return nullptr;
-		//else
-		//	return template_expansion<T, TFactory, ArgsGrow..., false>::template expand<Arguments...>(factory, std::forward<Arguments>(args)...);
 	}
 };
 
@@ -437,7 +560,8 @@ public:
 	};
 };
 
-template<typename TDerived, typename T, typename TFactory> // , bool ...BoolArgs>
+// expand bool and int at the same time...
+template<typename TDerived, typename T> 
 class BoolIntFactory
 {
 public:
@@ -450,21 +574,27 @@ public:
 		{
 			class InnerFactory
 			{
+			private:
+				TDerived& _factory;
+
 			public:
+				InnerFactory(TDerived& factory) : _factory(factory)
+				{ }
+
 				// TODO: rename ArgsFinal to IntArgs, and IntArgs to max int
 				template<int ...ArgsFinal>
-				T* create(TFactory& factory)
+				T* create()
 				{
-					return factory.create<BoolArgs..., ArgsFinal...>();
+					return _factory.template create2<BoolArgs..., ArgsFinal...>();
 				}
 			};
 
 		public:
 			template<typename ...Arguments> 
-			static T* create(TFactory& factory, Arguments... args)
+			static T* create(TDerived& factory, Arguments... args)
 			{
-				InnerFactory factory;
-				return template_expansion_int<T, decltype(factory), IntArgs...>::expand(factory, std::forward<Arguments>(args)...);
+				InnerFactory innerfactory(factory);
+				return template_expansion_int<T, decltype(innerfactory), IntArgs...>::expand(innerfactory, std::forward<Arguments>(args)...);
 			}
 		};
 	};
@@ -480,26 +610,3 @@ public:
 	}
 };
 
-class IArguments
-{
-public:
-	virtual po::options_description* options() = 0;
-
-	virtual Learner* create(vw& all) = 0;
-
-	// optional dependencies
-	virtual const char** dependencies()
-	{
-		return nullptr;
-	}
-};
-
-template<typename TDerived, typename TLearner>
-class Arguments :  public IArguments
-{
-public:
-	Learner* create(vw& all)
-	{
-		return new TLearner(static_cast<TDerived&>(*this), all);
-	}
-};
