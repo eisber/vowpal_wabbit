@@ -142,52 +142,6 @@ inline void audit_feature(audit_results& dat, const float ft_weight, const uint6
 
 class GDArgs : public IArguments
 {
-public:
-	// need to have an intermediate type to capture the actual create call passing in the runtime int-variables
-	//template<typename T>
-	//class GDFactory : public BoolIntFactory<GDFactory<T>, T>
-	//{
-	//private:
-	//	vw& _all;
-	//	GDArgs& _args;
-
-	//public:
-	//	GDFactory(vw& all, GDArgs& args) : _all(all), _args(args)
-	//	{ }
-
-	//	// called by InnerFactory
-	//	template<bool l1, bool audit, bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, uint64_t adaptive, uint64_t normalized, uint64_t spare, uint64_t next>
-	//	Learner* create2()
-	//	{
-	//		return new GDLearner<l1, audit, sparse_l2, invariant, sqrt_rate, feature_mask_off, adaptive, normalized, spare, next>(_args, _all);
-	//	}
-
-	//	template<bool ...BoolArgs>
-	//	T* dynamic_create()
-	//	{
-	//		uint64_t adaptive = 0, spare = 0;
-	//		if (_all.adaptive)
-	//		{
-	//			adaptive = 1;
-	//			spare = 2;
-	//		}
-
-	//		uint64_t normalized = 0, next = spare + 1;
-	//		if (_all.normalized_updates)
-	//		{
-	//			normalized = adaptive + 1;
-	//			next = adaptive + 3;
-	//		}
-	//		_all.normalized_idx = normalized;
-
-	//		// TODO: compress  the range of spare/next to generate less code
-
-	//		// 1, 2, 2, 4 are the max-values that adapative, normalized, spare and next can take
-	//		// BoolArgs..., 1, 2, 2, 4
-	//		// return Inner<1, 2, 2, 4>::Inner2<BoolArgs...>::create(*this, (int)adaptive, (int)normalized, (int)spare, (int)next);
-	//		return Inner<1, 1, 1, 1>::Inner2<BoolArgs...>::create(*this, (int)adaptive, (int)normalized, (int)spare, (int)next);
-	//	}
-	//};
 
 public:
 	float sparse_l2 = 0.;
@@ -208,6 +162,8 @@ public:
 	bool feature_mask_off = true;
 	bool sqrt_rate;
 	bool sparse_l2_t;
+	int reg_mode;
+	bool hash_inv;
 
 	po::options_description* options()
 	{
@@ -225,49 +181,102 @@ public:
 	Learner* create(vw& all);
 };
 
-//template<bool l1, bool audit,bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, uint64_t adaptive, uint64_t normalized, uint64_t spare, uint64_t next>
-//class GDLearner : public LearnerBase<GDLearner<l1, audit, sparse_l2, invariant, sqrt_rate, feature_mask_off, adaptive, normalized, spare, next>, GDArgs, float, float>
 class GDLearner : public LearnerBase<GDLearner, GDArgs, float, float>
 {
+	typedef LearnerBase<GDLearner, GDArgs, float, float> TLearnerBase;
 public:
-	// typedef GDArgs<GDLearner<sparse_l2, invariant, sqrt_rate, feature_mask_off, adaptive, normalized, spare, next>> Args;
-	// typedef GDLearner<l1, audit, sparse_l2, invariant, sqrt_rate, feature_mask_off, adaptive, normalized, spare, next> GDLearnerBound;
+	typedef float TPrediction;
+	typedef float TLabel;
+
+
+
+	template<bool is_learn>
+	struct PredictOrLearnFactory
+	{
+		template<bool l1, bool audit, bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, bool adaptive, bool normalized>
+		static PredictOrLearnMethod create()
+		{
+			const int adapative_v = adaptive ? 1 : 2;
+			const int normalized_v = normalized ? adapative_v : 0;
+			const int spare = adaptive ? 0 : 2;
+			return 
+				static_cast<PredictOrLearnMethod>(&predict_or_learn_dispatch<GDLearner, TPrediction, TLabel,
+					&GDLearner::template predict_or_learn<l1, audit, sparse_l2, invariant, sqrt_rate, feature_mask_off, adapative_v, normalized_v, spare>>);
+		}
+	};
+
+	struct UpdateFactory
+	{
+		template<bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, bool adaptive, bool normalized>
+		static UpdateMethod create()
+		{
+			const int adapative_v = adaptive ? 1 : 2;
+			const int normalized_v = normalized ? adapative_v : 0;
+			const int spare = adaptive ? 0 : 2;
+			return 
+				&update_dispatch<GDLearner, TPrediction, TLabel,
+					&GDLearner::template update<sparse_l2, invariant, sqrt_rate, feature_mask_off, adapative_v, normalized_v, spare>>;
+		}
+	};
+
+	struct MultiPredictFactory
+	{
+		template<bool l1, bool audit>
+		static MultiPredictMethod create()
+		{
+			return &multi_predict_dispatch<GDLearner, TPrediction, TLabel, &GDLearner::template multi_predict<l1, audit>>;
+		}
+	};
+
+	struct SensitivityFactory
+	{
+		template<bool adaptive, bool normalized, bool sqrt_rate, bool feature_mask_off>
+		static SensitivityMethod create()
+		{
+			const int adapative_v = adaptive ? 1 : 2;
+			const int normalized_v = normalized ? adapative_v : 0;
+			const int spare = adaptive ? 0 : 2;
+			return 
+				&sensitivity_dispatch<GDLearner, TPrediction, TLabel,
+					&GDLearner::sensitivity<sqrt_rate, feature_mask_off, adapative_v, normalized_v, spare>>;
+		}
+	};
+
+	static TypedLearnerVTable<TPrediction, TLabel> GetVTable(GDArgs& args)
+	{
+		const bool l1 = args.reg_mode % 2 == 1;
+		const bool audit = args.audit || args.hash_inv;
+
+		TypedLearnerVTable<TPrediction, TLabel> vtable;
+
+		vtable.learn_method = template_expansion<PredictOrLearnMethod, PredictOrLearnFactory<true>>::template expand(
+			l1, audit, args.sparse_l2, args.invariant, args.sqrt_rate, args.feature_mask_off, args.adaptive, args.normalized);
+
+		vtable.predict_method = template_expansion<PredictOrLearnMethod, PredictOrLearnFactory<false>>::template expand(
+			l1, audit, args.sparse_l2, args.invariant, args.sqrt_rate, args.feature_mask_off, args.adaptive, args.normalized);
+
+		vtable.update_method = template_expansion<UpdateMethod, UpdateFactory>::template expand(
+			args.sparse_l2, args.invariant, args.sqrt_rate, args.feature_mask_off, args.adaptive, args.normalized);
+
+		vtable.multi_predict_method = template_expansion<MultiPredictMethod, MultiPredictFactory>::template expand(l1, audit);
+		vtable.sensitivity_method = template_expansion<SensitivityMethod, SensitivityFactory>::template expand(args.adaptive, args.normalized, args.sqrt_rate, args.feature_mask_off);
+
+		return vtable;
+	}
+
+public:
 private:
 	vw& all; // TODO remove me
 
 public:
-	GDLearner(GDArgs& args, vw& _all) : 
-		// LearnerBase<GDLearner<l1, audit, sparse_l2, invariant, sqrt_rate, feature_mask_off, adaptive, normalized, spare, next>, GDArgs, float, float>(args, _all),
-		LearnerBase<GDLearner, GDArgs, float, float>(args, _all),
+	GDLearner(GDArgs& args, vw& _all) :
+		LearnerBase<GDLearner, GDArgs, float, float>(args, _all, GetVTable(args)),
 		all(_all)
-	{ 
+	{
 		_all.normalized_sum_norm_x = 0;
 	}
 
-public:
-	typedef float(*SensitivityMethod)(TypedLearner<float, float>&, example& ec, size_t i);
 
-	class SensitivityFactory
-	{
-	public:
-		template<bool adaptive, bool normalized, bool sqrt_rate, bool feature_mask_off>
-		static SensitivityMethod create()
-		{
-			return static_cast<SensitivityMethod>(
-				&LearnerBase<GDLearner, GDArgs, float, float>::sensitivity_dispatch<
-					&GDLearner::sensitivity<
-						sqrt_rate, 
-						feature_mask_off, 
-						adaptive ? 1 : 2,
-						normalized ? (adaptive ? 1 : 2) : 0, 
-						adaptive ? 0 : 2>>);
-		}
-	};
-
-	static SensitivityMethod GetSensitivityMethod(GDArgs& args)
-	{
-		return template_expansion<SensitivityMethod, SensitivityFactory>::template expand(args.adaptive, args.normalized, args.sqrt_rate, args.feature_mask_off);
-	}
 
 private:
 	inline float quake_InvSqrt(float x)
@@ -620,8 +629,8 @@ public:
 	const float x2_max = FLT_MAX;
 	
 public:
-	//template<bool sqrt_rate, bool feature_mask_off, size_t adaptive, size_t normalized, size_t spare, bool stateless>
-	template<bool stateless>
+	template<bool sqrt_rate, bool feature_mask_off, size_t adaptive, size_t normalized, size_t spare, bool stateless>
+	// template<bool stateless>
 	inline void pred_per_update_feature(norm_data& nd, float x, float& fw)
 	{
 		if (feature_mask_off || fw != 0.)
@@ -659,7 +668,7 @@ public:
 				}
 				nd.norm_x += x2 / (w[normalized] * w[normalized]);
 			}
-			w[spare] = compute_rate_decay(nd.pd, fw);
+			w[spare] = compute_rate_decay<sqrt_rate, adaptive, normalized>(nd.pd, fw);
 			nd.pred_per_update += x2 * w[spare];
 		}
 	}
@@ -761,22 +770,12 @@ public:
 		return update_scale;
 	}
 public:
-	//template<bool sqrt_rate, bool feature_mask_off, size_t adaptive, size_t normalized, size_t spare>
-	//static float sensitivity(example& ec, size_t)
-	//{
-
-	//}
-
 	template<bool sqrt_rate, bool feature_mask_off, size_t adaptive, size_t normalized, size_t spare>
 	float sensitivity(example& ec, size_t)
 	{
 		return get_scale<adaptive>(ec, 1.)
 			* sensitivity<sqrt_rate, feature_mask_off, adaptive, normalized, spare, true>(ec);
 	}
-	//{
-	//	return get_scale(ec, 1.)
-	//		* sensitivity<true>(ec);
-	//}
 
 private:
 	//template<bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, size_t adaptive, size_t normalized, size_t spare>
@@ -827,7 +826,8 @@ public:
 			sync_weights(_all);
 	}
 
-	template<bool is_learn>
+	template<bool is_learn, bool l1, bool audit, bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, size_t adaptive, size_t normalized, size_t spare>
+	//template<bool l1, bool is_learn>
 	void predict_or_learn(example& ec, float& pred, float& label)
 	{
 		if (is_learn)
@@ -837,6 +837,7 @@ public:
 			assert(ec.weight > 0.);
 		}
 
+		// from gd.cc: predict
 		if (l1)
 			ec.partial_prediction = trunc_predict(ec, _all.sd->gravity);
 		else
@@ -848,18 +849,7 @@ public:
 			print_audit_features(ec);
 
 		if (is_learn)
-		{
-			//assert(ec.in_use);
-			//assert(ec.l.simple.label != FLT_MAX);
-			//assert(ec.weight > 0.);
-			//g.predict(g, base, ec);
-			//update<sparse_l2, invariant, sqrt_rate, feature_mask_off, adaptive, normalized, spare>(g, base, ec);
-			update(ec);
-		}
-		else
-		{
-
-		}
+			update<sparse_l2, invariant, sqrt_rate, feature_mask_off, adaptive, normalized, spare>(ec);
 	}
 };
 
@@ -956,12 +946,10 @@ Learner* GDArgs::create(vw& all)
 	invariant = all.invariant_updates;
 	sparse_l2_t = sparse_l2 > 0.f;
 
-	return new GDLearner(*this, all);
-	// TODO: all.weights.stride_shift((uint32_t)ceil_log_2(stride - 1));
+	reg_mode = all.reg_mode;
+	hash_inv = all.hash_inv;
 
-	//GDFactory<Learner> factory(all, *this);
-	//return template_expansion<Learner, GDFactory<Learner>>
-	//	::template expand(factory, l1, audit, sparse_l2_t, all.invariant_updates, sqrt_rate, feature_mask_off);
+	return new GDLearner(*this, all);
 }
 
 // 2 step creation process

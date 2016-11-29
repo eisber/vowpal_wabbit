@@ -103,11 +103,11 @@ public:
 	typedef void(*UpdateMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, size_t i);
 	typedef float(*SensitivityMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, size_t i);
 
-	PredictOrLearnMethod learn_method;
-	PredictOrLearnMethod predict_method;
-	MultiPredictMethod multi_predict_method;
-	UpdateMethod update_method;
-	SensitivityMethod sensitivity_method;
+	PredictOrLearnMethod learn_method = nullptr;
+	PredictOrLearnMethod predict_method = nullptr;
+	MultiPredictMethod multi_predict_method = nullptr;
+	UpdateMethod update_method = nullptr;
+	SensitivityMethod sensitivity_method = nullptr;
 };
 
 template<typename TPrediction, typename TLabel>
@@ -119,7 +119,7 @@ private:
 	const TypedLearnerVTable<TPrediction, TLabel>& _vtable;
 
 protected:
-	TypedLearner(vw& all, size_t weights, size_t increment, const TypedLearnerVTable<TPrediction, TLabel>& vtable) :
+	TypedLearner(vw& all, size_t weights, size_t increment, const TypedLearnerVTable<TPrediction, TLabel> vtable) :
 		Learner(all, weights, increment),
 		_vtable(vtable)
 	{ }
@@ -128,25 +128,47 @@ public:
 	TypedLearnerVTable<TPrediction, TLabel> vtable() { return _vtable; }
 };
 
+template<typename TDerived, typename TPrediction, typename TLabel, void(TDerived::*M)(example&, TPrediction&, TLabel&)>
+inline void predict_or_learn_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, TPrediction& pred, TLabel& label)
+{
+	// invoke the most derived implementation of predict_or_learn_impl
+	// this method is only called from the base class and "that" == "this"
+	(static_cast<TDerived&>(that).*M)(ec, pred, label);
+}
+
+template<typename TDerived, typename TPrediction, typename TLabel, void(TDerived::*M)(example&, size_t, size_t, TPrediction*, TLabel&, bool)>
+inline void multi_predict_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, size_t lo, size_t count, TPrediction* pred, TLabel& label, bool finalize_predictions)
+{
+	// invoke the most derived implementation of predict_or_learn_impl
+	// this method is only called from the base class and "that" == "this"
+	(static_cast<TDerived&>(that).*M)(ec, lo, count, pred, label, finalize_predictions);
+}
+
+template<typename TDerived, typename TPrediction, typename TLabel, void(TDerived::*M)(example&, size_t)>
+static inline void update_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, size_t i)
+{
+	// invoke the most derived implementation of predict_or_learn_impl
+	// this method is only called from the base class and "that" == "this"
+	(static_cast<TDerived&>(that).*M)(ec, i);
+}
+
+template<typename TDerived, typename TPrediction, typename TLabel, float(TDerived::*M)(example&, size_t)>
+static inline float sensitivity_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, size_t i)
+{
+	// invoke the most derived implementation of predict_or_learn_impl
+	// this method is only called from the base class and "that" == "this"
+	return (static_cast<TDerived&>(that).*M)(ec, i);
+}
+
 template<typename TDerived, typename TArgs, typename TPrediction, typename TLabel>
 class LearnerBase : public TypedLearner<TPrediction, TLabel>
 {
+	typedef LearnerBase<TDerived, TArgs, TPrediction, TLabel> TThis;
 protected:
 	template<bool is_learn>
-	static inline void predict_or_learn_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, TPrediction& pred, TLabel& label)
+	void predict_or_learn(example& ec, TPrediction& pred, TLabel& label)
 	{
-		// invoke the most derived implementation of predict_or_learn_impl
-		// this method is only called from the base class and "that" == "this"
-		// TODO: static_cast<TDerived&>(that).template predict_or_learn<is_learn>(ec, pred, label);
-	}
 
-	// TODO: template specialization for is_learn = false (predict) -> learn
-
-	static inline void multi_predict_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, size_t lo, size_t count, TPrediction* pred, TLabel& label, bool finalize_predictions)
-	{
-		// invoke the most derived implementation of predict_or_learn_impl
-		// this method is only called from the base class and "that" == "this"
-		// TODO: static_cast<TDerived&>(that).multi_predict(ec, lo, count, pred, label, finalize_predictions);
 	}
 
 	void multi_predict(example& ec, size_t lo, size_t count, TPrediction* pred, TLabel& label, bool finalize_predictions)
@@ -163,34 +185,21 @@ protected:
 			assert(false);
 			//if (finalize_predictions) pred[c] = ec.pred; // TODO: this breaks for complex labels because = doesn't do deep copy!
 			//else                      pred[c].scalar = ec.partial_prediction;
-			ec.ft_offset += (uint32_t)_increment;
+			ec.ft_offset += (uint32_t)Learner::_increment;
 		}
-	}
-
-	static inline void update_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, size_t i)
-	{
-		// invoke the most derived implementation of predict_or_learn_impl
-		// this method is only called from the base class and "that" == "this"
-		// TODO: static_cast<TDerived&>(that).update(ec, i);
 	}
 
 	void update(example& ec, size_t i)
 	{ 
-		// TODO: defaults to learn
-	}
-public:
-	template<float(TDerived::*M)(example&, size_t)>
-	static inline float sensitivity_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, size_t i)
-	{
-		// invoke the most derived implementation of predict_or_learn_impl
-		// this method is only called from the base class and "that" == "this"
-		return (static_cast<TDerived&>(that).*M)(ec, i);
+		// TODO: defaults to learn?
 	}
 
 	float sensitivity(example& ec, size_t i)
 	{
 		return 0.; // see noop_sensitivity
 	}
+
+public:
 
 	// need to re-declare for gcc
 	typedef void(*PredictOrLearnMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, TPrediction& pred, TLabel& label);
@@ -200,44 +209,33 @@ public:
 
 protected:
 	TArgs& _args;
-
-	//template<bool is_learn>
-	//static PredictOrLearnMethod GetPredictOrLearnMethod(TArgs& args)
-	//{
-	//	return static_cast<PredictOrLearnMethod>(&sensitivity_dispatch<&TDerived::sensitivy>);
-	//}
-
-	// provide override hook to set methods based on args
-	static SensitivityMethod GetSensitivityMethod(TArgs& args)
-	{
-		return static_cast<SensitivityMethod>(&sensitivity_dispatch<&TDerived::sensitivity>);
-	}
-
+	
+public:
 	// get most derived implementation of Learn & Predict
 	LearnerBase(TArgs& args, vw& all, size_t weights = 1, size_t increment = 0)
 		: TypedLearner<TPrediction, TLabel>(
 			all, weights, increment,
 			{
-				static_cast<PredictOrLearnMethod>(&predict_or_learn_dispatch<true>),
-				static_cast<PredictOrLearnMethod>(&predict_or_learn_dispatch<false>),
-				static_cast<MultiPredictMethod>(&multi_predict_dispatch),
-				static_cast<UpdateMethod>(&update_dispatch),
-				TDerived::GetSensitivityMethod(args)
+				&predict_or_learn_dispatch<TDerived, TPrediction, TLabel, &TDerived::template predict_or_learn<true>>,
+				&predict_or_learn_dispatch<TDerived, TPrediction, TLabel, &TDerived::template predict_or_learn<false>>,
+				&multi_predict_dispatch<TDerived, TPrediction, TLabel, &TDerived::multi_predict>,
+				&update_dispatch<TDerived, TPrediction, TLabel, &TDerived::update>,
+				&sensitivity_dispatch<TDerived, TPrediction, TLabel, &TDerived::sensitivity>
 			}),
 		_args(args)
 	{ }
 
-	LearnerBase(vw& all, size_t weights = 1, size_t increment = 0)
+	LearnerBase(TArgs& args, vw& all, TypedLearnerVTable<TPrediction, TLabel> vtable, size_t weights = 1, size_t increment = 0)
+		: TypedLearner<TPrediction, TLabel>(
+			all, weights, increment, vtable),
+		_args(args)
+	{ }
+
+	/*LearnerBase(vw& all, size_t weights = 1, size_t increment = 0)
 		: TypedLearner<TPrediction, TLabel>(
 			all, weights, increment,
-			{
-				static_cast<PredictOrLearnMethod>(&predict_or_learn_dispatch<true>),
-				static_cast<PredictOrLearnMethod>(&predict_or_learn_dispatch<false>),
-				static_cast<MultiPredictMethod>(&multi_predict_dispatch),
-				static_cast<UpdateMethod>(&update_dispatch),
-				static_cast<SensitivityMethod>(&sensitivity_dispatch)
-			})
-	{ }
+			FillDefaults(TDerived::GetVTable(args)))
+	{ }*/
 
 	//// iterate through one namespace (or its part), callback function T(some_data_R, feature_value_x, feature_weight)
 	//template <class R, void(TDerived::*T)(R&, const float, float&)>
@@ -368,8 +366,8 @@ template<typename T>
 class RestoreValueOnReturn
 {
 private:
-	T _value_initial;
 	T& _value;
+	T _value_initial;
 
 public:
 	RestoreValueOnReturn(T& value) : _value(value), _value_initial(value)
@@ -411,35 +409,35 @@ protected:
 	{
 		// RestoreValueOnReturn<uint64_t> x(ec.ft_offset);
 		RESTORE_VALUE_ON_RETURN(ec.ft_offset);
-		ec.ft_offset += _increment * i;
+		ec.ft_offset += Learner::_increment * i;
 		(*_base_vtable.learn_method)(*_base, ec, pred, label);
 	}
 
 	inline void base_predict(example& ec, TPredictionOfBase& pred, TLabel& label, size_t i = 0)
 	{
 		RESTORE_VALUE_ON_RETURN(ec.ft_offset);
-		ec.ft_offset += _increment * i;
+		ec.ft_offset += Learner::_increment * i;
 		(*_base_vtable.predict_method)(*_base, ec, pred, label);
 	}
 
 	inline void base_multi_predict(TBaseLearner&, example& ec, size_t lo, size_t count, TPrediction* pred, TLabel& label, bool finalize_predictions)
 	{
 		RESTORE_VALUE_ON_RETURN(ec.ft_offset);
-		ec.ft_offset += _increment * lo;
+		ec.ft_offset += Learner::_increment * lo;
 		(*_base_vtable.multi_predict_method)(*_base, ec, lo, count, pred, label, finalize_predictions);
 	}
 
 	inline void base_update(TBaseLearner&, example& ec, size_t i = 0)
 	{
 		RESTORE_VALUE_ON_RETURN(ec.ft_offset);
-		ec.ft_offset += _increment * lo;
+		ec.ft_offset += Learner::_increment; // TODO *lo;
 		(*_base_vtable.update_method)(*_base, ec, i);
 	}
 
 	inline float base_sensitivity(TBaseLearner&, example& ec, size_t i = 0)
 	{
 		RESTORE_VALUE_ON_RETURN(ec.ft_offset);
-		ec.ft_offset += _increment * lo;
+		ec.ft_offset += Learner::_increment; //TODO *lo;
 		return (*_base_vtable.sensitivity_method)(*_base, ec, i);
 	}
 public:
@@ -455,7 +453,7 @@ public:
 		_base_vtable = _base->vtable();
 
 		// REMOVEME: as done in init_learner()
-		_increment = _base->increment() * _weights;
+		Learner::_increment = _base->increment() * Learner::_weights;
 
 		return true;
 	}
@@ -497,186 +495,3 @@ public:
 			return template_expansion<T, TFactory, ArgsGrow..., false>::template expand<>(std::forward<Arguments>(args)...);
 	}
 };
-
-//template<typename T, typename TFactory, int N, int ...ArgsN>
-//class template_expansion_int
-//{
-//public:
-//	template<int ...ArgsGrow>
-//	class inner
-//	{
-//	public:
-//		template<typename S>
-//		static T expand(TFactory& factory, S value)
-//		{
-//			if (value == N)
-//				return factory.create<ArgsGrow..., N>();
-//			else if (value < N)
-//				return template_expansion_int<T, TFactory, ArgsN..., N - 1>::inner<ArgsGrow...>::template expand<S>(factory, value);
-//			else
-//				return nullptr;
-//		}
-//
-//		template<typename TI, typename ...Arguments>
-//		static T expand(TFactory& factory, TI value, Arguments... args)
-//		{
-//			if (value == N)
-//				return template_expansion_int<T, TFactory, ArgsN...>::inner<N, ArgsGrow...>::template expand<>(factory, std::forward<Arguments>(args)...);
-//			else if (value < N)
-//				return template_expansion_int<T, TFactory, ArgsN..., N - 1>::inner<ArgsGrow...>::template expand<>(factory, value, std::forward<Arguments>(args)...);
-//			else
-//				return nullptr;
-//		}
-//	};
-//
-//	template<typename ...Arguments>
-//	static T expand(TFactory& factory, Arguments... args)
-//	{
-//		return inner<>::template expand<int>(factory, std::forward<Arguments>(args)...);
-//	}
-//};
-//
-//template<typename T, typename TFactory, int ...ArgsN>
-//class template_expansion_int<T, TFactory, -1, ArgsN...>
-//{
-//public:
-//	template<int ...ArgsGrow>
-//	class inner
-//	{
-//	public:
-//		template<typename S>
-//		static T expand(TFactory& factory, S b)
-//		{
-//			// throw exception
-//			return nullptr;
-//		}
-//
-//		template<typename ...Arguments>
-//		static T expand(TFactory& factory, int a, Arguments... args)
-//		{
-//			// throw exception
-//			return nullptr;
-//		}
-//	};
-//};
-//
-//// expand bool and int at the same time...
-//template<typename TDerived, typename T> 
-//class BoolIntFactory
-//{
-//public:
-//	template<int ...IntArgs>
-//	class Inner
-//	{
-//	public:
-//		template<bool ...BoolArgs>
-//		class Inner2
-//		{
-//			class InnerFactory
-//			{
-//			private:
-//				TDerived& _factory;
-//
-//			public:
-//				InnerFactory(TDerived& factory) : _factory(factory)
-//				{ }
-//
-//				// TODO: rename ArgsFinal to IntArgs, and IntArgs to max int
-//				template<int ...ArgsFinal>
-//				T create()
-//				{
-//					return _factory.template create2<BoolArgs..., ArgsFinal...>();
-//				}
-//			};
-//
-//		public:
-//			template<typename ...Arguments> 
-//			static T create(TDerived& factory, Arguments... args)
-//			{
-//				InnerFactory innerfactory(factory);
-//				return template_expansion_int<T, decltype(innerfactory), IntArgs...>::expand(innerfactory, std::forward<Arguments>(args)...);
-//			}
-//		};
-//	};
-//
-//	// called by template_expansion::expand()
-//	template<bool ...BoolArgs>
-//	T create()
-//	{
-//		// need another level of indirection as we can't generically capture the runtime values
-//		// in variables. Thus we'll dispatch down to a class holding the runtime arguments
-//		// which will call up to create passing in the configuration and runtime values
-//		return static_cast<TDerived&>(*this).dynamic_create<BoolArgs...>();
-//	}
-//};
-
-//#include <tuple>
-//
-//template<typename TMethodFactory, typename T, typename ...Args>
-//class BoolIntFactory2 : public BoolIntFactory<BoolIntFactory2<TMethodFactory, T>, T>
-//{
-//	std::tuple<Args...> _t;
-//
-//	typedef std::tuple<Args...> TupleType;
-//	typedef BoolIntFactory2<TMethodFactory, T, Args...> TThis;
-//public:
-//	BoolIntFactory2(Args... values) : _t(values...)
-//	{ }
-//
-//	template<bool ...BoolArgs>
-//	class A
-//	{
-//	public:
-//		template<typename Tuple, typename ...IntArgs>
-//		class B
-//		{
-//		public:
-//			template<int pos>
-//			static T unpack_tuple(TThis& that, Tuple t, IntArgs... values)
-//			{
-//				return B<Tuple, int, IntArgs...>::unpack_tuple<pos-1>(that, t, std::get<pos - 1>(t), values...);
-//			}
-//
-//			// termination
-//			template<>
-//			static T unpack_tuple<0>(TThis& that, Tuple t, IntArgs... values)
-//			{
-//				return Inner<1, 1, 1, 1>::Inner2<BoolArgs...>::create(that, values...);
-//			}
-//		};
-//	};
-//
-//	template<bool ...BoolArgs>
-//	T dynamic_create()
-//	{
-//		return A<BoolArgs...>::B<TupleType>::unpack_tuple<std::tuple_size<TupleType>::value>(*this, _t);
-//		// return Inner<1, 1, 1, 1>::Inner2<BoolArgs...>::create(*this, (int)adaptive, (int)normalized, (int)spare, (int)next);
-//	}
-//
-//	template<typename ...SomeArgs>
-//	T create2()
-//	{
-//		return TMethodFactory::create2<SomeArgs...>();
-//	}
-//};
-//
-//template<typename TMethodFactory, typename T>
-//class Helper
-//{
-//public:
-//	template<typename ...Args>
-//	static BoolIntFactory2<TMethodFactory, T, Args...> create(Args... values)
-//	{
-//		return BoolIntFactory2<TMethodFactory, T, Args...>(values...);
-//	}
-//};
-
-// #define foreach_feature_m(method, ec, ...) foreach_feature<>(*this, __VA_ARGS__).values<&method>(ec, __VA_ARGS__)
-
-
-// bool a, b, d;
-// int e, f;
-// magic<TFactory>(a, b, d, e, f)
-// magic<>(d, e, f).foo(a, b)
-
-// tuple<>
