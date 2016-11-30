@@ -201,11 +201,11 @@ protected:
 
 public:
 
-	// need to re-declare for gcc
-	typedef void(*PredictOrLearnMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, TPrediction& pred, TLabel& label);
-	typedef void(*MultiPredictMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, size_t lo, size_t count, TPrediction* pred, TLabel& label, bool finalize_predictions);
-	typedef void(*UpdateMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, size_t i);
-	typedef float(*SensitivityMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, size_t i);
+	//// need to re-declare for gcc
+	//typedef void(*PredictOrLearnMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, TPrediction& pred, TLabel& label);
+	//typedef void(*MultiPredictMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, size_t lo, size_t count, TPrediction* pred, TLabel& label, bool finalize_predictions);
+	//typedef void(*UpdateMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, size_t i);
+	//typedef float(*SensitivityMethod)(TypedLearner<TPrediction, TLabel>&, example& ec, size_t i);
 
 protected:
 	TArgs& _args;
@@ -217,7 +217,7 @@ public:
 			all, weights, increment,
 			{
 				&predict_or_learn_dispatch<TDerived, TPrediction, TLabel, &TDerived::template predict_or_learn<true>>,
-				&predict_or_learn_dispatch<TDerived, TPrediction, TLabel, &TDerived::template predict_or_learn<false>>,
+				&predict_or_learn_dispatch<TDerived,TPrediction, TLabel, &TDerived::template predict_or_learn<false>>,
 				&multi_predict_dispatch<TDerived, TPrediction, TLabel, &TDerived::multi_predict>,
 				&update_dispatch<TDerived, TPrediction, TLabel, &TDerived::update>,
 				&sensitivity_dispatch<TDerived, TPrediction, TLabel, &TDerived::sensitivity>

@@ -188,33 +188,36 @@ public:
 	typedef float TPrediction;
 	typedef float TLabel;
 
-
-
 	template<bool is_learn>
 	struct PredictOrLearnFactory
 	{
 		template<bool l1, bool audit, bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, bool adaptive, bool normalized>
-		static PredictOrLearnMethod create()
+		static TypedLearnerVTable<TPrediction, TLabel>::PredictOrLearnMethod create()
 		{
 			const int adapative_v = adaptive ? 1 : 2;
 			const int normalized_v = normalized ? adapative_v : 0;
 			const int spare = adaptive ? 0 : 2;
-			return 
-				static_cast<PredictOrLearnMethod>(&predict_or_learn_dispatch<GDLearner, TPrediction, TLabel,
-					&GDLearner::template predict_or_learn<l1, audit, sparse_l2, invariant, sqrt_rate, feature_mask_off, adapative_v, normalized_v, spare>>);
+			//return 
+			//	&TypedLearnerVTable<TPrediction, TLabel>::template predict_or_learn_dispatch<GDLearner,
+			//		&GDLearner::template predict_or_learn<l1, audit, sparse_l2, invariant, sqrt_rate, feature_mask_off, adapative_v, normalized_v, spare>>;
+			void(*m)(TypedLearner<TPrediction, TLabel>&, example& , TPrediction& , TLabel& ) =
+				predict_or_learn_dispatch<GDLearner, TPrediction, TLabel,
+				&GDLearner::template predict_or_learn<l1, audit, sparse_l2, invariant, sqrt_rate, feature_mask_off, adapative_v, normalized_v, spare>>;
+		
+			return m;
 		}
 	};
 
 	struct UpdateFactory
 	{
 		template<bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, bool adaptive, bool normalized>
-		static UpdateMethod create()
+		static TypedLearnerVTable<TPrediction, TLabel>::UpdateMethod create()
 		{
 			const int adapative_v = adaptive ? 1 : 2;
 			const int normalized_v = normalized ? adapative_v : 0;
 			const int spare = adaptive ? 0 : 2;
 			return 
-				&update_dispatch<GDLearner, TPrediction, TLabel,
+				update_dispatch<GDLearner, TPrediction, TLabel,
 					&GDLearner::template update<sparse_l2, invariant, sqrt_rate, feature_mask_off, adapative_v, normalized_v, spare>>;
 		}
 	};
@@ -222,22 +225,22 @@ public:
 	struct MultiPredictFactory
 	{
 		template<bool l1, bool audit>
-		static MultiPredictMethod create()
+		static TypedLearnerVTable<TPrediction, TLabel>::MultiPredictMethod create()
 		{
-			return &multi_predict_dispatch<GDLearner, TPrediction, TLabel, &GDLearner::template multi_predict<l1, audit>>;
+			return multi_predict_dispatch<GDLearner, TPrediction, TLabel, &GDLearner::template multi_predict<l1, audit>>;
 		}
 	};
 
 	struct SensitivityFactory
 	{
 		template<bool adaptive, bool normalized, bool sqrt_rate, bool feature_mask_off>
-		static SensitivityMethod create()
+		static TypedLearnerVTable<TPrediction, TLabel>::SensitivityMethod create()
 		{
 			const int adapative_v = adaptive ? 1 : 2;
 			const int normalized_v = normalized ? adapative_v : 0;
 			const int spare = adaptive ? 0 : 2;
 			return 
-				&sensitivity_dispatch<GDLearner, TPrediction, TLabel,
+				sensitivity_dispatch<GDLearner, TPrediction, TLabel,
 					&GDLearner::sensitivity<sqrt_rate, feature_mask_off, adapative_v, normalized_v, spare>>;
 		}
 	};
@@ -249,17 +252,17 @@ public:
 
 		TypedLearnerVTable<TPrediction, TLabel> vtable;
 
-		vtable.learn_method = template_expansion<PredictOrLearnMethod, PredictOrLearnFactory<true>>::template expand(
+		vtable.learn_method = template_expansion<TypedLearnerVTable<TPrediction, TLabel>::PredictOrLearnMethod, PredictOrLearnFactory<true>>::template expand(
 			l1, audit, args.sparse_l2, args.invariant, args.sqrt_rate, args.feature_mask_off, args.adaptive, args.normalized);
 
-		vtable.predict_method = template_expansion<PredictOrLearnMethod, PredictOrLearnFactory<false>>::template expand(
+		vtable.predict_method = template_expansion<TypedLearnerVTable<TPrediction, TLabel>::PredictOrLearnMethod, PredictOrLearnFactory<false>>::template expand(
 			l1, audit, args.sparse_l2, args.invariant, args.sqrt_rate, args.feature_mask_off, args.adaptive, args.normalized);
 
-		vtable.update_method = template_expansion<UpdateMethod, UpdateFactory>::template expand(
+		vtable.update_method = template_expansion<TypedLearnerVTable<TPrediction, TLabel>::UpdateMethod, UpdateFactory>::template expand(
 			args.sparse_l2, args.invariant, args.sqrt_rate, args.feature_mask_off, args.adaptive, args.normalized);
 
-		vtable.multi_predict_method = template_expansion<MultiPredictMethod, MultiPredictFactory>::template expand(l1, audit);
-		vtable.sensitivity_method = template_expansion<SensitivityMethod, SensitivityFactory>::template expand(args.adaptive, args.normalized, args.sqrt_rate, args.feature_mask_off);
+		vtable.multi_predict_method = template_expansion<TypedLearnerVTable<TPrediction, TLabel>::MultiPredictMethod, MultiPredictFactory>::template expand(l1, audit);
+		vtable.sensitivity_method = template_expansion<TypedLearnerVTable<TPrediction, TLabel>::SensitivityMethod, SensitivityFactory>::template expand(args.adaptive, args.normalized, args.sqrt_rate, args.feature_mask_off);
 
 		return vtable;
 	}
@@ -555,7 +558,7 @@ public:
 		for (size_t c = 0; c<count; c++)
 			pred[c] = ec.l.simple.initial;
 			//pred[c].scalar = ec.l.simple.initial;
-		multipredict_info mp = { count, step, pred, _all.weights, (float)_all.sd->gravity };
+		// TODO qmultipredict_info mp = { count, step, pred, _all.weights, (float)_all.sd->gravity };
 		// TODO
 		//if (l1) foreach_feature<multipredict_info, uint64_t, vec_add_trunc_multipredict>(ec, mp);
 		//else    foreach_feature<multipredict_info, uint64_t, vec_add_multipredict      >(ec, mp);
