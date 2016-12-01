@@ -194,17 +194,14 @@ public:
 		template<bool l1, bool audit, bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, bool adaptive, bool normalized>
 		static TypedLearnerVTable<TPrediction, TLabel>::PredictOrLearnMethod create()
 		{
-			const int adapative_v = adaptive ? 1 : 2;
-			const int normalized_v = normalized ? adapative_v : 0;
-			const int spare = adaptive ? 0 : 2;
-			//return 
-			//	&TypedLearnerVTable<TPrediction, TLabel>::template predict_or_learn_dispatch<GDLearner,
-			//		&GDLearner::template predict_or_learn<l1, audit, sparse_l2, invariant, sqrt_rate, feature_mask_off, adapative_v, normalized_v, spare>>;
-			void(*m)(TypedLearner<TPrediction, TLabel>&, example& , TPrediction& , TLabel& ) =
+			const size_t adapative_v = adaptive ? 1 : 2;
+			const size_t normalized_v = normalized ? adapative_v : 0;
+			const size_t spare = adaptive ? 0 : 2;
+			
+			return 
 				predict_or_learn_dispatch<GDLearner, TPrediction, TLabel,
-				&GDLearner::template predict_or_learn<l1, audit, sparse_l2, invariant, sqrt_rate, feature_mask_off, adapative_v, normalized_v, spare>>;
-		
-			return m;
+				&GDLearner::template predict_or_learn<is_learn, l1, audit, sparse_l2, invariant, sqrt_rate, 
+					feature_mask_off, adapative_v, normalized_v, spare>>;
 		}
 	};
 
@@ -278,8 +275,6 @@ public:
 	{
 		_all.normalized_sum_norm_x = 0;
 	}
-
-
 
 private:
 	inline float quake_InvSqrt(float x)
@@ -830,7 +825,6 @@ public:
 	}
 
 	template<bool is_learn, bool l1, bool audit, bool sparse_l2, bool invariant, bool sqrt_rate, bool feature_mask_off, size_t adaptive, size_t normalized, size_t spare>
-	//template<bool l1, bool is_learn>
 	void predict_or_learn(example& ec, float& pred, float& label)
 	{
 		if (is_learn)

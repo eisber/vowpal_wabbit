@@ -129,6 +129,11 @@ public:
 };
 
 template<typename TDerived, typename TPrediction, typename TLabel, void(TDerived::*M)(example&, TPrediction&, TLabel&)>
+inline void predict_or_learn_dispatch2(TypedLearner<TPrediction, TLabel>& that, example& ec, TPrediction& pred, TLabel& label)
+{
+}
+
+template<typename TDerived, typename TPrediction, typename TLabel, void(TDerived::*M)(example&, TPrediction&, TLabel&)>
 inline void predict_or_learn_dispatch(TypedLearner<TPrediction, TLabel>& that, example& ec, TPrediction& pred, TLabel& label)
 {
 	// invoke the most derived implementation of predict_or_learn_impl
