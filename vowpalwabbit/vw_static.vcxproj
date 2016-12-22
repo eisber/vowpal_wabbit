@@ -363,6 +363,7 @@
     <ClInclude Include="correctedMath.h" />
     <ClInclude Include="crossplat_compat.h" />
     <ClInclude Include="csoaa.h" />
+    <ClInclude Include="decisionservice.h" />
     <ClInclude Include="ect.h" />
     <ClInclude Include="example.h" />
     <ClInclude Include="explore_eval.h" />
@@ -427,6 +428,7 @@
     <ClInclude Include="topk.h" />
     <ClInclude Include="unique_sort.h" />
     <ClInclude Include="primitives.h" />
+    <ClInclude Include="vw_api.h" />
     <ClInclude Include="vw_validate.h" />
     <ClInclude Include="vw.h" />
     <ClInclude Include="vw_allreduce.h" />
@@ -516,6 +518,7 @@
     <ClCompile Include="svrg.cc" />
     <ClCompile Include="topk.cc" />
     <ClCompile Include="unique_sort.cc" />
+    <ClCompile Include="vw_api.cpp" />
     <ClCompile Include="vw_exception.cc" />
     <ClCompile Include="vw_validate.cc" />
   </ItemGroup>

@@ -27,21 +27,30 @@ namespace DecisionService {
 			}
 
 			// key encoded into per example seed
-			int choose_action(examples* context)
+			int choose_action(examples& context)
 			{
 				return 0;
 			}
 
+			int choose_action(examples& context, int default_action)
+			{
+				return 0;
+			}
+
+			void choose_ranking(examples& context, std::vector<int>& default_action, std::vector<int>& result)
+			{
+			}
+
 			// TODO: default ranking
-			void choose_ranking(examples* context, std::vector<int>* result) 
+			void choose_ranking(examples& context, std::vector<int>& result) 
 			{
 				prediction pred;
-				_pred_pool.predict(context, &pred);
+				_pred_pool.predict(context, pred);
 
 				// TODO: where to do the sampling?
 
 				// TODO: logging
-				context->write_json();
+				context.write_json();
 
 				// TODO: convert pred into result
 			}
