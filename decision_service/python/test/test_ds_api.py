@@ -6,6 +6,7 @@ import json
 import ssl
 from time import sleep
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import os
 
 from decision_service import *
 
@@ -110,9 +111,10 @@ class MockServer:
 		self.mock_server = HTTPServer(('localhost', self.mock_server_port), handler)
 		proto = 'http'
 		if self.https_enabled:
+			certfile = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../unittest.pem')
 			self.mock_server.socket = ssl.wrap_socket(self.mock_server.socket,
 				server_side=True,
-				certfile='unittest.pem')
+				certfile=certfile)
 			proto = 'https'
 
 		# Start running mock server in a separate thread.

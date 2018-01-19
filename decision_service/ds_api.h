@@ -39,7 +39,7 @@ namespace Microsoft {
 
       const std::string model_version;
 
-      int top_action();
+      int top_action() throw(std::exception);
 
       const std::vector<float>& probabilities();
 
@@ -48,9 +48,9 @@ namespace Microsoft {
 #ifndef ARRAYS_OPTIMIZED
       int length();
 
-      int action(int index);
+      int action(int index) throw(std::exception);
 
-      float probability(int index);
+      float probability(int index) throw(std::exception);
 #endif
 
 #ifndef SWIG
@@ -118,6 +118,7 @@ namespace Microsoft {
 
       // TODO: understand how memory ownership works...
       // TODO: support dynamic server-side parameterization using config files
+      // since there is a dependency on the learning algorithm passed in, this is a bit dangerous
       IExplorer* explorer;
 
       // defaults to error

@@ -24,7 +24,6 @@ namespace Microsoft {
         // initialize n-clients
         _event_hub_interactions(config.num_parallel_connection, EventHubClient(config.eventhub_interaction_connection_string, config.certificate_validation_enabled)),
         _event_hub_observation(config.eventhub_observation_connection_string, config.certificate_validation_enabled),
-        // TODO: daemon mode?
         _upload_interaction_thread(&DecisionServiceClientInternal::upload_interactions, this),
         _download_model_thread(&DecisionServiceClientInternal::download_model, this),
         _default_explorer(0.2f)

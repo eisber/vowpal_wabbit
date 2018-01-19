@@ -49,9 +49,6 @@ namespace Microsoft {
             // IExplorer();
             virtual ~IExplorer();
 
-// TODO: excluding from swig interface now to avoid PredictorContainer leakage and questions on memory for std::vector<float>&
-//       assuming the exploration algos are always
-            // returns distribution over actions... 
 #ifndef SWIG
             virtual ActionProbabilities explore(PredictorContainer& container);
 #endif

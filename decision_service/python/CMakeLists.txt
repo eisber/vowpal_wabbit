@@ -45,9 +45,11 @@ macro (ds_pythonbuild PYVERSION)
             # the http server is only included with python3
 
             # TODO: just grep the file using discover_python_unittest 
-            add_test(test.test_ds_api.TestDecisionServiceConfiguration.test_not_found ${PYTHON_EXECUTABLE} "-m" "unittest" "-v" test.test_ds_api.TestDecisionServiceConfiguration.test_not_found)
-            add_test(test.test_ds_api.TestDecisionServiceConfiguration.test_download ${PYTHON_EXECUTABLE} "-m" "unittest" "-v" test.test_ds_api.TestDecisionServiceConfiguration.test_download)
-            add_test(test.test_ds_api.TestDecisionServiceClient.test_rank ${PYTHON_EXECUTABLE} "-m" "unittest" "-v" test.test_ds_api.TestDecisionServiceClient.test_rank)
+            add_test(NAME decision_service_python_test
+                COMMAND ${PYTHON_EXECUTABLE} "../test/test_ds_api.py")
+
+            set_property(TEST decision_service_python_test PROPERTY
+                ENVIRONMENT "PYTHONPATH=swig${PYVERSION}")
         endif()
     endif()
 

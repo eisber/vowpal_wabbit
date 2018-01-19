@@ -23,24 +23,27 @@ namespace Microsoft {
       return _ranking.size();
     }
 
-    int RankResponse::top_action()
+    int RankResponse::top_action() throw(std::exception)
     {
+      if (_ranking.size() == 0)
+        throw out_of_range("index out of range");
+
       // we always have at least 1 element
       return _ranking[0];
     }
 
-    int RankResponse::action(int index)
+    int RankResponse::action(int index) throw(std::exception)
     {
       if (index < 0 || index >= _ranking.size())
-        return -1; // TODO: throw argument exception
+        throw out_of_range("index out of range");
 
       return _ranking[index];
     }
 
-    float RankResponse::probability(int index)
+    float RankResponse::probability(int index) throw(std::exception)
     {
       if (index < 0 || index >= _probabilities.size())
-        return -1; // TODO: throw argument exception
+        throw out_of_range("index out of range");
 
       return _probabilities[index];
     }
