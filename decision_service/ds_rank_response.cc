@@ -70,7 +70,7 @@ namespace Microsoft {
       // remove last ,
       ostr.seekp(-1, ostr.cur);
 
-      ostr << "],\"c\":{" << rankResponse.features << "},"
+      ostr << "],\"c\":" << rankResponse.features << ","
         "\"p\":[";
 
       // insert ranking

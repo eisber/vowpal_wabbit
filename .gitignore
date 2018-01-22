@@ -130,4 +130,6 @@ CMakeCache.txt
 *.vcxproj.filters
 *.sln
 decision_service/swig
+/decision_service/python/python2/swig2/*
+/decision_service/python/python3/swig3/*
 CTestTestfile.cmake
