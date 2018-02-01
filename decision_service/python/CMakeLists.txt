@@ -17,10 +17,14 @@ macro (ds_pythonbuild PYVERSION)
     find_package(PythonInterp ${PYVERSION} EXACT)
 
     if (PYTHON_INCLUDE_DIRS)
+    set(CMAKE_SWIG_OUTDIR "swig")
+
         set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "swig${PYVERSION}")
-        set(CMAKE_SWIG_OUTDIR "swig${PYVERSION}")
+        set(CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}/swig${PYVERSION}")
         set(PYVERSION ${PYVERSION})
-        set(ds_api_python "swig${PYVERSION}/ds_api_python.i")
+        set(ds_api_python "${CMAKE_SWIG_OUTDIR}/ds_api_python.i")
+
+        set(decision_service${PYVERSION}_SWIG_SOURCE_DIR "")
 
         configure_file(../ds_api_python.i.in ${ds_api_python})
         set_property(SOURCE ${ds_api_python} PROPERTY CPLUSPLUS ON)
