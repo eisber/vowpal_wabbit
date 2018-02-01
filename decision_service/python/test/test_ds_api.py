@@ -208,7 +208,7 @@ class TestDecisionServiceClient(unittest.TestCase):
 			self.assertEqual(server.posts[0]['path'], '/interaction/messages?timeout=60&api-version=2014-01')
 			self.assertEqual(server.posts[0]['response_code'], 201)
 			self.assertEqual(server.posts[0]['content-type'], 'application/atom+xml;type=entry;charset=utf-8')
-			self.assertEqual(server.posts[0]['body'], '{"Version":"1","EventId":"' + ranking.event_id + '","a":[1,0],"c":{{"a":2}},"p":[0.8,0.2],"VWState":{"m":"m1"}}')
+			self.assertEqual(server.posts[0]['body'], '{"Version":"1","EventId":"' + ranking.event_id + '","a":[1,0],"c":{"a":2},"p":[0.8,0.2],"VWState":{"m":"m1"}}')
 
 	def test_rank1(self):
 		with MockServer() as server:
@@ -224,7 +224,7 @@ class TestDecisionServiceClient(unittest.TestCase):
 			self.assertEqual(server.posts[0]['path'], '/interaction/messages?timeout=60&api-version=2014-01')
 			self.assertEqual(server.posts[0]['response_code'], 201)
 			self.assertEqual(server.posts[0]['content-type'], 'application/atom+xml;type=entry;charset=utf-8')
-			self.assertEqual(server.posts[0]['body'], '{"Version":"1","EventId":"abc","a":[3,2,0,1],"c":{{"a":2}},"p":[0.85,0.05,0.05,0.05],"VWState":{"m":"m1"}}')
+			self.assertEqual(server.posts[0]['body'], '{"Version":"1","EventId":"abc","a":[3,2,0,1],"c":{"a":2},"p":[0.85,0.05,0.05,0.05],"VWState":{"m":"m1"}}')
 
 	def test_update_model(self):
 		with MockServer() as server:
@@ -262,6 +262,7 @@ class TestDecisionServiceClient(unittest.TestCase):
 
 			preds = TestPredictor()
 			client = DecisionServiceClient(self.config)
+			# TODO: debug me, segfaults!
 			# ranking = client.explore_and_log('{"a":2}', '', preds)
 
 if __name__ == '__main__':

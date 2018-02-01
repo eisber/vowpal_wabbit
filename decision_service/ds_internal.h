@@ -7,7 +7,7 @@
 #include <memory>
 #include <thread>
 
-#include <cpprest/http_client.h>
+// #include <cpprest/http_client.h>
 
 #include <boost/lockfree/queue.hpp>
 #include <boost/thread/mutex.hpp>

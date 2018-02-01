@@ -14,7 +14,7 @@
 #include <boost/archive/iterators/transform_width.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include <boost/regex.hpp>
+//#include <boost/regex.hpp>
 
 namespace Microsoft {
   namespace DecisionService {
@@ -42,20 +42,56 @@ namespace Microsoft {
     }
 
     // Endpoint=sb://fooo.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=bar;EntityPath=interaction
-    boost::regex event_hub_connection_string_expression("^Endpoint=sb://([^;]+)/;SharedAccessKeyName=([^;]+);SharedAccessKey=([^;]+);EntityPath=(.+)$");
+    // boost::regex event_hub_connection_string_expression("^Endpoint=sb://([^;]+)/;SharedAccessKeyName=([^;]+);SharedAccessKey=([^;]+);EntityPath=(.+)$");
+    pair<string, string> split_on_equal(string s)
+    {
+      auto pos = s.find('=');
+      if (pos == string::npos)
+        throw out_of_range("string must contain =");
+
+      return make_pair(s.substr(0, pos), s.substr(pos, s.length()));
+    }
+
+    vector<pair<string, string>> split(string& s, char delim)
+    {
+      vector<pair<string, string>> v;
+      size_t i = 0;
+      size_t pos = s.find(delim);
+      while (pos != string::npos) {
+        v.push_back(split_on_equal(s.substr(i, pos - i)));
+        i = ++pos;
+        pos = s.find(delim, pos);
+
+        if (pos == string::npos)
+          v.push_back(split_on_equal(s.substr(i, s.length())));
+      }
+      return v;
+    }
 
     EventHubClient::EventHubClient(std::string connection_string, bool certificate_validation_enabled)
       : _connection_string(connection_string), _authorization_valid_until(0)
     {
       // extract event hub connection string information
-      boost::cmatch what;
-      if (!boost::regex_match(_connection_string.c_str(), what, event_hub_connection_string_expression))
-        throw "unable to parse connection string. TODO";
+      for (pair<string, string> comp : split(connection_string, ';'))
+      {
+        if (comp.first == "Endpoint")
+          _event_hub_namespace_host = comp.second;
+        else if (comp.first == "SharedAccessKeyName")
+          _key_name = comp.second;
+        else if (comp.first == "SharedAccessKey")
+          _key = comp.second;
+        else if (comp.first == "EntityPath")
+          _event_hub = comp.second;
+      }
 
-      _event_hub_namespace_host = string(what[1].first, what[1].second);
-      _key_name = string(what[2].first, what[2].second);
-      _key = string(what[3].first, what[3].second);
-      _event_hub = string(what[4].first, what[4].second);
+      //boost::cmatch what;
+      //if (!boost::regex_match(_connection_string.c_str(), what, event_hub_connection_string_expression))
+      //  throw "unable to parse connection string. TODO";
+
+      //_event_hub_namespace_host = string(what[1].first, what[1].second);
+      //_key_name = string(what[2].first, what[2].second);
+      //_key = string(what[3].first, what[3].second);
+      //_event_hub = string(what[4].first, what[4].second);
 
       // construct URL
       ostringstream url;
@@ -81,10 +117,10 @@ namespace Microsoft {
     {
       http_request req(methods::POST);
 
-      req.headers().add(U("Authorization"), Authorization().c_str());
-      req.headers().add(U("Host"), _event_hub_namespace_host.c_str());
+      req.headers().add(_XPLATSTR("Authorization"), Authorization().c_str());
+      req.headers().add(_XPLATSTR("Host"), _event_hub_namespace_host.c_str());
 
-      req.set_body(conversions::to_string_t(data), U("application/atom+xml;type=entry;charset=utf-8"));
+      req.set_body(conversions::to_string_t(data), _XPLATSTR("application/atom+xml;type=entry;charset=utf-8"));
 
       return _client->request(req);
     }
@@ -95,9 +131,9 @@ namespace Microsoft {
       http_request req(methods::POST);
 
       // TODO: refactor
-      req.headers().add(U("Authorization"), Authorization().c_str());
-      req.headers().add(U("Host"), _event_hub_namespace_host.c_str());
-      req.headers().add(U("Content-Type"), "application/atom+xml;type=entry;charset=utf-8");
+      req.headers().add(_XPLATSTR("Authorization"), Authorization().c_str());
+      req.headers().add(_XPLATSTR("Host"), _event_hub_namespace_host.c_str());
+      req.headers().add(_XPLATSTR("Content-Type"), "application/atom+xml;type=entry;charset=utf-8");
 
       req.set_body(*data);
 

@@ -25,6 +25,7 @@ namespace Microsoft {
       }
     };
 
+    // float[] scores
     ActionProbabilities EpsilonGreedyExplorer::explore(PredictorContainer& container)
     {
       DecisionServicePrediction& prediction = *container.begin();

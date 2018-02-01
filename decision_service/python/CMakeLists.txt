@@ -28,7 +28,11 @@ macro (ds_pythonbuild PYVERSION)
         set_source_files_properties("swig${PYVERSION}/ds_api_pythonPYTHON_wrap"
                     PROPERTIES COMPILE_FLAGS "-I${PYTHON_INCLUDE_DIRS} -DSWIG_PYTHON")
 
-        SWIG_ADD_MODULE("decision_service${PYVERSION}" python ${ds_api_python})
+		IF (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 3.8)
+			swig_add_library("decision_service${PYVERSION}" LANGUAGE python SOURCES ${ds_api_python})
+		ELSE()
+			SWIG_ADD_MODULE("decision_service${PYVERSION}" python ${ds_api_python})
+		ENDIF()
         SWIG_LINK_LIBRARIES("decision_service${PYVERSION}" ds ${PYTHON_LIBRARIES})
 
         ADD_CUSTOM_COMMAND(TARGET "_decision_service${PYVERSION}"
@@ -46,10 +50,10 @@ macro (ds_pythonbuild PYVERSION)
 
             # TODO: just grep the file using discover_python_unittest 
             add_test(NAME decision_service_python_test
-                COMMAND ${PYTHON_EXECUTABLE} "../test/test_ds_api.py")
+                COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/../test/test_ds_api.py")
 
             set_property(TEST decision_service_python_test PROPERTY
-                ENVIRONMENT "PYTHONPATH=swig${PYVERSION}")
+                ENVIRONMENT "PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/swig${PYVERSION}")
         endif()
     endif()
 

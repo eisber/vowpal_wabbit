@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_SUITE( DecisionServiceExploreEpsilon )
 
 BOOST_AUTO_TEST_CASE( EpsilonGreedy )
 {
-    EpsilonGreedyExplorer explorer(0.3);
+    EpsilonGreedyExplorer explorer(0.3f);
 
     vector<float> scores = { 1, 2, 3 };
     DecisionServicePredictorsSimple predictor(scores);
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE( EpsilonGreedy )
 
 BOOST_AUTO_TEST_CASE( EpsilonGreedyStable )
 {
-    EpsilonGreedyExplorer bag(0.3);
+    EpsilonGreedyExplorer bag(0.3f);
 
     vector<float> scores = { 0, 1, 1 };
     DecisionServicePredictorsSimple predictor(scores);

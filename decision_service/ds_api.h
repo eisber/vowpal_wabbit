@@ -70,7 +70,6 @@ namespace Microsoft {
       size_t length;
     };
 
-
     enum DecisionServiceLogLevel {
       none = 0,
       error = 1,
@@ -149,7 +148,7 @@ namespace Microsoft {
       RankResponse* explore_and_log(const char* features, const char* event_id, const std::vector<float>& scores) throw(std::exception)
       { return explore_and_log_cstyle(features, event_id,  &scores[0], scores.size()); }
 
-#elif SWIG_CSHARP
+#elif defined SWIG_CSHARP
       RankResponse* explore_and_log(const char* features, const char* event_id, const Array<float>& scores) throw(std::exception)
       { return explore_and_log_cstyle(features, event_id, scores.data, scores.length); }
 #endif

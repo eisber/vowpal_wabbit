@@ -23,7 +23,7 @@ namespace Microsoft {
       if (val.is_null() || !val.is_string())
       {
         ostringstream msg;
-        msg << "JSON property: '" << property << "' not found";
+        msg << "JSON property: '" << conversions::to_utf8string(property) << "' not found";
         throw domain_error(msg.str());
       }
 

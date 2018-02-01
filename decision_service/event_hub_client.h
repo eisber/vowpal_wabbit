@@ -3,6 +3,9 @@
 #include <string>
 #include <memory>
 #include <istream>
+
+#define _TURN_OFF_PLATFORM_STRING
+
 #include <cpprest/http_client.h>
 
 namespace Microsoft {

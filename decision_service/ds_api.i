@@ -5,13 +5,6 @@
  using namespace Microsoft::DecisionService;
 %}
 
-%nspace *::RankResponse;
-%nspace *::DecisionServiceClient;
-%nspace *::DecisionServiceConfiguration;
-%nspace *::DecisionServiceLogger;
-%nspace *::DecisionServicePrediction;
-%nspace *::DecisionServicePredictors;
-
 %include <std_string.i>
 #include <exception.i>
 %include <std_vector.i>
@@ -37,7 +30,7 @@
 	%ignore Microsoft::DecisionService::RankResponse::ranking();
 
 	%ignore Microsoft::DecisionService::Array<int>;
-	%ignore Microsoft::DecisionService::Array<int>;
+	%ignore Microsoft::DecisionService::Array<float>;
 	// %ignore Microsoft::DecisionService::DecisionServiceClient::rank_struct;
 	// %ignore Microsoft::DecisionService::DecisionServiceClient::rank_vector;
 

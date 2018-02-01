@@ -3,7 +3,6 @@ Copyright (c) by respective owners including Yahoo!, Microsoft, and
 individual contributors. All rights reserved.  Released under a BSD (revised)
 license as described in the file LICENSE.
 */
-
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
@@ -30,9 +29,9 @@ BOOST_AUTO_TEST_CASE( ActionProbabilities_init )
 BOOST_AUTO_TEST_CASE( ActionProbabilities_swap_first )
 {
     ActionProbabilities actionProbs(3);
-    actionProbs[0].probability = 0.8;
-    actionProbs[1].probability = 0.1;
-    actionProbs[2].probability = 0.1;
+    actionProbs[0].probability = 0.8f;
+    actionProbs[1].probability = 0.1f;
+    actionProbs[2].probability = 0.1f;
 
     actionProbs.swap_first(2);
 
@@ -48,9 +47,9 @@ BOOST_AUTO_TEST_CASE( ActionProbabilities_swap_first )
 BOOST_AUTO_TEST_CASE( ActionProbabilities_sort_by_probabilities_desc )
 {
     ActionProbabilities actionProbs(3);
-    actionProbs[0].probability = 0.1;
-    actionProbs[1].probability = 0.1;
-    actionProbs[2].probability = 0.8;
+    actionProbs[0].probability = 0.1f;
+    actionProbs[1].probability = 0.1f;
+    actionProbs[2].probability = 0.8f;
 
     actionProbs.sort_by_probabilities_desc();
 
@@ -66,9 +65,9 @@ BOOST_AUTO_TEST_CASE( ActionProbabilities_sort_by_probabilities_desc )
 BOOST_AUTO_TEST_CASE( ActionProbabilities_sample )
 {
     ActionProbabilities actionProbs(3);
-    actionProbs[0].probability = 0.7;
-    actionProbs[1].probability = 0.2;
-    actionProbs[2].probability = 0.1;
+    actionProbs[0].probability = 0.7f;
+    actionProbs[1].probability = 0.2f;
+    actionProbs[2].probability = 0.1f;
 
     PRG::prg random_generator(123);
     double counts[3] = { 0, 0, 0};

@@ -5,7 +5,10 @@ set (CMAKE_CXX_STANDARD 14)
 
 enable_testing()
 
-set(Boost_USE_STATIC_LIBS ON)
+IF (NOT ${CMAKE_SYSTEM} MATCHES "^Windows")
+	set(Boost_USE_STATIC_LIBS ON)
+ENDIF()
+
 find_package(Boost ${Boost_VW_VERSION} COMPONENTS unit_test_framework REQUIRED)
 
 # TODO: code coverage

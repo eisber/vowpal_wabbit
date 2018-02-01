@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+    <metadata>
+    <!-- The identifier that must be unique within the hosting gallery -->
+    <id>Microsoft.DecisionService.ClientLibrary</id>
+
+    <!-- The package version number that is used when resolving dependencies -->
+    <version>1.0.0</version>
+
+    <!-- Authors contain text that appears directly on the gallery -->
+    <authors>Markus Cozowicz</authors>
+
+    <!-- Owners are typically nuget.org identities that allow gallery
+            users to easily find other packages by the same owners.  -->
+    <owners>Markus Cozowicz</owners>
+
+    <!-- License and project URLs provide links for the gallery -->
+    <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
+    <projectUrl>http://github.com/eisber/vowpal_wabbit</projectUrl>
+
+    <!-- The icon is used in Visual Studio's package manager UI -->
+    <iconUrl>http://github.com/contoso/UsefulStuff/nuget_icon.png</iconUrl>
+
+    <!-- If true, this value prompts the user to accept the license when
+            installing the package. -->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+
+    <!-- Any details about this particular release -->
+    <releaseNotes>Bug fixes and performance improvements</releaseNotes>
+
+    <!-- The description can be used in package manager UI. Note that the
+            nuget.org gallery uses information you add in the portal. -->
+    <description>Core utility functions for web applications</description>
+
+    <!-- Copyright information -->
+    <copyright>Microsoft Copyright 2018</copyright>
+
+    <!-- Tags appear in the gallery and can be used for tag searches -->
+    <tags>Microsoft Decision Service Client Library</tags>
+
+    <!-- Dependencies are automatically installed when the package is installed -->
+    <dependencies>
+    </dependencies>
+    </metadata>
+
+    <!-- A readme.txt to display when the package is installed -->
+    <files>
+        <file src="release\ds_cs_managed.dll" target="lib\netstandard2.0\ds_cs_managed.dll" />
+        <file src="..\release\ds_cs.dll" target="runtimes\win-x64\native\ds_cs.dll" />
+        <file src="..\..\..\..\..\install\x64-Release\bin\boost_date_time-vc141-mt-1_65_1.dll" target="runtimes\win-x64\native\boost_date_time-vc141-mt-1_65_1.dll" />
+        <file src="..\..\..\..\..\install\x64-Release\bin\boost_program_options-vc141-mt-1_65_1.dll" target="runtimes\win-x64\native\boost_program_options-vc141-mt-1_65_1.dll" />
+        <file src="..\..\..\..\..\install\x64-Release\bin\boost_system-vc141-mt-1_65_1.dll" target="runtimes\win-x64\native\boost_system-vc141-mt-1_65_1.dll" />
+        <file src="..\..\..\..\..\install\x64-Release\bin\cpprest_2_9.dll" target="runtimes\win-x64\native\cpprest_2_9.dll" />
+        <file src="..\..\..\..\..\install\x64-Release\bin\LIBEAY32.dll" target="runtimes\win-x64\native\LIBEAY32.dll" />
+        <file src="..\..\..\..\..\install\x64-Release\bin\SSLEAY32.dll" target="runtimes\win-x64\native\SSLEAY32.dll" />
+        <file src="..\..\..\..\..\install\x64-Release\bin\zlib1.dll" target="runtimes\win-x64\native\zlib1.dll" />
+    </files>
+</package>

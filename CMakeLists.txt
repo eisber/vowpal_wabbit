@@ -15,6 +15,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # option(VW_SSE2 "Enable SSE2 optimization" ON)
 include(DiscoverPythonUnittest)
+include(InstallDependencies)
 
 # set(Boost_VERSION 1.66.0)
 # DSVM only has Boost 1.58.0 installed

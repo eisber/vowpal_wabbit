@@ -14,6 +14,7 @@ namespace Microsoft {
   namespace DecisionService {
 #endif
 
+#ifndef SWIG
     class DecisionServicePrediction {
 
         std::vector<float> _scores;
@@ -33,7 +34,8 @@ namespace Microsoft {
         // void set(const Array<float>& default_ranking);
         // void set(const float* default_ranking, size_t default_ranking_size);
     };
-  
+#endif
+
     // doesn't work with feature modifying reductions
     // this bears some threading/timing issues:
     // the closure will have to get a "version" lock 
@@ -50,12 +52,18 @@ namespace Microsoft {
 
 #ifdef SWIG_PYTHON
       virtual std::vector<float> get_prediction(size_t index, const std::vector<int>& previous_decisions) throw(std::exception);
+#elif defined SWIG_CSHARP
+      // TODO: need to fix CSHARP_IN_ARRAYS
+      // virtual std::vector<float> get_prediction(size_t index, const std::vector<int>& previous_decisions) throw(std::exception);
+      // virtual void get_prediction_out(size_t index, const std::vector<int>& previous_decisions, DecisionServicePrediction* output_result) throw(std::exception);
+      // disabled for now
 #else
       // full library implementation
       virtual void get_prediction_out(size_t index, const std::vector<int>& previous_decisions, DecisionServicePrediction* output_result) throw(std::exception);
 
       virtual std::vector<float> get_prediction(size_t index, const std::vector<int>& previous_decisions) throw(std::exception);
 #endif
+
       size_t count() const;
     };
 

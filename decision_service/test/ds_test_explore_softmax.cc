@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE( Softmax )
 
 BOOST_AUTO_TEST_CASE( SoftmaxMinEpsilon )
 {
-    SoftmaxExplorer explorer(1, 0.45);
+    SoftmaxExplorer explorer(1, 0.45f);
 
     vector<float> scores = { 1, 2, 3 };
     DecisionServicePredictorsSimple predictor(scores);
