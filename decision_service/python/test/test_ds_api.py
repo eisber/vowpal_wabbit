@@ -7,6 +7,8 @@ import ssl
 from time import sleep
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
+import numpy.testing as npt
+import numpy as np
 
 from decision_service import *
 
@@ -264,6 +266,90 @@ class TestDecisionServiceClient(unittest.TestCase):
 			client = DecisionServiceClient(self.config)
 			# TODO: debug me, segfaults!
 			# ranking = client.explore_and_log('{"a":2}', '', preds)
+
+class TestDecisionServiceClient(unittest.TestCase):
+	def test_epsilon_greedy(self):
+		distribution = ExplorationStrategies_epsilon_greedy(0.4, 1, 4)
+
+		npt.assert_allclose(distribution, [0.1,0.7,0.1,0.1])
+
+	def test_softmax(self):
+		distribution = ExplorationStrategies_softmax(1.2, [.2,.3,.4])
+
+		npt.assert_allclose(distribution, [0.294226,  0.331739,  0.374035], rtol=1e-04)
+
+	def test_bag(self):
+		distribution = ExplorationStrategies_bag([0,2,0,3], 4)
+
+		npt.assert_allclose(distribution, [0.5, 0, 0.25, 0.25])
+
+	def test_enforce_minimum_probability(self):
+		distribution = ExplorationStrategies_enforce_minimum_probability(0.3, [0.1, 0.9])
+
+		# each action is explored with at least 0.3/2 prob
+		npt.assert_allclose(distribution, [0.15, 0.85])
+
+	def test_choose_action(self):
+		sampling = Sampling()
+
+		action = sampling.choose_action("123", [1,0])
+		self.assertEqual(action, 0)
+
+		action = sampling.choose_action("123", [0,1])
+		self.assertEqual(action, 1)
+
+		# TODO: test that this approaches certain distribution?
+		# generate GUID
+
+	def test_rank(self):
+		sampling = Sampling("app1")
+
+		rank = sampling.rank("123", [1, 0], [0, 1])
+		npt.assert_array_equal(rank, [0, 1])
+
+	def test_rank2(self):
+		sampling = Sampling("app1")
+
+		rank = sampling.rank("123", [.2, .2, .6], [2, 0, 1])
+		npt.assert_array_equal(rank, [1, 0, 2])
+
+		rank = sampling.rank_by_score("123", [.2, .2, .6], [0.4,.1,.8])
+		npt.assert_array_equal(rank, [2, 0, 1])
+
+	def test_flow1(self):
+		# model prediction
+		# 2,1,0
+		scores = [.2, .4, .8]
+
+		top_action = scores.index(max(scores))
+		sampling = Sampling("app1")
+
+		epsilon = 0.5
+		distribution = ExplorationStrategies_epsilon_greedy(epsilon, top_action, len(scores))
+
+		# print(distribution)
+		# keep around to cache hash(app1)
+
+		rank_distr = np.zeros((3,3))
+		n = 10000
+		for i in range(0,n):
+			event_id = "prefix%d" % i
+
+			# sort action ids by scores
+			rank = sampling.rank_by_score(event_id, distribution, scores)
+			for p in range(0,3):
+				# print("slot: %d action: %d" % (p, rank[p]))
+				rank_distr[p, rank[p]] = rank_distr[p, rank[p]] +1
+
+		rank_distr = rank_distr/n
+		# print(rank_distr)
+		# "top slot distribution must converge to specified distribution"
+		npt.assert_allclose(rank_distr[0,], distribution, atol=0.02)
+		
+		self.assertEqual(rank_distr[1,2], 0, "slot 1 can never get action 2")
+		self.assertEqual(rank_distr[2,1], 0, "slot 2 can never get action 1")
+
+		# npt.assert_array_equal(rank, [2, 0, 1])
 
 if __name__ == '__main__':
 	unittest.main()
