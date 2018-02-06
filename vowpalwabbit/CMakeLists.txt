@@ -28,6 +28,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${rapidjson_INCLUDE_DIRS}) 
 include_directories(${vwcommon_INCLUDE_DIRS})
 include_directories(${allreduce_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 configure_file(config.h.in config.h)
 
@@ -38,7 +39,7 @@ add_library(vw hash.cc global_data.cc io_buf.cc parse_regressor.cc parse_primiti
 
 target_link_libraries(vw PUBLIC allreduce vwcommon ${Boost_LIBRARIES} Threads::Threads ${ZLIB_LIBRARIES})
 
-set(${PROJECT_NAME}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR} ${vwcommon_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}
+set(${PROJECT_NAME}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR} ${vwcommon_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR}
     CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
 
 
