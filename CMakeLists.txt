@@ -34,6 +34,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 enable_testing()
 
 # NOTE: The order matters! The most independent ones should go first.
+add_subdirectory(vowpalwabbit-predict) 
 add_subdirectory(common)
 add_subdirectory(allreduce) 
 add_subdirectory(vowpalwabbit) 

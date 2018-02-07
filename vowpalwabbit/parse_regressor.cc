@@ -24,6 +24,7 @@ using namespace std;
 #include "vw_exception.h"
 #include "vw_validate.h"
 #include "vw_versions.h"
+#include "gd.h"
 
 template <class T> class set_initial_wrapper
 {
@@ -552,6 +553,95 @@ void save_predictor(vw& all, string reg_name, size_t current_pass)
   dump_regressor(all, filename.str(), false);
 }
 
+// TODO: this code should be moved to gd.cc, but would require to enable JSON export infrastructure for all base learners
+template<class T, bool weight>
+void dump_json_gd(ofstream& json, vw& all, T& weights)
+{
+  long pos = json.tellp();
+  
+  json << "\"" << (weight ? "weights" : "indices") << "\":[";
+
+  for (typename T::iterator v = weights.begin(); v != weights.end(); ++v)
+    if (*v != 0.)
+    {
+      uint64_t i = v.index() >> weights.stride_shift();
+
+      if (weight)
+      {
+        float value = *v;
+
+        // apply l1 truncation prior to export
+        if (all.reg_mode % 2)
+          value = GD::trunc_weight(value, all.sd->gravity); 
+
+        json << value;
+      }
+      else
+        json << i;
+
+      json << ",";
+    }
+
+  // delete last , if we wrote something
+  long pos_end = json.tellp();
+  if (pos != pos_end)
+    json.seekp (pos_end - 1);
+
+  json << "]";
+
+  // json << ",\"stride_shift\":" << weights.stride_shift();
+}
+
+void dump_json_gd(ofstream& json, vw& all)
+{
+  json << "\"sparse\":{";
+
+  if (all.weights.sparse)
+    dump_json_gd<sparse_parameters, true>(json, all, all.weights.sparse_weights);
+  else
+    dump_json_gd<dense_parameters, true>(json, all, all.weights.dense_weights);
+
+  json << ",";
+
+  if (all.weights.sparse)
+    dump_json_gd<sparse_parameters, false>(json, all, all.weights.sparse_weights);
+  else
+    dump_json_gd<dense_parameters, false>(json, all, all.weights.dense_weights);
+
+  json << "}";
+}
+
+void dump_json_regressor(vw& all)
+{
+  ofstream json(all.predict_json_regressor_name);
+
+  json << "{";
+
+  dump_json_gd(json, all);
+
+  // TODO: escape "
+  if (all.id.size() > 0)
+    json << ",\"id\":\"" << all.id << "\"";
+
+  json << ",\"contraction\":" << all.sd->contraction;
+  json << ",\"bits\":" << all.num_bits;
+
+  if (all.interactions.size() > 0)
+  {
+    json << ",\"interactions\":[";
+    for (size_t i = 0; i<all.interactions.size(); i++)
+    {
+      json << (i > 0 ? "," : "") << "[";
+      json << (int)*all.interactions[i]._begin;
+      for (unsigned char* j = all.interactions[i]._begin+1; j < all.interactions[i]._end; ++j)
+        json << "," << (int)*j;
+      json << "]";  
+    }
+    json << "]";
+  }
+  json << "}";
+}
+
 void finalize_regressor(vw& all, string reg_name)
 {
   if (!all.early_terminate)
@@ -569,6 +659,9 @@ void finalize_regressor(vw& all, string reg_name)
       dump_regressor(all, all.inv_hash_regressor_name, true);
       all.print_invert = false;
     }
+
+    if (all.predict_json_regressor_name.length() > 0)
+      dump_json_regressor(all);
   }
 }
 

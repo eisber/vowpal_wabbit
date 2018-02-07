@@ -1122,6 +1122,8 @@ void parse_output_model(vw& all)
   new_options(all, "Output model")
   ("final_regressor,f", po::value< string >(), "Final regressor")
   ("readable_model", po::value< string >(), "Output human-readable final regressor with numeric features")
+  ("predict_model_json", po::value< string >(), "Output JSON final regressor usable by prediction-only component.")
+  // ("predict_model", po::value< string >(), "Output binary final regressor with numeric features")
   ("invert_hash", po::value< string >(), "Output human-readable final regressor with feature names.  Computationally expensive.")
   ("save_resume", "save extra state so learning can be resumed later with new data")
   ("preserve_performance_counters", "reset performance counters when warmstarting")
@@ -1143,6 +1145,9 @@ void parse_output_model(vw& all)
 
   if (vm.count("readable_model"))
     all.text_regressor_name = vm["readable_model"].as<string>();
+
+  if (vm.count("predict_model_json"))
+    all.predict_json_regressor_name = vm["predict_model_json"].as<string>();
 
   if (vm.count("invert_hash"))
   {
