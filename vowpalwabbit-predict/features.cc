@@ -1,4 +1,5 @@
 #include "features.h"
+#include <iterator>
 
 namespace vwp {
 
@@ -31,4 +32,30 @@ namespace vwp {
     features::feature_iterator::feature_iterator(const features& f, size_t n)
         : _weight_index(&f._weight_indices[0] + n), _x(&f._x[0] + n)
     { }
+
+    features::feature_iterator features::feature_iterator::operator-(int n) const
+    {
+        features::feature_iterator lhs(*this);
+        lhs._weight_index -= n;
+        lhs._x -= n;
+
+        return lhs;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const features::feature_iterator& feature)
+    {
+        return os << '\"' << feature.weight_index() << "\":" << feature.x();
+    }
+
+    std::ostream& operator<<(std::ostream& os, const features& f)
+    {
+        if (f._x.empty())
+            return os;
+
+        std::copy(f.begin(), 
+            f.end() - 1, 
+            std::ostream_iterator<features::feature_iterator>(os, ","));
+            
+        return os << *(f.end() - 1);
+    }
 }

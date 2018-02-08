@@ -19,7 +19,12 @@ namespace vwp
         _namespaces.insert(std::make_pair(constant_namespace, constant_features));
     }
 
-    void example::add_namespace(char feature_group, const uint64_t* weight_indicies, const float* x, uint32_t n)
+    void example::add_namespace(unsigned char feature_group, uint64_t weight_index, float x)
+    {
+        add_namespace(feature_group, &weight_index, &x, 1);
+    }
+
+    void example::add_namespace(unsigned char feature_group, const uint64_t* weight_indicies, const float* x, uint32_t n)
     {
         // find existing namespace
         auto existing = _namespaces.find(feature_group);
@@ -49,5 +54,30 @@ namespace vwp
         } 
 
         return ex_new;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const example& ex)
+    {
+        if (ex._namespaces.empty())
+            return os;
+
+        os << '{';
+
+        size_t prepend_comma = false;
+        for(auto& ns : ex._namespaces)
+        {
+            // exclude constant namespace
+            if (ns.first == constant_namespace)
+                continue;
+
+            if (prepend_comma)
+                os << ',';
+            else 
+                prepend_comma = true;
+
+            os  << '\"' << ns.first << "\":{" << ns.second << '}';
+        }
+
+        return os << '}';
     }
 }        

@@ -57,21 +57,21 @@ namespace vwp {
         auto& interactions_json = document["interactions"];
         if (interactions_json.IsArray())
         {
-            std::vector<std::string> interactions(interactions_json.Size());
+            std::vector<ustring> interactions(interactions_json.Size());
             for (SizeType i = 0; i < interactions_json.Size(); i++) 
             {
                 auto& interaction = interactions_json[i];
                 if (!interaction.IsArray())
                     throw std::invalid_argument("interactions[] elements must be arrays");
                 
-                std::string s;
+                ustring s;
                 for (SizeType j = 0; j < interaction.Size(); j++) 
                 {
                     auto& ns = interaction[j];
                     if (!ns.IsUint())
                         throw std::invalid_argument("namespace in interaction element must uint");
                         
-                    s.push_back((char)ns.GetUint());
+                    s.push_back((unsigned char)ns.GetUint());
                 }    
 
                 interactions[i] = s;

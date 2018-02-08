@@ -13,6 +13,8 @@ namespace vwp
     // http://www.isthe.com/chongo/tech/comp/fnv/#FNV-param
     const uint32_t FNV_prime = 16777619;
 
+    typedef std::basic_string<unsigned char> ustring;
+
     class model
     {
         // the weight_mask does not have the stride shift applied
@@ -20,10 +22,10 @@ namespace vwp
 
         // dense only for now
         std::vector<float> _weights;
-        std::vector<std::string> _interactions;
+        std::vector<ustring> _interactions;
         float _contraction;
 
-        float predict(const example& example, const char* interaction, uint64_t weight_index = 0, float x = 1.f);
+        float predict(const example& example, const unsigned char* interaction, uint64_t weight_index = 0, float x = 1.f);
         
         inline float predict(uint64_t weight_index, float x)
         { 
@@ -41,9 +43,9 @@ namespace vwp
         model(const float* weights, uint64_t n);
         model(model&&) = default;
 
-        void set_interactions(std::vector<std::string>& interactions);
+        void set_interactions(std::vector<ustring>& interactions) { _interactions = interactions; }
 
-        void set_contraction(float contraction);
+        void set_contraction(float contraction) { _contraction = contraction; }
 
         // produce weighted sums over index/value pairs
         // generate interaction terms --> 

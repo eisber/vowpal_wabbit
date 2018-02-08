@@ -14,14 +14,9 @@ namespace vwp
             throw std::invalid_argument("model size must be of power 2");
     }
 
-    void model::set_interactions(std::vector<std::string>& interactions)
-    { _interactions = interactions; }
-
-    void model::set_contraction(float contraction)
-    { _contraction = contraction; }
-
+    // recursive implementation of interactions
     // computes weight_index: f3 x k*(f2 x k*f1)
-    float model::predict(const example& example, const char* interaction, uint64_t weight_index, float x)
+    float model::predict(const example& example, const unsigned char* interaction, uint64_t weight_index, float x)
     {
         if (!*interaction)
             return predict(weight_index, x);
@@ -33,14 +28,13 @@ namespace vwp
         if (ns == example._namespaces.end())
             return 0;
 
-        // some over features
         weight_index *= FNV_prime;
         
         float pred = 0.f;
         for (auto& f : ns->second)
             pred += predict(
                 example, 
-                interaction + 1, // move to next namesace
+                interaction + 1, // move to next namespace
                 weight_index ^ f.weight_index(), // combine feature hashes 
                 x * f.x()); // create polynomial
 
@@ -49,22 +43,18 @@ namespace vwp
 
     float model::predict(const example& example)
     {
-        // TODO: add example builder for convenience and proper JSON logging
-        // TODO: add generate in python/C#, from dictionary?
-
         // at prediction time ec.l.simple.initial=0 as set by simple_label.c:default_simple_label()
         float pred = 0.f;
 
         for(auto& ns : example._namespaces)
         {
             // std::cout << "namespace: " << (int)ns.first << std::endl;
-            // kv.first = feature group
             for (auto& f : ns.second)
-                pred += predict(f.weight_index(), f.x(), false);
+                pred += predict(f.weight_index(), f.x());
         }
 
         // interactions
-        for (std::string& interaction : _interactions)
+        for (ustring& interaction : _interactions)
             pred += predict(example, interaction.c_str());
 
         // audit

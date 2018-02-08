@@ -1,16 +1,15 @@
 #pragma once
 
 #include <vector>
+#include <iterator>
 #include <map>
 #include <stdint.h>
+#include <ostream>
 
 namespace vwp
 {
-    // assume externally managed
     class features
     {
-        // TODO: not sure if need for interaction, assume it's all inside weight_indecies 
-        // uint64_t _namespace_offset;
         std::vector<uint64_t> _weight_indices; 
         std::vector<float> _x;
 
@@ -23,7 +22,7 @@ namespace vwp
 
         features concat(features& f);
 
-        class feature_iterator
+        class feature_iterator : public std::iterator<std::input_iterator_tag, feature_iterator, long, feature_iterator*, feature_iterator>
         {
             const uint64_t* _weight_index;
             const float* _x;
@@ -31,11 +30,12 @@ namespace vwp
             feature_iterator(const features& f, size_t n);
 
         public:
+            feature_iterator(const feature_iterator&) = default;
             feature_iterator(feature_iterator&&) = default;
 
-            inline float x() { return *_x; }
+            inline float x() const { return *_x; }
 
-            inline uint64_t weight_index() { return *_weight_index; } 
+            inline uint64_t weight_index() const { return *_weight_index; } 
 
             inline feature_iterator& operator++()
             {
@@ -44,6 +44,8 @@ namespace vwp
             }
 
             feature_iterator& operator*() { return *this; }
+
+            feature_iterator operator-(int) const;
 
             bool operator==(const feature_iterator& rhs) { return _x == rhs._x; }
 
@@ -59,5 +61,9 @@ namespace vwp
         friend class feature_iterator;
         friend class model;
         friend class example;
+
+        friend std::ostream& operator<<(std::ostream& os, const features& f);
     };
+
+    std::ostream& operator<<(std::ostream& os, const features& f);
 }
