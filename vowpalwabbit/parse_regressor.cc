@@ -611,8 +611,84 @@ void dump_json_gd(ofstream& json, vw& all)
   json << "}";
 }
 
+#include "onnx.pb.h"
 void dump_json_regressor(vw& all)
 {
+  ofstream json(all.predict_json_regressor_name);
+  ONNX_NAMESPACE::ModelProto m;
+
+  m.set_producer_name("VowpalWabbit");
+  m.set_producer_version(PACKAGE_VERSION);
+  m.set_domain("com.microsoft.vowpalwabbit");
+  m.set_ir_version(1);
+
+  ONNX_NAMESPACE::GraphProto* g = m.mutable_graph();
+  g->set_name("linear");
+
+  ONNX_NAMESPACE::TensorProto* tp_weight = g->mutable_initializer()->Add();
+  tp_weight->set_name("weights");
+  tp_weight->mutable_dims()->Add(3);
+  tp_weight->set_data_type(ONNX_NAMESPACE::TensorProto_DataType_FLOAT);
+  
+  auto weight_input = g->add_input();
+  weight_input->set_name("weights");
+  ONNX_NAMESPACE::TypeProto* tp_weight_input = weight_input->mutable_type();
+  ONNX_NAMESPACE::TypeProto_Tensor* tensor_type_weight_input = tp_weight_input->mutable_tensor_type();
+
+  tensor_type_weight_input->set_elem_type(ONNX_NAMESPACE::TensorProto_DataType_FLOAT);
+  ONNX_NAMESPACE::TensorShapeProto_Dimension* d_weight_input = tensor_type_weight_input->mutable_shape()->mutable_dim()->Add();
+  d_weight_input->set_dim_value(3);
+
+
+
+  std::vector<float> weights = { 1,3,4 };
+  google::protobuf::RepeatedField<float> weights_field(weights.begin(), weights.end());
+  tp_weight->mutable_float_data()->Swap(&weights_field); 
+
+  // define input
+  ONNX_NAMESPACE::ValueInfoProto* in = g->add_input();
+  in->set_name("in");
+
+  ONNX_NAMESPACE::TypeProto* tp = in->mutable_type();
+  ONNX_NAMESPACE::TypeProto_Tensor* tensor_type = tp->mutable_tensor_type();
+
+  tensor_type->set_elem_type(ONNX_NAMESPACE::TensorProto_DataType_FLOAT);
+  ONNX_NAMESPACE::TensorShapeProto_Dimension* d = tensor_type->mutable_shape()->mutable_dim()->Add();
+  d->set_dim_value(3);
+
+  // define output
+  ONNX_NAMESPACE::ValueInfoProto* out = g->add_output();
+  out->set_name("out");
+
+  ONNX_NAMESPACE::TypeProto* tp_out = out->mutable_type();
+  ONNX_NAMESPACE::TypeProto_Tensor* tensor_type_out = tp_out->mutable_tensor_type();
+
+  tensor_type_out->set_elem_type(ONNX_NAMESPACE::TensorProto_DataType_FLOAT);
+  ONNX_NAMESPACE::TensorShapeProto_Dimension* d_out = tensor_type_out->mutable_shape()->mutable_dim()->Add();
+  d_out->set_dim_value(1);
+
+  // // sample runtime
+  // // Cafe (python)
+  // // PyTorch
+
+  ONNX_NAMESPACE::NodeProto* n = g->add_node();
+
+  n->set_name("linear");
+  // domain: ai.onnx
+  n->set_op_type("MatMul");
+  n->add_input("weights");
+  n->add_input("in");
+
+  n->add_output("out");
+
+  // TODO: check model format using python -c 'from onnx import *;  checker.check_model('');
+
+
+ fstream output(all.predict_json_regressor_name, ios::out | ios::trunc | ios::binary);
+    if (!m.SerializeToOstream(&output)) {
+      cerr << "Failed to write model" << endl;
+    }
+/*
   ofstream json(all.predict_json_regressor_name);
 
   json << "{";
@@ -640,6 +716,7 @@ void dump_json_regressor(vw& all)
     json << "]";
   }
   json << "}";
+  */
 }
 
 void finalize_regressor(vw& all, string reg_name)
