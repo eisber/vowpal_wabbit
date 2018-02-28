@@ -15,7 +15,7 @@ namespace vwp
     }
 
     // recursive implementation of interactions
-    // computes weight_index: f3 x k*(f2 x k*f1)
+    // computes weight_index: f3 ^ k*(f2 ^ k*f1)
     float model::predict(const example& example, const unsigned char* interaction, uint64_t weight_index, float x)
     {
         if (!*interaction)

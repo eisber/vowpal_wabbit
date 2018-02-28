@@ -41,14 +41,22 @@ int main(int argc, char *argv[])
 //     float x[] = { 7, 1, .24f };
 //     e.add_namespace(' ', weight_indicies, x, 3);
 
-    // std::ifstream model_json(argv[1]);
-    // std::string json((std::istreambuf_iterator<char>(model_json)),
-    //                 std::istreambuf_iterator<char>());
+    std::ifstream model_json(argv[1]);
+    std::string json((std::istreambuf_iterator<char>(model_json)),
+                    std::istreambuf_iterator<char>());
 
-    // model m = model_parser_json::parse(json.c_str());
+    cout << json << endl;
+
+    model m = model_parser_json::parse(json.c_str());
 
     // ../vowpalwabbit/vw -b 4 -d ../../vwds/vowpalwabbit-predict/data.txt -f model1 --readable_model model1.txt
     // cout << "predict: " << m.predict(e) << endl;    
+
+
+    // train
+    // ../vowpalwabbit/vw -b 8 -d data-cb.json -f model-cb1 --predict_model_json model-cb.json --cb_adf --json
+    // predict
+    // head -n 1 data-cb.json | ../vowpalwabbit/vw -i model-cb1 -t --json -a --examples 1
 
     // setup shared context
     example shared;
@@ -72,7 +80,9 @@ int main(int argc, char *argv[])
     cb_ex.add_action(&action3);
 
     cout << cb_ex << endl;
-    // std::vector<float> scores = cb_example.predict(m); 
+                
+    std::vector<float> scores = cb_ex.predict(m); 
 
-    // std::cout << scores << std::endl; 
+    std::copy(scores.begin(), scores.end(), std::ostream_iterator<float>(cout, " "));
+    std::cout << std::endl; 
 }
