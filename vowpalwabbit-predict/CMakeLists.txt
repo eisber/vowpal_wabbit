@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 # TODO make this optional
 find_package(RapidJSON REQUIRED)
-include_directories(${rapidjson_INCLUDE_DIRS}) 
+include_directories(${RAPIDJSON_INCLUDES})
 
 add_executable(${PROJECT_NAME} main.cc cb_example.cc example.cc features.cc model.cc 
 	parser_json.cc)

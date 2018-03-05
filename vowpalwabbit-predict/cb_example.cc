@@ -11,6 +11,8 @@ namespace vwp
             predictions.push_back(_shared ? 
                 model.predict(*ex) : 
                 model.predict(ex->merge(*_shared)));
+
+        return predictions;
     }
 
     std::ostream& operator<<(std::ostream& os, const example* ex)

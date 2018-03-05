@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.0</TargetFramework>
+    <AssemblyName>${LIBRARY_NAME}</AssemblyName>
+    <PackageId>${LIBRARY_NAME}</PackageId>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>${CMAKE_CURRENT_BINARY_DIR}</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="${PROJECT_SOURCE_DIR}\ExplorationStrategies.cs" Link="ExplorationStrategies.cs" />
+    <Compile Include="${PROJECT_SOURCE_DIR}\PRG.cs" Link="PRG.cs" />
+    <Compile Include="${PROJECT_SOURCE_DIR}\Sampling.cs" Link="Sampling.cs" />
+  </ItemGroup>
+
+</Project>

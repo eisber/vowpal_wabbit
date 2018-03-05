@@ -41,6 +41,8 @@ namespace vwp
             {
                 ++_weight_index;
                 ++_x;
+
+                return *this;
             }
 
             feature_iterator& operator*() { return *this; }

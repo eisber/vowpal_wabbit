@@ -49,7 +49,7 @@ namespace Microsoft {
 
         PredictorContainer::iterator PredictorContainer::end()
         {
-            return PredictorContainer::iterator(this, _predictors->count());
+            return PredictorContainer::iterator(this, (int)_predictors->count());
         }
 
         size_t PredictorContainer::count() 

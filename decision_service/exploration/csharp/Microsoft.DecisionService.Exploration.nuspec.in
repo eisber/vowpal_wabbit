@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <title>Microsoft.DecsionService.Exploration</title>
+    <id>Microsoft.DecsionService.Exploration</id>
+    <tags>Microsoft Decision Service</tags>
+    <authors>Microsoft</authors>
+    <version>${PACKAGE_VERSION}</version>
+    <projectUrl>https://aka.ms/mwt</projectUrl>
+    <licenseUrl>https://github.com/JohnLangford/vowpal_wabbit/blob/master/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Microsoft Decision Service exploration library</description>
+    <copyright>Copyright (C) Microsoft Corp 2012-2016</copyright>
+  </metadata>
+  <files>
+	  <!-- despite warning this is still required -->
+	  <file src="${CMAKE_CURRENT_BINARY_DIR}\Release\${LIBRARY_NAME}.dll" target="lib\net45" />
+	  <file src="${CMAKE_CURRENT_BINARY_DIR}\netstandard1.0\${LIBRARY_NAME}.dll" target="lib\netstandard1.0" />
+
+	  <!-- TODO: .pdb and .xml
+	  <file src="${CMAKE_CURRENT_BINARY_DIR}\Release\" target="lib\net45" />
+	  <file src="${CMAKE_CURRENT_BINARY_DIR}\Release\" target="lib\net45" />
+	  -->
+  </files>
+</package>
+

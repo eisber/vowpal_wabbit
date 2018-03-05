@@ -9,6 +9,12 @@ find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
 # find_package(PythonLibs REQUIRED)
 
+
+if(WIN32)
+	# disable warning on exception as it's required for SWIG
+	add_compile_options(/wd4290)
+endif()
+
 include_directories(${Boost_INCLUDE_DIRS} ${cpprest_INCLUDE_DIRS} ${vw_INCLUDE_DIRS} 
         ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/../explore/cpp") 
 # include_directories(${vw_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS}) 
@@ -26,7 +32,8 @@ set(${PROJECT_NAME}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}
 find_package(SWIG REQUIRED)
 include(UseSWIG)
 
-add_subdirectory(python)
+add_subdirectory(exploration)
+# add_subdirectory(python)
 add_subdirectory(test)
 
 IF (WIN32)

@@ -17,7 +17,7 @@ namespace vwp {
 
         if (!document["bits"].IsNumber())
             throw std::invalid_argument("bits missing");
-        uint64_t n = 1 << document["bits"].GetInt();
+        uint64_t n = 1i64 << document["bits"].GetInt();
 
         auto& sparse = document["sparse"];         
         if (!sparse.IsObject())
@@ -45,7 +45,7 @@ namespace vwp {
             if (!value.IsNumber())
                 throw std::invalid_argument("sparse.weights[] must be double");
 
-            weights[index.GetUint()] = value.GetDouble();
+            weights[index.GetUint()] = (float)value.GetDouble();
         }
 
         model model(&weights[0], weights.size());

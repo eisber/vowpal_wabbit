@@ -19,6 +19,9 @@
 %nodefaultctor *::RankResponse;
 %nodefaultctor RankResponse;
 
+// %nodefaultctor *::ExplorationStrategies;
+// %nodefaultctor ExplorationStrategies;
+
 %feature("director") *::DecisionServiceLogger;
 %feature("director") DecisionServiceLogger;
 

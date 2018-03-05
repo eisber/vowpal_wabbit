@@ -50,7 +50,7 @@ namespace vwp
             ex_new.add_namespace(kv.first, 
                 &kv.second._weight_indices[0],
                 &kv.second._x[0], 
-                kv.second._x.size());
+                (uint32_t)kv.second._x.size());
         } 
 
         return ex_new;

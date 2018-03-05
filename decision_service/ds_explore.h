@@ -57,30 +57,6 @@ namespace Microsoft {
 #endif
       };
 
-      class ExplorationStrategies
-      {
-        public:
-#ifndef SWIG
-          // distribution must be caller allocated and of size 'num_actions'
-          static void epsilon_greedy(float epsilon, uint32_t top_action, float* probability_distribution, uint32_t num_actions) throw(std::out_of_range);
-
-          static void softmax(float lambda, float* scores, float* probability_distribution, uint32_t num_actions) throw(std::out_of_range);
-
-          static void bag(uint32_t* top_actions, uint32_t num_models, float* probability_distribution, uint32_t num_actions) throw(std::out_of_range);
-
-          static void enforce_minimum_probability(float min_prob, float* probability_distribution, uint32_t num_actions);
-
-#endif
-          // python signature
-          static std::vector<float> epsilon_greedy(float epsilon, int top_action, int num_actions) throw(std::out_of_range);
-
-          static std::vector<float> softmax(float lambda, std::vector<float> scores) throw(std::out_of_range);
-
-          static std::vector<float> bag(std::vector<int> top_actions, int num_actions) throw(std::out_of_range);
-          
-          static std::vector<float> enforce_minimum_probability(float min_prob, std::vector<float> probability_distribution);
-      };
-
       class Sampling
       {
           uint64_t _seed_from_app_id;

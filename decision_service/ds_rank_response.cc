@@ -20,7 +20,7 @@ namespace Microsoft {
 
     int RankResponse::length()
     {
-      return _ranking.size();
+      return (int)_ranking.size();
     }
 
     int RankResponse::top_action() throw(std::exception)

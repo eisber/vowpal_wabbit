@@ -13,8 +13,8 @@ namespace vwp {
     {
         features c;
 
-        c.append(&_weight_indices[0], &_x[0], _x.size());
-        c.append(&f._weight_indices[0], &f._x[0], f._x.size());
+        c.append(&_weight_indices[0], &_x[0], (uint32_t)_x.size());
+        c.append(&f._weight_indices[0], &f._x[0], (uint32_t)f._x.size());
 
         return c;
     }
