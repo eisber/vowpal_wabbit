@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.3</TargetFramework>
+    <AssemblyName>${LIBRARY_NAME}</AssemblyName>
+    <PackageId>${LIBRARY_NAME}</PackageId>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>${CMAKE_CURRENT_BINARY_DIR}</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="${PROJECT_SOURCE_DIR}\DataLogger.cs" Link="DataLogger.cs" />
+    <Compile Include="${PROJECT_SOURCE_DIR}\RewardLogger.cs" Link="RewardLogger.cs" />
+    <Compile Include="${PROJECT_SOURCE_DIR}\EventHubClient.cs" Link="EventHubClient.cs" />
+    <Compile Include="${PROJECT_SOURCE_DIR}\EventHubConnection.cs" Link="EventHubConnection.cs" />
+    <Compile Include="${PROJECT_SOURCE_DIR}\SasTokenHelper.cs" Link="SasTokenHelper.cs" />
+    <Compile Include="${PROJECT_SOURCE_DIR}\SasTokenProvider.cs" Link="SasTokenProvider.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Net.Http" Version="4.3.3" />
+  </ItemGroup>
+</Project>

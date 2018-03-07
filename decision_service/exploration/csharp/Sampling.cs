@@ -1,7 +1,18 @@
-namespace Microsoft.DecisionService
+using System;
+using System.Collections;
+using System.Linq;
+
+namespace Microsoft.DecisionService.Exploration
 {
     public class Sampling 
 	{
+        public static int Sample(string seed, float[] probabilityDistribution)
+        {
+            ulong hash = MurMurHash3.ComputeIdHash(seed);
+            float randomDraw = PRG.UniformUnitInterval(hash);
+            return Sample(randomDraw, probabilityDistribution);
+        }
+
         public static int Sample(double randomDraw, float[] probabilityDistribution)
         {
             float cumulativeSum = 0f;
@@ -15,6 +26,35 @@ namespace Microsoft.DecisionService
             }
 
             return probabilityDistribution.Length - 1;
+        }
+
+        private sealed class IndexComparer : IComparer
+        {
+            internal float[] scores;
+
+            int IComparer.Compare(object x, object y)
+            {
+                return scores[(int)x].CompareTo(scores[(int)y]);
+            }
+        }
+
+        public static int[] SwapTopSlot(float[] scores, int chosenAction)
+        {
+            int[] ranking = Enumerable.Range(0, scores.Length).ToArray();
+
+            // use .NET Standard compatible sorting
+            Array.Sort(ranking, new IndexComparer { scores = scores });
+
+            SwapTopSlot(ranking, chosenAction);
+
+            return ranking;
+        }
+
+        public static void SwapTopSlot(int[] ranking, int chosenAction)
+        {
+            int temp = ranking[0];
+            ranking[0] = ranking[chosenAction];
+            ranking[chosenAction] = temp;
         }
     }
 }

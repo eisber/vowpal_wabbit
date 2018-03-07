@@ -5,12 +5,12 @@ enable_language(CSharp)
 set(PACKAGE_VERSION 1.0)
 set(LIBRARY_NAME "Microsoft.DecisionService.Exploration")
 
-add_library(${PROJECT_NAME} ExplorationStrategies.cs Sampling.cs PRG.cs)
+add_library(${PROJECT_NAME} ExplorationStrategies.cs Sampling.cs PRG.cs MurMurHash3.cs)
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${LIBRARY_NAME})
 set_target_properties(${PROJECT_NAME} PROPERTIES VS_DOTNET_REFERENCES "System")
 
 # just in case we need it
-# target_compile_options(${PROJECT_NAME} PRIVATE "/langversion:6")
+target_compile_options(${PROJECT_NAME} PRIVATE "/langversion:6" "/platform:anycpu" "/p:NET40")
 
 add_executable("${PROJECT_NAME}_test" TestDriver.cs)
 target_link_libraries("${PROJECT_NAME}_test" ${PROJECT_NAME})
@@ -33,5 +33,5 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
 # run tests
 add_test(NAME ds_explore_cs_test1
-	COMMAND $<TARGET_FILE:${PROJECT_NAME}_test> ../test/test1-input.txt ../test/test1-expected.txt
+	COMMAND $<TARGET_FILE:${PROJECT_NAME}_test> ../tests/test1-input.txt ../tests/test1-expected.txt
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})

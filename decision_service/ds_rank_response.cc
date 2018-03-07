@@ -61,12 +61,13 @@ namespace Microsoft {
       // "VWState":{"m":"680ec362b798463eaf64489efaa0d7b1/d13d8ad87e6f4af3b090b0f9cb9faaac"}}
 
       // TODO: locales?
+      // Version needs to be upfront for parsing
       ostr << "{\"Version\":\"1\",\"EventId\":\"" << rankResponse.event_id << "\","
         "\"a\":[";
 
-      // insert ranking
+      // insert ranking (a: is 1-based!)
       for (auto& r : rankResponse._ranking)
-        ostr << r << ",";
+        ostr << (r+1) << ",";
       // remove last ,
       ostr.seekp(-1, ostr.cur);
 

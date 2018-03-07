@@ -14,6 +14,7 @@
     <Compile Include="${PROJECT_SOURCE_DIR}\ExplorationStrategies.cs" Link="ExplorationStrategies.cs" />
     <Compile Include="${PROJECT_SOURCE_DIR}\PRG.cs" Link="PRG.cs" />
     <Compile Include="${PROJECT_SOURCE_DIR}\Sampling.cs" Link="Sampling.cs" />
+    <Compile Include="${PROJECT_SOURCE_DIR}\MurMurHash3.cs" Link="MurMurHash3.cs" />
   </ItemGroup>
 
 </Project>

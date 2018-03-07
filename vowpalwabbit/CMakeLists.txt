@@ -31,7 +31,7 @@ INCLUDE_DIRECTORIES(${PROTOBUF_INCLUDE_DIR})
 PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER onnx/onnx.proto)
 
 include_directories(${Boost_INCLUDE_DIRS}) 
-include_directories(${rapidjson_INCLUDE_DIRS}) 
+include_directories(${RAPIDJSON_INCLUDES}) 
 include_directories(${vwcommon_INCLUDE_DIRS})
 include_directories(${allreduce_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})

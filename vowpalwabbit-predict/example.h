@@ -9,7 +9,7 @@
 
 namespace vwp
 {
-    typedef std::map<unsigned, features> namespace_feature_map_t;
+    typedef std::map<unsigned char, features> namespace_feature_map_t;
     
     class example 
     {

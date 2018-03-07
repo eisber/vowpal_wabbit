@@ -3,7 +3,7 @@ using System.Linq;
 using System.IO;
 using System.Globalization;
 
-namespace Microsoft.DecisionService
+namespace Microsoft.DecisionService.Exploration
 {
     public static class Program
     {
@@ -65,6 +65,8 @@ namespace Microsoft.DecisionService
                         var expectedProbs = lineExpected.Split(' ').Select(f => float.Parse(f, CultureInfo.InvariantCulture)).ToArray();
                         if (expectedProbs.Length != probabilityDistribution.Length)
                             throw new Exception("Expected and actual probability distribution length must match");
+
+                        Console.WriteLine("Actual: " + string.Join(" ", probabilityDistribution));
 
                         for (int i = 0; i < expectedProbs.Length; i++)
                             FuzzyEqual(expectedProbs[i], probabilityDistribution[i], 1e-4);

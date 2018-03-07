@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Microsoft.DecisionService
+namespace Microsoft.DecisionService.Exploration
 {
     /// <summary>
     /// Exploration strategies

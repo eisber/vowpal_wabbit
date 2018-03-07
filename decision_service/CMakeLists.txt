@@ -33,6 +33,7 @@ find_package(SWIG REQUIRED)
 include(UseSWIG)
 
 add_subdirectory(exploration)
+add_subdirectory(logging)
 # add_subdirectory(python)
 add_subdirectory(test)
 
