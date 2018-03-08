@@ -28,6 +28,14 @@ namespace Microsoft.DecisionService.Exploration
             return probabilityDistribution.Length - 1;
         }
 
+        /// <summary>
+        /// Produce ranking
+        /// </summary>
+        public static int[] Sample(string seed, float[] probabilityDistribution, float[] scores)
+        {
+            return SwapTopSlot(scores, Sample(seed, probabilityDistribution));
+        }
+
         private sealed class IndexComparer : IComparer
         {
             internal float[] scores;
