@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>${LIBRARY_NAME}</AssemblyName>
+    <PackageId>${LIBRARY_NAME}</PackageId>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>${CMAKE_CURRENT_BINARY_DIR}</OutputPath>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="${PROJECT_SOURCE_DIR}\ContextualBanditExample.cs" Link="ContextualBanditExample.cs" />
+    <Compile Include="${PROJECT_SOURCE_DIR}\Example.cs" Link="Example.cs" />
+    <Compile Include="${PROJECT_SOURCE_DIR}\Feature.cs" Link="Feature.cs" />
+    <Compile Include="${PROJECT_SOURCE_DIR}\Model.cs" Link="Model.cs" />
+
+    <Compile Include="${PROJECT_SOURCE_DIR}\ModelParser.cs" Link="ModelParser.cs" />
+    <Compile Include="${PROJECT_SOURCE_DIR}\TestDriver.cs" Link="TestDriver.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+  </ItemGroup>
+</Project>

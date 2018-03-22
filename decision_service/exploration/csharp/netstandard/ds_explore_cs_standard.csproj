@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.0</TargetFramework>
+    <AssemblyName>Microsoft.DecisionService.Exploration</AssemblyName>
+    <PackageId>Microsoft.DecisionService.Exploration</PackageId>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>C:/work/vwds/decision_service/exploration/csharp</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="C:/work/vwds/decision_service/exploration/csharp\ExplorationStrategies.cs" Link="ExplorationStrategies.cs" />
+    <Compile Include="C:/work/vwds/decision_service/exploration/csharp\PRG.cs" Link="PRG.cs" />
+    <Compile Include="C:/work/vwds/decision_service/exploration/csharp\Sampling.cs" Link="Sampling.cs" />
+    <Compile Include="C:/work/vwds/decision_service/exploration/csharp\MurMurHash3.cs" Link="MurMurHash3.cs" />
+  </ItemGroup>
+
+</Project>

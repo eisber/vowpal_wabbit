@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <title>Microsoft.DecisionService.Exploration</title>
+    <id>Microsoft.DecisionService.Exploration</id>
+    <tags>Microsoft Decision Service</tags>
+    <authors>Microsoft</authors>
+    <version>1.0</version>
+    <projectUrl>https://aka.ms/mwt</projectUrl>
+    <licenseUrl>https://github.com/JohnLangford/vowpal_wabbit/blob/master/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Microsoft Decision Service exploration library</description>
+    <copyright>Copyright (C) Microsoft Corp 2012-2018</copyright>
+  </metadata>
+  <files>
+	  <!-- despite warning this is still required -->
+	  <file src="C:/work/vwds/decision_service/exploration/csharp\Release\Microsoft.DecisionService.Exploration.dll" target="lib\net45" />
+    <file src="C:/work/vwds/decision_service/exploration/csharp\netstandard1.0\Microsoft.DecisionService.Exploration.dll" target="lib\netstandard1.0" />
+    <file src="C:/work/vwds/decision_service/exploration/csharp\netstandard1.0\Microsoft.DecisionService.Exploration.pdb" target="lib\netstandard1.0" />
+
+	  <!-- TODO: .pdb and .xml
+	  <file src="C:/work/vwds/decision_service/exploration/csharp\Release\" target="lib\net45" />
+	  <file src="C:/work/vwds/decision_service/exploration/csharp\Release\" target="lib\net45" />
+	  -->
+  </files>
+</package>
+

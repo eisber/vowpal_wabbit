@@ -1,0 +1,279 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4EAC8C5A-7C0E-3872-909A-7CDB7A5335CA}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>ds_explore_cs</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32' Or '$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <OutputPath>C:\work\vwds\decision_service\exploration\csharp\Debug\</OutputPath>
+    <PlatformTarget>anycpu</PlatformTarget>
+    <PlatformToolset>v141</PlatformToolset>
+    <AssemblyName>Microsoft.DecisionService.Exploration</AssemblyName>
+    <AdditionalOptions>/p:NET40</AdditionalOptions>
+    <DebugType>full</DebugType>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <LangVersion>6</LangVersion>
+    <Optimize>false</Optimize>
+    <WarningLevel>3</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32' Or '$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
+    <OutputPath>C:\work\vwds\decision_service\exploration\csharp\Release\</OutputPath>
+    <PlatformTarget>anycpu</PlatformTarget>
+    <PlatformToolset>v141</PlatformToolset>
+    <AssemblyName>Microsoft.DecisionService.Exploration</AssemblyName>
+    <AdditionalOptions>/p:NET40</AdditionalOptions>
+    <DebugType>none</DebugType>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>queue</ErrorReport>
+    <LangVersion>6</LangVersion>
+    <Optimize>true</Optimize>
+    <WarningLevel>1</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32' Or '$(Configuration)|$(Platform)'=='MinSizeRel|x86'" Label="Configuration">
+    <OutputPath>C:\work\vwds\decision_service\exploration\csharp\MinSizeRel\</OutputPath>
+    <PlatformTarget>anycpu</PlatformTarget>
+    <PlatformToolset>v141</PlatformToolset>
+    <AssemblyName>Microsoft.DecisionService.Exploration</AssemblyName>
+    <AdditionalOptions>/p:NET40</AdditionalOptions>
+    <DebugType>none</DebugType>
+    <DefineConstants>TRACE</DefineConstants>
+    <LangVersion>6</LangVersion>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32' Or '$(Configuration)|$(Platform)'=='RelWithDebInfo|x86'" Label="Configuration">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <OutputPath>C:\work\vwds\decision_service\exploration\csharp\RelWithDebInfo\</OutputPath>
+    <PlatformTarget>anycpu</PlatformTarget>
+    <PlatformToolset>v141</PlatformToolset>
+    <AssemblyName>Microsoft.DecisionService.Exploration</AssemblyName>
+    <AdditionalOptions>/p:NET40</AdditionalOptions>
+    <DebugType>full</DebugType>
+    <DefineConstants>TRACE</DefineConstants>
+    <LangVersion>6</LangVersion>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.CSharp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.CSharp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemGroup>
+    <None Include="C:\work\vwds\decision_service\exploration\csharp\CMakeLists.txt">
+    </None>
+  </ItemGroup>
+  <Target Condition="'$(Configuration)|$(Platform)'=='Debug|Win32' Or '$(Configuration)|$(Platform)'=='Debug|x86'"
+    Name="CustomCommand_Debug_59bb813ea8d9ded045f1c018e2008256"
+    Inputs="C:/work/vwds/decision_service/exploration/csharp/CMakeLists.txt;C:\work\vwds\decision_service\exploration\csharp\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeSystem.cmake.in;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineCSharpCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CompilerId\VS-10.csproj.in;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCSharpCompiler.cmake.in;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeCSharpCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCSharpInformation.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeTestCSharpCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCSharpCompiler.cmake.in;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeCSharpCompiler.cmake;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeCSharpCompiler.cmake;C:\work\vwds\decision_service\exploration\csharp\ds_explore_cs_standard.csproj.in;C:\work\vwds\decision_service\exploration\csharp\Microsoft.DecisionService.Exploration.nuspec.in;C:\work\vwds\decision_service\exploration\csharp\CMakeLists.txt"
+    Outputs="C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\generate.stamp">
+    <Exec Command="echo Building Custom Rule C:/work/vwds/decision_service/exploration/csharp/CMakeLists.txt" />
+    <Exec Command="setlocal
+&quot;C:\Program Files\CMake\bin\cmake.exe&quot; -HC:/work/vwds/decision_service/exploration/csharp -BC:/work/vwds/decision_service/exploration/csharp --check-stamp-file C:/work/vwds/decision_service/exploration/csharp/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd" />
+  </Target>
+  <Target Condition="'$(Configuration)|$(Platform)'=='Release|Win32' Or '$(Configuration)|$(Platform)'=='Release|x86'"
+    Name="CustomCommand_Release_59bb813ea8d9ded045f1c018e2008256"
+    Inputs="C:/work/vwds/decision_service/exploration/csharp/CMakeLists.txt;C:\work\vwds\decision_service\exploration\csharp\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeSystem.cmake.in;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineCSharpCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CompilerId\VS-10.csproj.in;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCSharpCompiler.cmake.in;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeCSharpCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCSharpInformation.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeTestCSharpCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCSharpCompiler.cmake.in;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeCSharpCompiler.cmake;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeCSharpCompiler.cmake;C:\work\vwds\decision_service\exploration\csharp\ds_explore_cs_standard.csproj.in;C:\work\vwds\decision_service\exploration\csharp\Microsoft.DecisionService.Exploration.nuspec.in;C:\work\vwds\decision_service\exploration\csharp\CMakeLists.txt"
+    Outputs="C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\generate.stamp">
+    <Exec Command="echo Building Custom Rule C:/work/vwds/decision_service/exploration/csharp/CMakeLists.txt" />
+    <Exec Command="setlocal
+&quot;C:\Program Files\CMake\bin\cmake.exe&quot; -HC:/work/vwds/decision_service/exploration/csharp -BC:/work/vwds/decision_service/exploration/csharp --check-stamp-file C:/work/vwds/decision_service/exploration/csharp/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd" />
+  </Target>
+  <Target Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32' Or '$(Configuration)|$(Platform)'=='MinSizeRel|x86'"
+    Name="CustomCommand_MinSizeRel_59bb813ea8d9ded045f1c018e2008256"
+    Inputs="C:/work/vwds/decision_service/exploration/csharp/CMakeLists.txt;C:\work\vwds\decision_service\exploration\csharp\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeSystem.cmake.in;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineCSharpCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CompilerId\VS-10.csproj.in;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCSharpCompiler.cmake.in;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeCSharpCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCSharpInformation.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeTestCSharpCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCSharpCompiler.cmake.in;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeCSharpCompiler.cmake;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeCSharpCompiler.cmake;C:\work\vwds\decision_service\exploration\csharp\ds_explore_cs_standard.csproj.in;C:\work\vwds\decision_service\exploration\csharp\Microsoft.DecisionService.Exploration.nuspec.in;C:\work\vwds\decision_service\exploration\csharp\CMakeLists.txt"
+    Outputs="C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\generate.stamp">
+    <Exec Command="echo Building Custom Rule C:/work/vwds/decision_service/exploration/csharp/CMakeLists.txt" />
+    <Exec Command="setlocal
+&quot;C:\Program Files\CMake\bin\cmake.exe&quot; -HC:/work/vwds/decision_service/exploration/csharp -BC:/work/vwds/decision_service/exploration/csharp --check-stamp-file C:/work/vwds/decision_service/exploration/csharp/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd" />
+  </Target>
+  <Target Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32' Or '$(Configuration)|$(Platform)'=='RelWithDebInfo|x86'"
+    Name="CustomCommand_RelWithDebInfo_59bb813ea8d9ded045f1c018e2008256"
+    Inputs="C:/work/vwds/decision_service/exploration/csharp/CMakeLists.txt;C:\work\vwds\decision_service\exploration\csharp\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeSystem.cmake.in;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineCSharpCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CompilerId\VS-10.csproj.in;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCSharpCompiler.cmake.in;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeCSharpCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCSharpInformation.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeTestCSharpCompiler.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\CMakeCSharpCompiler.cmake.in;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeCSharpCompiler.cmake;C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\3.10.1\CMakeCSharpCompiler.cmake;C:\work\vwds\decision_service\exploration\csharp\ds_explore_cs_standard.csproj.in;C:\work\vwds\decision_service\exploration\csharp\Microsoft.DecisionService.Exploration.nuspec.in;C:\work\vwds\decision_service\exploration\csharp\CMakeLists.txt"
+    Outputs="C:\work\vwds\decision_service\exploration\csharp\CMakeFiles\generate.stamp">
+    <Exec Command="echo Building Custom Rule C:/work/vwds/decision_service/exploration/csharp/CMakeLists.txt" />
+    <Exec Command="setlocal
+&quot;C:\Program Files\CMake\bin\cmake.exe&quot; -HC:/work/vwds/decision_service/exploration/csharp -BC:/work/vwds/decision_service/exploration/csharp --check-stamp-file C:/work/vwds/decision_service/exploration/csharp/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd" />
+  </Target>
+  <ItemGroup>
+    <Compile Include="C:\work\vwds\decision_service\exploration\csharp\ExplorationStrategies.cs"  />
+    <Compile Include="C:\work\vwds\decision_service\exploration\csharp\Sampling.cs"  />
+    <Compile Include="C:\work\vwds\decision_service\exploration\csharp\PRG.cs"  />
+    <Compile Include="C:\work\vwds\decision_service\exploration\csharp\MurMurHash3.cs"  />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\work\vwds\decision_service\exploration\csharp\ZERO_CHECK.vcxproj">
+      <Project>{3368D5A7-3EB4-3CDD-842D-27EA6E26552E}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <PostBuildEvent>
+setlocal
+cd C:\work\vwds\decision_service\exploration\csharp\netstandard
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+msbuild /t:restore ds_explore_cs_standard.csproj
+if %errorlevel% neq 0 goto :cmEnd
+msbuild ds_explore_cs_standard.csproj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+nuget pack C:/work/vwds/decision_service/exploration/csharp/Microsoft.DecisionService.Exploration.nuspec
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+    </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <PostBuildEvent>
+setlocal
+cd C:\work\vwds\decision_service\exploration\csharp\netstandard
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+msbuild /t:restore ds_explore_cs_standard.csproj
+if %errorlevel% neq 0 goto :cmEnd
+msbuild ds_explore_cs_standard.csproj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+nuget pack C:/work/vwds/decision_service/exploration/csharp/Microsoft.DecisionService.Exploration.nuspec
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+    </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'MinSizeRel'">
+    <PostBuildEvent>
+setlocal
+cd C:\work\vwds\decision_service\exploration\csharp\netstandard
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+msbuild /t:restore ds_explore_cs_standard.csproj
+if %errorlevel% neq 0 goto :cmEnd
+msbuild ds_explore_cs_standard.csproj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+nuget pack C:/work/vwds/decision_service/exploration/csharp/Microsoft.DecisionService.Exploration.nuspec
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+    </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'RelWithDebInfo'">
+    <PostBuildEvent>
+setlocal
+cd C:\work\vwds\decision_service\exploration\csharp\netstandard
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+msbuild /t:restore ds_explore_cs_standard.csproj
+if %errorlevel% neq 0 goto :cmEnd
+msbuild ds_explore_cs_standard.csproj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+nuget pack C:/work/vwds/decision_service/exploration/csharp/Microsoft.DecisionService.Exploration.nuspec
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+    </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <BuildDependsOn>
+      CustomCommand_Debug_59bb813ea8d9ded045f1c018e2008256;
+      CustomCommand_MinSizeRel_59bb813ea8d9ded045f1c018e2008256;
+      CustomCommand_RelWithDebInfo_59bb813ea8d9ded045f1c018e2008256;
+      CustomCommand_Release_59bb813ea8d9ded045f1c018e2008256;
+      $(BuildDependsOn)
+    </BuildDependsOn>
+  </PropertyGroup>
+</Project>
