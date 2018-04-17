@@ -1,0 +1,32 @@
+{
+    "name": "C++ Launch",
+    "type": "cppdbg",
+    "request": "launch",
+    "program": "/home/marcozo/anaconda3/bin/python3",
+    "args": ["test/test_ds_api.py"],
+    "stopAtEntry": false,
+    "cwd": "/mnt/c/work/vwds/decision_service/python",
+    "environment": [
+        {"name":"PYTHONPATH", "value":"/mnt/c/work/vwds/decision_service/python/python3/swig3"}
+    ],
+    "externalConsole": true,
+    "windows": {
+        "MIMode": "gdb",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            }
+        ]
+    }, 
+    "pipeTransport": {
+        "pipeCwd": "",
+        "pipeProgram": "c:\\windows\\sysnative\\bash.exe",
+        "pipeArgs": ["-c"],
+        "debuggerPath": "/usr/bin/gdb"
+    },
+    "sourceFileMap": {
+        "/mnt/c": "c:\\"
+    }
+}

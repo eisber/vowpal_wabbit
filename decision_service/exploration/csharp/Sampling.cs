@@ -73,7 +73,7 @@ namespace Microsoft.DecisionService.Exploration
 
             int IComparer.Compare(object x, object y)
             {
-                return scores[(int)x].CompareTo(scores[(int)y]);
+                return scores[(int)y].CompareTo(scores[(int)x]);
             }
         }
 

@@ -30,4 +30,4 @@ INSTALL(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION bin)
 set(${PROJECT_NAME}_dll "${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.dll")
 Install_Dependencies(${PROJECT_NAME}_dll)
 
-add_subdirectory(managed)
+# add_subdirectory(managed)

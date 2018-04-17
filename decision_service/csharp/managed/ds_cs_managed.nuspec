@@ -46,13 +46,23 @@
     <!-- A readme.txt to display when the package is installed -->
     <files>
         <file src="release\ds_cs_managed.dll" target="lib\netstandard2.0\ds_cs_managed.dll" />
-        <file src="..\release\ds_cs.dll" target="runtimes\win-x64\native\ds_cs.dll" />
-        <file src="..\..\..\..\..\install\x64-Release\bin\boost_date_time-vc141-mt-1_65_1.dll" target="runtimes\win-x64\native\boost_date_time-vc141-mt-1_65_1.dll" />
-        <file src="..\..\..\..\..\install\x64-Release\bin\boost_program_options-vc141-mt-1_65_1.dll" target="runtimes\win-x64\native\boost_program_options-vc141-mt-1_65_1.dll" />
-        <file src="..\..\..\..\..\install\x64-Release\bin\boost_system-vc141-mt-1_65_1.dll" target="runtimes\win-x64\native\boost_system-vc141-mt-1_65_1.dll" />
-        <file src="..\..\..\..\..\install\x64-Release\bin\cpprest_2_9.dll" target="runtimes\win-x64\native\cpprest_2_9.dll" />
-        <file src="..\..\..\..\..\install\x64-Release\bin\LIBEAY32.dll" target="runtimes\win-x64\native\LIBEAY32.dll" />
-        <file src="..\..\..\..\..\install\x64-Release\bin\SSLEAY32.dll" target="runtimes\win-x64\native\SSLEAY32.dll" />
-        <file src="..\..\..\..\..\install\x64-Release\bin\zlib1.dll" target="runtimes\win-x64\native\zlib1.dll" />
+      <file src="..\release\ds_cs.dll" target="runtimes\win-x64\native\ds_cs.dll" />
+      <file src="..\..\..\..\..\install\x64-Release\bin\boost_date_time-vc141-mt-1_65_1.dll" target="runtimes\win-x64\native\boost_date_time-vc141-mt-1_65_1.dll" />
+      <file src="..\..\..\..\..\install\x64-Release\bin\boost_program_options-vc141-mt-1_65_1.dll" target="runtimes\win-x64\native\boost_program_options-vc141-mt-1_65_1.dll" />
+      <file src="..\..\..\..\..\install\x64-Release\bin\boost_system-vc141-mt-1_65_1.dll" target="runtimes\win-x64\native\boost_system-vc141-mt-1_65_1.dll" />
+      <file src="..\..\..\..\..\install\x64-Release\bin\cpprest_2_9.dll" target="runtimes\win-x64\native\cpprest_2_9.dll" />
+      <file src="..\..\..\..\..\install\x64-Release\bin\LIBEAY32.dll" target="runtimes\win-x64\native\LIBEAY32.dll" />
+      <file src="..\..\..\..\..\install\x64-Release\bin\SSLEAY32.dll" target="runtimes\win-x64\native\SSLEAY32.dll" />
+      <file src="..\..\..\..\..\install\x64-Release\bin\zlib1.dll" target="runtimes\win-x64\native\zlib1.dll" />
+      <!-- UWP path 
+      <file src="..\release\ds_cs.dll" target="runtimes\win10-x64\nativeassets\uap10.0\ds_cs.dll" />
+        <file src="..\..\..\..\..\install\x64-Release\bin\boost_date_time-vc141-mt-1_65_1.dll" target="runtimes\win10-x64\nativeassets\uap10.0\boost_date_time-vc141-mt-1_65_1.dll" />
+        <file src="..\..\..\..\..\install\x64-Release\bin\boost_program_options-vc141-mt-1_65_1.dll" target="runtimes\win10-x64\nativeassets\uap10.0\boost_program_options-vc141-mt-1_65_1.dll" />
+        <file src="..\..\..\..\..\install\x64-Release\bin\boost_system-vc141-mt-1_65_1.dll" target="runtimes\win10-x64\nativeassets\uap10.0\boost_system-vc141-mt-1_65_1.dll" />
+        <file src="..\..\..\..\..\install\x64-Release\bin\cpprest_2_9.dll" target="runtimes\win10-x64\nativeassets\uap10.0\cpprest_2_9.dll" />
+        <file src="..\..\..\..\..\install\x64-Release\bin\LIBEAY32.dll" target="runtimes\win10-x64\nativeassets\uap10.0\LIBEAY32.dll" />
+        <file src="..\..\..\..\..\install\x64-Release\bin\SSLEAY32.dll" target="runtimes\win10-x64\nativeassets\uap10.0\SSLEAY32.dll" />
+        <file src="..\..\..\..\..\install\x64-Release\bin\zlib1.dll" target="runtimes\win10-x64\nativeassets\uap10.0\zlib1.dll" />
+        -->
     </files>
 </package>

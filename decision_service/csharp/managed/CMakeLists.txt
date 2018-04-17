@@ -3,7 +3,7 @@ project (ds_cs_managed LANGUAGES CSharp)
 
 enable_language(CSharp)
 
-add_library(${PROJECT_NAME}
+set(CS_SOURCE
 	"${ds_cs_SWIG_SOURCE_DIR}/BagExplorer.cs"
 	"${ds_cs_SWIG_SOURCE_DIR}/DecisionServiceClient.cs"
 	"${ds_cs_SWIG_SOURCE_DIR}/DecisionServiceConfiguration.cs"
@@ -17,10 +17,13 @@ add_library(${PROJECT_NAME}
 	"${ds_cs_SWIG_SOURCE_DIR}/RankResponse.cs"
 	"${ds_cs_SWIG_SOURCE_DIR}/SoftmaxExplorer.cs"
 	"${ds_cs_SWIG_SOURCE_DIR}/ListInt.cs"
-	"${ds_cs_SWIG_SOURCE_DIR}/ListFloat.cs"
-	)
+	"${ds_cs_SWIG_SOURCE_DIR}/ListFloat.cs")
 
-set_property(TARGET ${PROJECT_NAME} PROPERTY VS_WINRT_COMPONENT TRUE)
+set_source_files_properties(${CS_SOURCE} PROPERTIES GENERATED TRUE)
+
+add_library(${PROJECT_NAME} ${CS_SOURCE})
+
+# set_property(TARGET ${PROJECT_NAME} PROPERTY VS_WINRT_COMPONENT TRUE)
 # set_property(TARGET Example PROPERTY VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.6.1")
 # set_property(TARGET Example PROPERTY WIN32_EXECUTABLE TRUE)
 
