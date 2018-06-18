@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Globalization;
@@ -17,12 +15,6 @@ namespace VowpalWabbit.Prediction
                  string.Format("\"{0}\":{{{1}}}",
                      kv.Key, string.Join(",", kv.Value.Select(f => f.ToJson()))))))
              .Append('}');
-            //json.Append('{')
-            //    .Append(string.Join(",",
-            //       this.Namespaces.Select((k, i) =>
-            //        string.Format("\"{0}\":{1}",
-            //            i, string.Join(",", k.Select(f => f.ToJson()))))))
-            //    .Append('}');
 
             return json.ToString();
         }
@@ -35,6 +27,22 @@ namespace VowpalWabbit.Prediction
             sb.Append(f.X.ToString(CultureInfo.InvariantCulture));
 
             return sb.ToString();
+        }
+
+        public static string ToJson(this MultilineExample ex)
+        {
+            var json = new StringBuilder();
+            json.Append('{');
+            if (ex.Shared != null)
+                json.Append("\"shared\":").Append(ex.Shared.ToJson()).Append(',');
+
+            json.Append("\"_multi\":[")
+                .Append(string.Join(",", ex.Examples.Select(a => a.ToJson())))
+                .Append(']');
+
+            json.Append('}');
+
+            return json.ToString();
         }
     }
 }

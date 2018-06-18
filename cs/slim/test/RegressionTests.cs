@@ -14,16 +14,16 @@ namespace test
 
         public ushort ParseFeatureGroup(Model m, string s)
         {
-            m.ParseIndex(s, out var featureGroup, out var _);
+            m.ParseNamespace(s, out var featureGroup, out var _);
 
             return featureGroup;
         }
 
         public UInt64 ParseFeatureIndex(Model m, string ns, string featureIndex)
         {
-            m.ParseIndex(ns, out var _, out var nsHash);
-            m.ParseIndex(featureIndex, out var _, out var featureHash, seed: (uint)nsHash);
-            return featureHash;
+            m.ParseNamespace(ns, out var _, out var namespaceHash);
+
+            return m.ParseFeature(featureIndex, namespaceHash);
         }
 
         public void Regression(string modelFile, string predFile, string dataFile)
@@ -41,28 +41,7 @@ namespace test
                 // Parse data file
                 foreach (var line in File.ReadAllLines(Path.Combine(dataDir, dataFile)))
                 {
-                    // 1 |a 0:1 |b 2:2
-                    var ns = from l in line.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries).Skip(1) // get namespaces, skip label
-                             let fs = l.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries) // split features
-                             let namespaceField = fs[0]
-                             select new
-                             {
-                                 FeatureGroup = ParseFeatureGroup(m, namespaceField), // first part is featuregroup
-                                 Features = fs.Skip(1).Select(pairs => pairs.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries))
-                                        // split 0:1
-                                        .Select(s =>
-                                            new Feature
-                                            {
-                                                WeightIndex = ParseFeatureIndex(m, namespaceField, s[0]),
-                                                X = float.Parse(s[1])
-                                            })
-                                        .ToList()
-                             };
-
-                    var ex = new Example
-                    {
-                        Namespaces = ns.ToDictionary(f => f.FeatureGroup, f => f.Features)
-                    };
+                    Example ex = m.ParseExample(line);
 
                     // help debugging
                     Console.Out.WriteLine("Input  " + line);
@@ -93,7 +72,13 @@ namespace test
         [TestMethod]
         public void RegressionTest1_NoConstant()
         {
-            Regression("regression_data_no_constant.model", "regression_data_ignore_linear.pred", "regression_data_2.txt");
+            Regression("regression_data_no_constant.model", "regression_data_no_constant.pred", "regression_data_1.txt");
+        }
+
+        [TestMethod]
+        public void RegressionTest1_IgnoreLinear()
+        {
+            Regression("regression_data_ignore_linear.model", "regression_data_ignore_linear.pred", "regression_data_2.txt");
         }
 
         [TestMethod]

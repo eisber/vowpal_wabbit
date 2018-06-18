@@ -90,16 +90,19 @@ namespace VowpalWabbit.Prediction
         public int NumBits { get; set; }
 
         // this needs the "hashing" mode
-        public void ParseIndex(string s, out ushort featureGroup, out UInt64 hash, uint seed = 0)
+        public void ParseNamespace(string s, out ushort featureGroup, out UInt64 hash)
         {
-            if (UInt64.TryParse(s, out hash))
-            {
-                featureGroup = (ushort)hash;
-                return;
-            }
-
             featureGroup = (ushort)s[0];
-            hash = MurMurHash3.ComputeIdHash(s, seed);
+            hash = MurMurHash3.ComputeIdHash(s, 0);
+        }
+
+        public UInt64 ParseFeature(string s, UInt64 namespaceHash)
+        {
+            UInt64 idx;
+            if (ulong.TryParse(s, out idx))
+                return namespaceHash + idx;
+
+            return MurMurHash3.ComputeIdHash(s, (uint)namespaceHash);
         }
     }
 }

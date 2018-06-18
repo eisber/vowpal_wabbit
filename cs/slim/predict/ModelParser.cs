@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Globalization;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,6 +50,7 @@ namespace VowpalWabbit.Prediction
             this.SkipUpdateChecksum("max_label", sizeof(float));
 
             model.NumBits = (int)this.ReadUInt32UpdateChecksum("num_bits");
+            //System.Diagnostics.Debug.WriteLine(model.NumBits);
 
             this.SkipUpdateChecksum("lda", sizeof(UInt32));
 
@@ -60,41 +60,46 @@ namespace VowpalWabbit.Prediction
             UInt32 skipsLen = this.ReadUInt32UpdateChecksum("skips_len");
             this.SkipUpdateChecksum("skips", (int)(3 * skipsLen));
 
-            string commandlineArgs = this.ReadStringUpdateChecksum("file_options");
+            model.CommandlineArguments = this.ReadStringUpdateChecksum("file_options");
 
-            bool no_constant = commandlineArgs.Contains("--noconstant");
+            model.NoConstant = model.CommandlineArguments.Contains("--noconstant");
 
-            int[] hashSeeds = OptionParser.FindOptionsInt(commandlineArgs, "--hash_seed").ToArray();
+            int[] hashSeeds = OptionParser.FindOptionsInt(model.CommandlineArguments, "--hash_seed").ToArray();
             if (hashSeeds.Length > 1 && hashSeeds[0] != 0)
                 throw new ModelParserException("hash_seed", "Only 0-valued hash_seed is supported");
 
             model.Interactions = new List<string>();
             foreach (var arg in new[] { "-q", "--quadratic", "--cubic", "--interactions" })
-                model.Interactions.AddRange(OptionParser.FindOptions(commandlineArgs, arg));
+                model.Interactions.AddRange(OptionParser.FindOptions(model.CommandlineArguments, arg));
+
+            // TODO: implement support for it
+            model.IgnoreLinear = new bool[256];
+            foreach (var featureGroup in OptionParser.FindOptions(model.CommandlineArguments, "--ignore_linear"))
+                model.IgnoreLinear[(int)featureGroup[0]] = true;
 
             UInt64 numWeights = 0;
 
-            if (commandlineArgs.Contains("--cb_explore_adf"))
+            if (model.CommandlineArguments.Contains("--cb_explore_adf"))
             {
-                model.BagSize = OptionParser.FindOptionsInt(commandlineArgs, "--bag").FirstOrDefault();
+                model.BagSize = OptionParser.FindOptionsInt(model.CommandlineArguments, "--bag").FirstOrDefault();
                 if (model.BagSize > 0)
                 {
                     model.Exploration = Exploration.Bag;
                     numWeights = (UInt64)model.BagSize;
 
                     // check for additional minimum epsilon greedy
-                    model.BagMinimumEpsilon = OptionParser.FindOptionsFloat(commandlineArgs, "--epsilon").FirstOrDefault();
+                    model.BagMinimumEpsilon = OptionParser.FindOptionsFloat(model.CommandlineArguments, "--epsilon").FirstOrDefault();
                 }
-                else if (commandlineArgs.Contains("--softmax"))
+                else if (model.CommandlineArguments.Contains("--softmax"))
                 {
                     model.Exploration = Exploration.Softmax;
 
-                    model.Lambda = OptionParser.FindOptionsFloat(commandlineArgs, "--lambda").FirstOrDefault();
+                    model.Lambda = OptionParser.FindOptionsFloat(model.CommandlineArguments, "--lambda").FirstOrDefault();
                 }
                 else
                 {
                     model.Exploration = Exploration.EpsilonGreedy;
-                    model.Epsilon = OptionParser.FindOptionsFloat(commandlineArgs, "--epsilon").FirstOrDefault();
+                    model.Epsilon = OptionParser.FindOptionsFloat(model.CommandlineArguments, "--epsilon").FirstOrDefault();
                 }
             }
 

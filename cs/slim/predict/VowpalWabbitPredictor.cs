@@ -23,7 +23,8 @@ namespace VowpalWabbit.Prediction
         public VowpalWabbitPredictor(Model model)
         {
             this.model = model;
-            this.weightMask = (UInt64)(((1 << model.NumBits) << model.StrideShift) - 1);
+            this.weightMask = ((1ul << model.NumBits) << model.StrideShift) - 1ul;
+            // System.Diagnostics.Debug.WriteLine("weightMask: " + this.weightMask);
         }
 
 #if NET40
@@ -31,12 +32,15 @@ namespace VowpalWabbit.Prediction
 #endif
         private float Predict(Feature f, ulong offset)
         {
+            // System.Diagnostics.Debug.WriteLine("StrideShift: " + model.StrideShift);
             // apply strideshift for multiple models
             UInt64 idx = f.WeightIndex << this.model.StrideShift;
             // select model
             idx += offset;
             // apply weightMask to stay within bounds
             idx &= this.weightMask;
+
+            // System.Diagnostics.Debug.WriteLine("Predict: " + f.WeightIndex +"/" + idx + ":" + f.X + "*" + this.model.Weights[idx]);
 
             return this.model.Weights[idx] * f.X;
         }
@@ -68,7 +72,8 @@ namespace VowpalWabbit.Prediction
 
             try
             {
-                // handle constant
+                // Note: the current models don't store --noconstant, just the weights will be 0
+                // to be forward compatible, let's still implement it
                 if (!this.model.NoConstant)
                 {
                     if (!ex.Namespaces.TryGetValue(constant_namespace, out constantNamespace))
@@ -80,15 +85,56 @@ namespace VowpalWabbit.Prediction
                         constantNamespace.Add(ConstantFeature);
                 }
 
-                // regular features + interaction expansion
-                return ex.Namespaces.Sum(kv => kv.Value.Sum(f => Predict(f, offset))) +
-                    this.model.Interactions.Sum(i => this.Predict(ex, i, 0, new Feature { X = 1f }, offset));
+                // compute linear terms
+                float pred = ex.Namespaces
+                    .Where(kv => !this.model.IgnoreLinear[kv.Key])
+                    .Sum(kv => kv.Value.Sum(f => Predict(f, offset)));
+
+                // compute interaction terms
+                pred += this.model.Interactions.Sum(i => this.Predict(ex, i, 0, new Feature { X = 1f }, offset));
+
+                return pred;
+
             }
             finally
             {
                 // don't remove namespace, just clear it
                 constantNamespace?.Clear();
             }
+        }
+
+        public float[] Predict(MultilineExample example)
+        {
+            var preds = new float[example.Examples.Count];
+
+            int i = 0;
+            foreach (var ex in example.Examples)
+            {
+                var ex2 = ex;
+
+                if (example.Shared != null)
+                {
+                    // copy so we can add shared features
+                    ex2 = new Example { Namespaces = new Dictionary<ushort, List<Feature>>(ex.Namespaces) };
+
+                    foreach (var ns in example.Shared.Namespaces)
+                    {
+                        List<Feature> existingFeatures;
+                        if (ex2.Namespaces.TryGetValue(ns.Key, out existingFeatures))
+                        {
+                            // copy the list
+                            existingFeatures = existingFeatures.Union(ns.Value).ToList();
+                            ex2.Namespaces[ns.Key] = existingFeatures;
+                        }
+                        else
+                            ex2.Namespaces.Add(ns.Key, ns.Value);
+                    }
+                }
+
+                preds[i++] = this.Predict(ex2);
+            }
+
+            return preds;
         }
     }
 }
