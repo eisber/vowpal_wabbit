@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-
-namespace VowpalWabbit.Prediction
+namespace Microsoft.DecisionService.Exploration
 {
     /// <summary>
     /// Translated implementation of C++ murmurhash3 in explore-cpp.

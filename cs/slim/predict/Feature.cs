@@ -2,8 +2,11 @@ using System.Diagnostics;
 
 namespace VowpalWabbit.Prediction
 {
+    /// <summary>
+    /// A single sparse feature.
+    /// </summary>
     [DebuggerDisplay("Feature({WeightIndex}:{X})")]
-    public struct Feature
+    public class Feature
     {
         public ulong WeightIndex;
 

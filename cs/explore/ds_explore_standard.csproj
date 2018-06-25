@@ -2,10 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.0</TargetFramework>
+    <AssemblyName>VowpalWabbit.Exploration</AssemblyName>
+    <PackageId>VowpalWabbit.Exploration</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\explore\ds_explore_standard.csproj" />
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

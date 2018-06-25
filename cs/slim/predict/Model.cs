@@ -1,59 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace VowpalWabbit.Prediction
 {
-    public interface IModelWeights
-    {
-        float this[UInt64 key]
-        {
-            get; set;
-        }
-    }
-
-    public sealed class DenseModelWeights : IModelWeights
-    {
-        private readonly float[] weights;
-
-        public DenseModelWeights(int numBits)
-        {
-            this.weights = new float[1 << numBits];
-        }
-
-        public float this[UInt64 key] 
-        { 
-            // TODO: conversions are fine?
-            get { return this.weights[(int)key]; }
-            set { this.weights[(int)key] = value; }
-        }
-    }
-
-    public sealed class SparseModelWeights : IModelWeights
-    {
-        private readonly Dictionary<UInt64, float> weights = new Dictionary<UInt64, float>();
-
-        public float this[UInt64 key]
-        { 
-            get
-            {
-                // TODO: stride shift
-                float value;
-                if (!this.weights.TryGetValue(key, out value))
-                    value = 0;
-
-                return value;
-            } 
-            
-            set { this.weights[key] = value; }
-        }
-    }
-
+    /// <summary>
+    /// A parsed Vowpal Wabbit model.
+    /// </summary>
     public class Model
     {
         private float lambda;
+
+        private int numBits;
 
         public IModelWeights Weights { get; set; }
 
@@ -79,7 +36,20 @@ namespace VowpalWabbit.Prediction
 
         public string Id { get; set; }
 
-        public string CommandlineArguments { get; set; }
+        private string commandlineArguments;
+
+        public string CommandlineArguments
+        {
+            get { return this.commandlineArguments; }
+
+            set
+            {
+                this.commandlineArguments = value;
+
+                this.IsCbAdfExplore = value.Contains("--cb_explore_adf");
+                this.IsCsoaaLdf = value.Contains("--csoaa_ldf");
+            }
+        }
 
         public List<string> Interactions { get; set; }
 
@@ -87,22 +57,30 @@ namespace VowpalWabbit.Prediction
 
         public bool NoConstant { get; set; }  
 
-        public int NumBits { get; set; }
-
-        // this needs the "hashing" mode
-        public void ParseNamespace(string s, out ushort featureGroup, out UInt64 hash)
+        public int NumBits
         {
-            featureGroup = (ushort)s[0];
-            hash = MurMurHash3.ComputeIdHash(s, 0);
+            get { return this.numBits; }
+            set
+            {
+                this.numBits = value;
+                this.WeightMask = (1ul << value) - 1ul;
+            }
         }
 
-        public UInt64 ParseFeature(string s, UInt64 namespaceHash)
-        {
-            UInt64 idx;
-            if (ulong.TryParse(s, out idx))
-                return namespaceHash + idx;
+        public bool IsCbAdfExplore { get; private set; }
 
-            return MurMurHash3.ComputeIdHash(s, (uint)namespaceHash);
-        }
+        public bool IsCsoaaLdf { get; private set; }
+
+        public UInt64 WeightMask { get; private set; }
+
+        public UInt64 GetStridedIndex(UInt64 idx, ulong offset)
+            // apply strideshift for multiple models
+            // select model
+            // apply weightMask to stay within bounds
+            => ((idx << this.StrideShift) + offset) & this.WeightMask;
+
+        public float GetWeight(UInt64 idx, ulong offset)
+            => this.Weights[this.GetStridedIndex(idx, offset)];
+
     }
 }

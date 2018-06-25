@@ -5,9 +5,17 @@ using System.Linq;
 
 namespace VowpalWabbit.Prediction
 {
+    /// <summary>
+    /// VowpalWabbit text format parser (no label support).
+    /// </summary>
     public static class TextDeserializer
     {
-        public static Example ParseExample(this Model m, string line)
+        /// <summary>
+        /// Parses VowpalWabbit test format.
+        /// </summary>
+        /// <param name="line">The data.</param>
+        /// <returns>Parsed example.</returns>
+        public static Example ParseExample(string line)
         {
             // An example line: 
             // 1 |a 0:1 |b 2:2
@@ -21,19 +29,21 @@ namespace VowpalWabbit.Prediction
 
                 ushort featureGroup;
                 UInt64 namespaceHash;
-                m.ParseNamespace(fields[0], out featureGroup, out namespaceHash);
+                HashUtil.ParseNamespace(fields[0], out featureGroup, out namespaceHash);
 
                 ex.Namespaces.Add(featureGroup,
                     fields.Skip(1)
                         .Select(pairs => pairs.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries))
                             // split 0:1
                             .Select(s =>
-                                new Feature
+                                new AuditFeature
                                 {
-                                    WeightIndex = m.ParseFeature(s[0], namespaceHash),
-                                    X = float.Parse(s[1], NumberStyles.Any, CultureInfo.InvariantCulture)
+                                    WeightIndex = HashUtil.ParseFeature(s[0], namespaceHash),
+                                    X = float.Parse(s[1], NumberStyles.Any, CultureInfo.InvariantCulture),
+                                    Name = s[0],
+                                    Namespace = fields[0]
                                 })
-                            .ToList());
+                            .ToList<Feature>());
             }
 
             return ex;

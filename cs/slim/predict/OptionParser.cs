@@ -1,10 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
 namespace VowpalWabbit.Prediction
 {
+    /// <summary>
+    /// Extract command line options from Vowpal Wabbit command line arguments.
+    /// </summary>
     public static class OptionParser
     {
         public static IEnumerable<string> FindOptions(string commandlineArgs, string argName)

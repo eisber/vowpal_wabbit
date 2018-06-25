@@ -3,27 +3,26 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VowpalWabbit.Prediction;
 
-namespace test
+namespace VowpalWabbit.Prediction.Tests
 {
     [TestClass]
     public class RegressionTests
     {
         public TestContext TestContext { get; set; }
 
-        public ushort ParseFeatureGroup(Model m, string s)
+        public ushort ParseFeatureGroup(string s)
         {
-            m.ParseNamespace(s, out var featureGroup, out var _);
+            HashUtil.ParseNamespace(s, out var featureGroup, out var _);
 
             return featureGroup;
         }
 
-        public UInt64 ParseFeatureIndex(Model m, string ns, string featureIndex)
+        public UInt64 ParseFeatureIndex(string ns, string featureIndex)
         {
-            m.ParseNamespace(ns, out var _, out var namespaceHash);
+            HashUtil.ParseNamespace(ns, out var _, out var namespaceHash);
 
-            return m.ParseFeature(featureIndex, namespaceHash);
+            return HashUtil.ParseFeature(featureIndex, namespaceHash);
         }
 
         public void Regression(string modelFile, string predFile, string dataFile)
@@ -35,13 +34,13 @@ namespace test
             using (var modelStream = File.OpenRead(Path.Combine(dataDir, modelFile)))
             {
                 Model m = ModelParser.Parse(modelStream);
-                var predictor = new VowpalWabbitPredictor(m);
+                var predictor = VowpalWabbitPredictor.Create(m) as VowpalWabbitPredictorRegression;
 
                 var actual = new List<float>();
                 // Parse data file
                 foreach (var line in File.ReadAllLines(Path.Combine(dataDir, dataFile)))
                 {
-                    Example ex = m.ParseExample(line);
+                    Example ex = TextDeserializer.ParseExample(line);
 
                     // help debugging
                     Console.Out.WriteLine("Input  " + line);

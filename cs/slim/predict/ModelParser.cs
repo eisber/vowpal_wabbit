@@ -3,24 +3,13 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.DecisionService.Exploration;
 
 namespace VowpalWabbit.Prediction
 {
-    public class ModelParserException : Exception
-    {
-        public ModelParserException(string fieldName, string message) : base(message)
-        {
-            this.FieldName = fieldName;
-        }
-
-        public ModelParserException(string fieldName, string message, Exception innerException) : base(message, innerException)
-        {
-            this.FieldName = fieldName;
-        }
-
-        public string FieldName { get; private set; }
-    }
-
+    /// <summary>
+    /// Parsers a model.
+    /// </summary>
     public class ModelParser : IDisposable
     {
         public static Model Parse(Stream s)
@@ -50,7 +39,6 @@ namespace VowpalWabbit.Prediction
             this.SkipUpdateChecksum("max_label", sizeof(float));
 
             model.NumBits = (int)this.ReadUInt32UpdateChecksum("num_bits");
-            //System.Diagnostics.Debug.WriteLine(model.NumBits);
 
             this.SkipUpdateChecksum("lda", sizeof(UInt32));
 
@@ -72,13 +60,11 @@ namespace VowpalWabbit.Prediction
             foreach (var arg in new[] { "-q", "--quadratic", "--cubic", "--interactions" })
                 model.Interactions.AddRange(OptionParser.FindOptions(model.CommandlineArguments, arg));
 
-            // TODO: implement support for it
             model.IgnoreLinear = new bool[256];
             foreach (var featureGroup in OptionParser.FindOptions(model.CommandlineArguments, "--ignore_linear"))
                 model.IgnoreLinear[(int)featureGroup[0]] = true;
 
             UInt64 numWeights = 0;
-
             if (model.CommandlineArguments.Contains("--cb_explore_adf"))
             {
                 model.BagSize = OptionParser.FindOptionsInt(model.CommandlineArguments, "--bag").FirstOrDefault();
@@ -103,10 +89,6 @@ namespace VowpalWabbit.Prediction
                 }
             }
 
-            // Console.Out.WriteLine("numBits: " + numBits);
-            // Console.Out.WriteLine("args: '" + commandlineArgs + "'");
-            // Console.Out.WriteLine("interactions: '" + string.Join(",", interactions) + "'");
-
             UInt32 checksumLen = this.ReadUInt32("check_sum_len");
             if (checksumLen != sizeof(UInt32))
                 throw new ModelParserException("check_sum_len", "Check sum length must be 4");
@@ -115,9 +97,16 @@ namespace VowpalWabbit.Prediction
             if (storedChecksum != this.checksum)
                 throw new ModelParserException("check_sum", "Invalid check sum " + storedChecksum + " vs " + this.checksum);
 
-            bool gdResume = this.input.ReadByte() != 0; 
+            if (model.CommandlineArguments.Contains("--cb_adf"))
+            {
+                this.input.BaseStream.Seek(sizeof(UInt64), SeekOrigin.Current); // cb_adf.cc: event_sum
+                this.input.BaseStream.Seek(sizeof(UInt64), SeekOrigin.Current); // cb_adf.cc: action_sum
+            }
+
+            byte gdResumeByte = this.input.ReadByte();
+            bool gdResume = gdResumeByte != 0; 
             if (gdResume)
-                throw new ModelParserException("gd_resume", "GD Resume is not supported");
+                throw new ModelParserException("gd_resume", "GD Resume is not supported: " + gdResumeByte);
 
             model.StrideShift = (int)CeilLog2(numWeights);
 
@@ -130,25 +119,26 @@ namespace VowpalWabbit.Prediction
         {
             var weights = new SparseModelWeights();
 
-            // TODO: double check the original code
+            // read until we reach end-of-file
             if (numBits < 31)
-                this.ReadWeights(weights, reader => (UInt64)reader.ReadUInt32());
+            {
+                // improve perf by not using a delegate/lambda
+                while (this.input.BaseStream.Position != this.input.BaseStream.Length)
+                {
+                    UInt64 idx = this.input.ReadUInt32();
+                    weights[idx] = this.input.ReadSingle();
+                }
+            }
             else
-                this.ReadWeights(weights, reader => reader.ReadUInt64());
+            {
+                while (this.input.BaseStream.Position != this.input.BaseStream.Length)
+                {
+                    UInt64 idx = this.input.ReadUInt64();
+                    weights[idx] = this.input.ReadSingle();
+                }
+            }
 
             return weights;
-        }
-
-        private void ReadWeights(IModelWeights weights, Func<BinaryReader, UInt64> indexReader)
-        {
-            // read until we reach end-of-file
-            while (this.input.BaseStream.Position != this.input.BaseStream.Length)
-            {
-                // 32 vs 64bit indices
-                UInt64 idx = indexReader(this.input);
-
-                weights[idx] = this.input.ReadSingle();
-            }
         }
 
         private UInt64 CeilLog2(UInt64 v)

@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace test
+namespace VowpalWabbit.Prediction.Tests
 {
     public class FuzzyFloatComparer : IComparer
     {

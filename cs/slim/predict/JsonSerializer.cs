@@ -4,6 +4,9 @@ using System.Globalization;
 
 namespace VowpalWabbit.Prediction
 {
+    /// <summary>
+    /// Serializes examples into JSON format.
+    /// </summary>
     public static class JsonSerializer
     {
         public static string ToJson(this Example ex)

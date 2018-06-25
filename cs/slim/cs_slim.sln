@@ -4,7 +4,13 @@ VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VowpalWabbit.Prediction", "predict\VowpalWabbit.Prediction.csproj", "{1B6E3EB7-D1C7-4E63-B378-9A20FFDBE4B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{39FE9FA7-553C-4391-A49E-6B02BAAA2F6A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VowpalWabbit.Prediction.Tests", "test\VowpalWabbit.Prediction.Tests.csproj", "{39FE9FA7-553C-4391-A49E-6B02BAAA2F6A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ds_explore_standard", "..\explore\ds_explore_standard.csproj", "{AA5A9323-C336-448E-BCCD-D913464D7CC2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VowpalWabbit.Diagnostics", "VowpalWabbit.Diagnostics\VowpalWabbit.Diagnostics.csproj", "{60D1C6CC-8ECF-4C10-8F46-C6722EB808DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VowpalWabbit.JSON", "VowpalWabbit.JSON\VowpalWabbit.JSON.csproj", "{DF09B787-82AE-4273-B8A7-C7809DE7D95B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +26,18 @@ Global
 		{39FE9FA7-553C-4391-A49E-6B02BAAA2F6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39FE9FA7-553C-4391-A49E-6B02BAAA2F6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39FE9FA7-553C-4391-A49E-6B02BAAA2F6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA5A9323-C336-448E-BCCD-D913464D7CC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA5A9323-C336-448E-BCCD-D913464D7CC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA5A9323-C336-448E-BCCD-D913464D7CC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA5A9323-C336-448E-BCCD-D913464D7CC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60D1C6CC-8ECF-4C10-8F46-C6722EB808DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60D1C6CC-8ECF-4C10-8F46-C6722EB808DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60D1C6CC-8ECF-4C10-8F46-C6722EB808DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60D1C6CC-8ECF-4C10-8F46-C6722EB808DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF09B787-82AE-4273-B8A7-C7809DE7D95B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF09B787-82AE-4273-B8A7-C7809DE7D95B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF09B787-82AE-4273-B8A7-C7809DE7D95B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF09B787-82AE-4273-B8A7-C7809DE7D95B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

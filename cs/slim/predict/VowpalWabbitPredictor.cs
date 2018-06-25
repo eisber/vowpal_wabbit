@@ -1,48 +1,66 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace VowpalWabbit.Prediction
 {
+    /// <summary>
+    /// Starting point to get various predictor implementations.
+    /// </summary>
     public class VowpalWabbitPredictor
     {
-        private static readonly Feature ConstantFeature = new Feature { WeightIndex = constant, X = 1f };
-
-        // see constant.h
-        private const ushort constant_namespace = 128;
-
-        private const Int64 constant = 11650396;
-
-        private const UInt32 FNV_prime = 16777619;
-
-        private readonly Model model;
-
-        private readonly UInt64 weightMask;
-
-        public VowpalWabbitPredictor(Model model)
+        /// <summary>
+        /// Instantiates the various predictors
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static VowpalWabbitPredictor Create(Model model)
         {
+            if (model.IsCbAdfExplore)
+            {
+                switch (model.Exploration)
+                {
+                    case Exploration.EpsilonGreedy:
+                        return new VowpalWabbitPredictorContextualBanditEpsilonGreedy(model);
+
+                    case Exploration.Softmax:
+                        return new VowpalWabbitPredictorContextualBanditSoftmax(model);
+
+                    case Exploration.Bag:
+                        return new VowpalWabbitPredictorContextualBanditBag(model);
+
+                    default:
+                        throw new NotSupportedException("Exploration: " + model.Exploration + " is not supported");
+                }
+            }
+
+            if (model.IsCsoaaLdf)
+                return new VowpalWabbitPredictorMulticlass(model);
+
+            return new VowpalWabbitPredictorRegression(model);
+        }
+
+        private static readonly Feature ConstantFeature = new Feature { WeightIndex = Constants.constant, X = 1f };
+
+        protected readonly Model model;
+
+        protected VowpalWabbitPredictor(Model model)
+        {
+            if (model == null)
+                throw new ArgumentNullException("model");
+
+            if (model.Weights == null)
+                throw new ArgumentNullException("model.Weights");
+
             this.model = model;
-            this.weightMask = ((1ul << model.NumBits) << model.StrideShift) - 1ul;
-            // System.Diagnostics.Debug.WriteLine("weightMask: " + this.weightMask);
         }
 
 #if NET40
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        private float Predict(Feature f, ulong offset)
+        protected float Predict(Feature f, ulong offset)
         {
-            // System.Diagnostics.Debug.WriteLine("StrideShift: " + model.StrideShift);
-            // apply strideshift for multiple models
-            UInt64 idx = f.WeightIndex << this.model.StrideShift;
-            // select model
-            idx += offset;
-            // apply weightMask to stay within bounds
-            idx &= this.weightMask;
-
-            // System.Diagnostics.Debug.WriteLine("Predict: " + f.WeightIndex +"/" + idx + ":" + f.X + "*" + this.model.Weights[idx]);
-
-            return this.model.Weights[idx] * f.X;
+            return this.model.GetWeight(f.WeightIndex, offset) * f.X;
         }
 
         private float Predict(Example ex, string interaction, int index, Feature f, ulong offset)
@@ -53,7 +71,7 @@ namespace VowpalWabbit.Prediction
             if (!ex.Namespaces.TryGetValue(interaction[index], out var features))
                 return 0;
 
-            f.WeightIndex *= FNV_prime;
+            f.WeightIndex *= Constants.FNV_prime;
 
             return features.Sum(fn => this.Predict(ex,
                 interaction,
@@ -66,7 +84,7 @@ namespace VowpalWabbit.Prediction
                 offset));
         }
 
-        public float Predict(Example ex, ulong offset = 0)
+        protected float Predict(Example ex, ulong offset = 0)
         {
             List<Feature> constantNamespace = null;
 
@@ -76,10 +94,10 @@ namespace VowpalWabbit.Prediction
                 // to be forward compatible, let's still implement it
                 if (!this.model.NoConstant)
                 {
-                    if (!ex.Namespaces.TryGetValue(constant_namespace, out constantNamespace))
+                    if (!ex.Namespaces.TryGetValue(Constants.constant_namespace, out constantNamespace))
                     {
                         constantNamespace = new List<Feature> { ConstantFeature };
-                        ex.Namespaces.Add(constant_namespace, constantNamespace);
+                        ex.Namespaces.Add(Constants.constant_namespace, constantNamespace);
                     }
                     else
                         constantNamespace.Add(ConstantFeature);
@@ -94,7 +112,6 @@ namespace VowpalWabbit.Prediction
                 pred += this.model.Interactions.Sum(i => this.Predict(ex, i, 0, new Feature { X = 1f }, offset));
 
                 return pred;
-
             }
             finally
             {
@@ -103,35 +120,16 @@ namespace VowpalWabbit.Prediction
             }
         }
 
-        public float[] Predict(MultilineExample example)
+        protected float[] Predict(MultilineExample example, ulong offset = 0)
         {
             var preds = new float[example.Examples.Count];
 
             int i = 0;
             foreach (var ex in example.Examples)
             {
-                var ex2 = ex;
+                var merged = ex.Merge(example.Shared);
 
-                if (example.Shared != null)
-                {
-                    // copy so we can add shared features
-                    ex2 = new Example { Namespaces = new Dictionary<ushort, List<Feature>>(ex.Namespaces) };
-
-                    foreach (var ns in example.Shared.Namespaces)
-                    {
-                        List<Feature> existingFeatures;
-                        if (ex2.Namespaces.TryGetValue(ns.Key, out existingFeatures))
-                        {
-                            // copy the list
-                            existingFeatures = existingFeatures.Union(ns.Value).ToList();
-                            ex2.Namespaces[ns.Key] = existingFeatures;
-                        }
-                        else
-                            ex2.Namespaces.Add(ns.Key, ns.Value);
-                    }
-                }
-
-                preds[i++] = this.Predict(ex2);
+                preds[i++] = this.Predict(merged, offset);
             }
 
             return preds;

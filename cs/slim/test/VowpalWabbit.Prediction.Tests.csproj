@@ -7,8 +7,8 @@
     <ProjectGuid>{39FE9FA7-553C-4391-A49E-6B02BAAA2F6A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>test</RootNamespace>
-    <AssemblyName>test</AssemblyName>
+    <RootNamespace>VowpalWabbit.Prediction.Tests</RootNamespace>
+    <AssemblyName>VowpalWabbit.Prediction.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -48,6 +48,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OptionParserTests.cs" />
+    <Compile Include="ContextualBanditTests.cs" />
     <Compile Include="FuzzyFloatComparer.cs" />
     <Compile Include="MulticlassTests.cs" />
     <Compile Include="RegressionTests.cs" />

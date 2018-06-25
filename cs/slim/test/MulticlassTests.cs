@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using VowpalWabbit.Prediction;
 
-namespace test
+namespace VowpalWabbit.Prediction.Tests
 {
     [TestClass]
     public class MulticlassTests
@@ -20,11 +20,11 @@ namespace test
             using (var modelStream = File.OpenRead(Path.Combine(dataDir, "multiclass_data_4.model")))
             {
                 Model m = ModelParser.Parse(modelStream);
-                var predictor = new VowpalWabbitPredictor(m);
+                var predictor = VowpalWabbitPredictor.Create(m) as VowpalWabbitPredictorMulticlass;
 
                 var examples = File.ReadAllLines(Path.Combine(dataDir, "multiclass_data_4.txt"))
                     .Where(l => l.Trim().Length > 0)
-                    .Select(m.ParseExample)
+                    .Select(TextDeserializer.ParseExample)
                     .ToList();
 
                 var actual = predictor.Predict(
