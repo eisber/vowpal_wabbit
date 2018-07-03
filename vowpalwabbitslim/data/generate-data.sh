@@ -107,4 +107,10 @@ $VW --quiet -d cb_data_5.txt -i cb_data_9.model -p cb_data_9.pred
 xxd -i cb_data_9.model >> $DATA_H
 xxd -i cb_data_9.pred >> $DATA_H
 
+# epsilon greedy using defaults + space as namespace
+$VW --quiet -d cb_data_10.txt --cb_explore_adf -q ab -k -c --holdout_off --passes 1000 -f cb_data_10.model
+$VW --quiet -d cb_data_10.txt -i cb_data_10.model -p cb_data_10.pred
+
+xxd -i cb_data_10.model >> $DATA_H
+xxd -i cb_data_10.pred >> $DATA_H
 
