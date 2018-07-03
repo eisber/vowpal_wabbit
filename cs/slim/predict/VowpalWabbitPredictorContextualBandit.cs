@@ -1,4 +1,5 @@
 using Microsoft.DecisionService.Exploration;
+using System;
 
 namespace VowpalWabbit.Prediction
 {
@@ -7,9 +8,31 @@ namespace VowpalWabbit.Prediction
     /// </summary>
     public abstract class VowpalWabbitPredictorContextualBandit : VowpalWabbitPredictor
     {
-        internal VowpalWabbitPredictorContextualBandit(Model model) : base(model)
+        public static VowpalWabbitPredictorContextualBandit Create(Model model)
+        {
+            if (!model.IsCbAdfExplore)
+                throw new NotSupportedException("Model must be --cb_adf_explore");
+
+            switch (model.Exploration)
+            {
+                case Exploration.EpsilonGreedy:
+                    return new VowpalWabbitPredictorContextualBanditEpsilonGreedy(model);
+
+                case Exploration.Softmax:
+                    return new VowpalWabbitPredictorContextualBanditSoftmax(model);
+
+                case Exploration.Bag:
+                    return new VowpalWabbitPredictorContextualBanditBag(model);
+
+                default:
+                    throw new NotSupportedException("Exploration: " + model.Exploration + " is not supported");
+            }
+        }
+
+        protected VowpalWabbitPredictorContextualBandit(Model model) : base(model)
         {
         }
+
         protected abstract void Predict(MultilineExample example, out float[] scores, out float[] pdf);
 
         /// <summary>

@@ -29,7 +29,7 @@ namespace VowpalWabbit.Prediction.Tests
             Console.WriteLine();
         }
 
-        private void ContextualBandit(string modelFile, int repetitions, float[] expectedPDF, float[,] expectedHistogram)
+        private void ContextualBandit(string modelFile, string dataFile, int repetitions, float[] expectedPDF, float[,] expectedHistogram)
         {
             var dataDir = Path.Combine(
                 TestContext.TestDir,
@@ -38,9 +38,9 @@ namespace VowpalWabbit.Prediction.Tests
             using (var modelStream = File.OpenRead(Path.Combine(dataDir, modelFile)))
             {
                 Model m = ModelParser.Parse(modelStream);
-                var predictor = VowpalWabbitPredictor.Create(m) as VowpalWabbitPredictorContextualBandit;
+                var predictor = VowpalWabbitPredictorContextualBandit.Create(m);
 
-                var examples = File.ReadAllLines(Path.Combine(dataDir, "cb_data_5.txt"))
+                var examples = File.ReadAllLines(Path.Combine(dataDir, dataFile))
                     .Take(4)
                     .Select(TextDeserializer.ParseExample)
                     .ToList();
@@ -87,7 +87,7 @@ namespace VowpalWabbit.Prediction.Tests
         [TestMethod]
         public void ContextualBanditTest_5()
         {
-            ContextualBandit("cb_data_5.model", 10000,
+            ContextualBandit("cb_data_5.model", "cb_data_5.txt", 10000,
                 expectedPDF: new[] { 0.1f, 0.1f, 0.8f },
                 expectedHistogram: new float[3, 3] {
                     // see top action 2 w / 0.8
@@ -104,7 +104,7 @@ namespace VowpalWabbit.Prediction.Tests
         [TestMethod]
         public void ContextualBanditTest_6()
         {
-            ContextualBandit("cb_data_6.model", 1000,
+            ContextualBandit("cb_data_6.model", "cb_data_5.txt", 1000,
                 expectedPDF: new[] { 0.329f, 0.333f, 0.337f },
                 expectedHistogram: new float[3, 3] {
                     {0.311f, 0.352f, 0.337f}, // slot 0
@@ -116,7 +116,7 @@ namespace VowpalWabbit.Prediction.Tests
         [TestMethod]
         public void ContextualBanditTest_7()
         {
-            ContextualBandit("cb_data_7.model", 5,
+            ContextualBandit("cb_data_7.model", "cb_data_5.txt", 5,
                 expectedPDF: new[] { 0.0f, 0.0f, 1.0f },
                 expectedHistogram: new float[3, 3] {
                     {0.0f, 0.0f, 1.0f}, // slot 0
@@ -128,12 +128,24 @@ namespace VowpalWabbit.Prediction.Tests
         [TestMethod]
         public void ContextualBanditTest_8()
         {
-            ContextualBandit("cb_data_8.model", 10000,
+            ContextualBandit("cb_data_8.model", "cb_data_5.txt", 10000,
                 expectedPDF: new[] { 0.09f, 0.09f, 0.82f },
                 expectedHistogram: new float[3, 3] {
                     {0.09f, 0.09f, 0.82f}, // slot 0
                     {0.09f, 0.91f, 0.00f}, // slot 1
                     {0.82f, 0.00f, 0.18f}  // slot 2
+                    });
+        }
+
+        [TestMethod]
+        public void ContextualBanditTest_10()
+        {
+            ContextualBandit("cb_data_10.model", "cb_data_10.txt", 10000,
+                expectedPDF: new[] { 0.0166f, 0.0166f, 0.966f }, 
+                expectedHistogram: new float[3, 3] {
+                    {0.0178f, 0.0146f, 0.9676f }, // slot 0
+                    {0.0146f, 0.9854f, 0.0f }, // slot 1
+                    {0.9676f, 0.0f, 0.0324f }  // slot 2
                     });
         }
     }

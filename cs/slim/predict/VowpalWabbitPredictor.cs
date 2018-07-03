@@ -9,37 +9,6 @@ namespace VowpalWabbit.Prediction
     /// </summary>
     public class VowpalWabbitPredictor
     {
-        /// <summary>
-        /// Instantiates the various predictors
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public static VowpalWabbitPredictor Create(Model model)
-        {
-            if (model.IsCbAdfExplore)
-            {
-                switch (model.Exploration)
-                {
-                    case Exploration.EpsilonGreedy:
-                        return new VowpalWabbitPredictorContextualBanditEpsilonGreedy(model);
-
-                    case Exploration.Softmax:
-                        return new VowpalWabbitPredictorContextualBanditSoftmax(model);
-
-                    case Exploration.Bag:
-                        return new VowpalWabbitPredictorContextualBanditBag(model);
-
-                    default:
-                        throw new NotSupportedException("Exploration: " + model.Exploration + " is not supported");
-                }
-            }
-
-            if (model.IsCsoaaLdf)
-                return new VowpalWabbitPredictorMulticlass(model);
-
-            return new VowpalWabbitPredictorRegression(model);
-        }
-
         private static readonly Feature ConstantFeature = new Feature { WeightIndex = Constants.constant, X = 1f };
 
         protected readonly Model model;

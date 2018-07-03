@@ -2,7 +2,7 @@ namespace VowpalWabbit.Prediction
 {
     public class VowpalWabbitPredictorRegression : VowpalWabbitPredictor
     {
-        internal VowpalWabbitPredictorRegression(Model model) : base(model)
+        public VowpalWabbitPredictorRegression(Model model) : base(model)
         {
         }
 

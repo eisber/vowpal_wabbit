@@ -20,7 +20,7 @@ namespace VowpalWabbit.Prediction.Tests
             using (var modelStream = File.OpenRead(Path.Combine(dataDir, "multiclass_data_4.model")))
             {
                 Model m = ModelParser.Parse(modelStream);
-                var predictor = VowpalWabbitPredictor.Create(m) as VowpalWabbitPredictorMulticlass;
+                var predictor = new VowpalWabbitPredictorMulticlass(m);
 
                 var examples = File.ReadAllLines(Path.Combine(dataDir, "multiclass_data_4.txt"))
                     .Where(l => l.Trim().Length > 0)

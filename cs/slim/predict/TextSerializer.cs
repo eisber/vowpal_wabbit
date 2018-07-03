@@ -19,9 +19,10 @@ namespace VowpalWabbit.Prediction
             if (f is AuditFeature full)
                 sb.Append(full.Name);
             else
-                sb.Append(f.WeightIndex).Append(':');
+                sb.Append(f.WeightIndex);
 
-            sb.Append(f.X.ToString(CultureInfo.InvariantCulture));
+            sb.Append(':')
+              .Append(f.X.ToString(CultureInfo.InvariantCulture));
 
             return sb.ToString();
         }

@@ -18,9 +18,9 @@ namespace VowpalWabbit.Prediction
         {
             if (m.IsCbAdfExplore && m.Exploration == Exploration.Bag)
                 return Enumerable.Range(0, m.BagSize)
-                    .SelectMany(offset => Audit(example, m, (ulong)offset));
+                    .SelectMany(offset => example.Audit(m, (ulong)offset));
 
-            return example.Audit(m);
+            return example.Audit(m, 0);
         }
 
         private static IEnumerable<AuditFeature> Audit(this Example ex, Model m, string interaction, int index, AuditFeature f, ulong offset)
@@ -49,7 +49,7 @@ namespace VowpalWabbit.Prediction
                 yield return item;
         }
 
-        private static IEnumerable<AuditFeature> Audit(this MultilineExample example, Model m, ulong offset = 0)
+        private static IEnumerable<AuditFeature> Audit(this MultilineExample example, Model m, ulong offset)
         {
             // TODO: add support for constant
             return example.Examples

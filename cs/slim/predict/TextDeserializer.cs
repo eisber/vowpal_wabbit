@@ -25,14 +25,27 @@ namespace VowpalWabbit.Prediction
             // get namespaces, skip label
             foreach (var ns in line.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries).Skip(1))
             {
-                var fields = ns.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries); // split features
+                // split features
+                var fields = ns.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s => s.Trim())
+                    .ToArray(); 
+
+                int fieldStart = 0;
+                string namespaceValue;
+                if (ns.StartsWith(" "))
+                    namespaceValue = " ";
+                else
+                {
+                    namespaceValue = fields[0];
+                    fieldStart = 1;
+                }
 
                 ushort featureGroup;
                 UInt64 namespaceHash;
-                HashUtil.ParseNamespace(fields[0], out featureGroup, out namespaceHash);
+                HashUtil.ParseNamespace(namespaceValue, out featureGroup, out namespaceHash);
 
                 ex.Namespaces.Add(featureGroup,
-                    fields.Skip(1)
+                    fields.Skip(fieldStart)
                         .Select(pairs => pairs.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries))
                             // split 0:1
                             .Select(s =>
@@ -41,7 +54,7 @@ namespace VowpalWabbit.Prediction
                                     WeightIndex = HashUtil.ParseFeature(s[0], namespaceHash),
                                     X = float.Parse(s[1], NumberStyles.Any, CultureInfo.InvariantCulture),
                                     Name = s[0],
-                                    Namespace = fields[0]
+                                    Namespace = namespaceValue
                                 })
                             .ToList<Feature>());
             }

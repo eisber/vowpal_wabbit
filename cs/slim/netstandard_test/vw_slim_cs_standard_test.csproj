@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>VowpalWabbit.Prediction</AssemblyName>
+    <PackageId>VowpalWabbit.Prediction</PackageId>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>C:/work/vw.csslim/cs/slim</OutputPath>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="C:/work/vw.csslim/cs/slim\ContextualBanditExample.cs" Link="ContextualBanditExample.cs" />
+    <Compile Include="C:/work/vw.csslim/cs/slim\Example.cs" Link="Example.cs" />
+    <Compile Include="C:/work/vw.csslim/cs/slim\Feature.cs" Link="Feature.cs" />
+    <Compile Include="C:/work/vw.csslim/cs/slim\Model.cs" Link="Model.cs" />
+
+    <Compile Include="C:/work/vw.csslim/cs/slim\ModelParser.cs" Link="ModelParser.cs" />
+    <Compile Include="C:/work/vw.csslim/cs/slim\TestDriver.cs" Link="TestDriver.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+  </ItemGroup>
+</Project>

@@ -34,7 +34,7 @@ namespace VowpalWabbit.Prediction.Tests
             using (var modelStream = File.OpenRead(Path.Combine(dataDir, modelFile)))
             {
                 Model m = ModelParser.Parse(modelStream);
-                var predictor = VowpalWabbitPredictor.Create(m) as VowpalWabbitPredictorRegression;
+                var predictor = new VowpalWabbitPredictorRegression(m);
 
                 var actual = new List<float>();
                 // Parse data file

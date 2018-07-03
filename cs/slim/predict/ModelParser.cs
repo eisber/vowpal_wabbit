@@ -21,8 +21,11 @@ namespace VowpalWabbit.Prediction
 
         private UInt32 checksum;
 
-        private ModelParser(Stream input)
+        private readonly bool enableChecksumCompute;
+
+        private ModelParser(Stream input, bool enableChecksumCompute = true)
         {
+            this.enableChecksumCompute = enableChecksumCompute;
             this.input = new BinaryReader(input, Encoding.UTF8, leaveOpen: true);
         }
 
@@ -85,7 +88,12 @@ namespace VowpalWabbit.Prediction
                 else
                 {
                     model.Exploration = Exploration.EpsilonGreedy;
-                    model.Epsilon = OptionParser.FindOptionsFloat(model.CommandlineArguments, "--epsilon").FirstOrDefault();
+
+                    var epsilonEnumerator = OptionParser.FindOptionsFloat(model.CommandlineArguments, "--epsilon").GetEnumerator();
+                    if (epsilonEnumerator.MoveNext())
+                        model.Epsilon = epsilonEnumerator.Current;
+                    else // default value from cb_explore.cc
+                        model.Epsilon = 0.05f;
                 }
             }
 
@@ -94,7 +102,7 @@ namespace VowpalWabbit.Prediction
                 throw new ModelParserException("check_sum_len", "Check sum length must be 4");
 
             UInt32 storedChecksum = this.ReadUInt32("check_sum");
-            if (storedChecksum != this.checksum)
+            if (this.enableChecksumCompute && storedChecksum != this.checksum)
                 throw new ModelParserException("check_sum", "Invalid check sum " + storedChecksum + " vs " + this.checksum);
 
             if (model.CommandlineArguments.Contains("--cb_adf"))
@@ -156,8 +164,9 @@ namespace VowpalWabbit.Prediction
                 if (len > 0)
                 {
                     byte[] data = this.input.ReadBytes(len);
-                    
-                    this.checksum = (UInt32)MurMurHash3.ComputeIdHash(data, this.checksum);
+
+                    if (this.enableChecksumCompute)
+                        this.checksum = (UInt32)MurMurHash3.ComputeIdHash(data, this.checksum);
                 }
             }
             catch (Exception e)
@@ -183,7 +192,8 @@ namespace VowpalWabbit.Prediction
             {
                 UInt32 value = this.input.ReadUInt32();
 
-                this.checksum = (UInt32)MurMurHash3.ComputeIdHash(BitConverter.GetBytes(value), this.checksum);
+                if (this.enableChecksumCompute)
+                    this.checksum = (UInt32)MurMurHash3.ComputeIdHash(BitConverter.GetBytes(value), this.checksum);
 
                 return value;
             }
@@ -199,7 +209,6 @@ namespace VowpalWabbit.Prediction
             {
                 UInt32 len = this.input.ReadUInt32();
 
-                // TODO: maybe length-1
                 return new String(this.input.ReadChars((int)len));
             }
             catch (Exception e)
@@ -218,8 +227,9 @@ namespace VowpalWabbit.Prediction
                     throw new ModelParserException(fieldName, "string fields must have a least 1 byte");
 
                 byte[] chars = this.input.ReadBytes((int)len);
-                
-                this.checksum = (UInt32)MurMurHash3.ComputeIdHash(chars, this.checksum);
+
+                if (this.enableChecksumCompute)
+                    this.checksum = (UInt32)MurMurHash3.ComputeIdHash(chars, this.checksum);
 
                 return Encoding.UTF8.GetString(chars, 0,  (int)len - 1);
             }

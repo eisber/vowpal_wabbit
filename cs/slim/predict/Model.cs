@@ -81,6 +81,5 @@ namespace VowpalWabbit.Prediction
 
         public float GetWeight(UInt64 idx, ulong offset)
             => this.Weights[this.GetStridedIndex(idx, offset)];
-
     }
 }
