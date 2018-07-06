@@ -75,4 +75,7 @@
     <Error Condition="!Exists('..\..\slim\packages\MSTest.TestAdapter.1.2.1\build\net45\MSTest.TestAdapter.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\slim\packages\MSTest.TestAdapter.1.2.1\build\net45\MSTest.TestAdapter.targets'))" />
   </Target>
   <Import Project="..\..\slim\packages\MSTest.TestAdapter.1.2.1\build\net45\MSTest.TestAdapter.targets" Condition="Exists('..\..\slim\packages\MSTest.TestAdapter.1.2.1\build\net45\MSTest.TestAdapter.targets')" />
+  <PropertyGroup>
+    <PreBuildEvent>echo F|xcopy /S /Q /Y /F /D $(SolutionDir)$(ConfigurationName)\cs_native_explore.dll $(TargetDir)cs_native_explore.dll</PreBuildEvent>
+  </PropertyGroup>
 </Project>

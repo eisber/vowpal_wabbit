@@ -10,11 +10,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ds_explore_standard", "..\e
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VowpalWabbit.Diagnostics", "VowpalWabbit.Diagnostics\VowpalWabbit.Diagnostics.csproj", "{60D1C6CC-8ECF-4C10-8F46-C6722EB808DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VowpalWabbit.JSON", "VowpalWabbit.JSON\VowpalWabbit.JSON.csproj", "{DF09B787-82AE-4273-B8A7-C7809DE7D95B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VowpalWabbit.JSON", "VowpalWabbit.JSON\VowpalWabbit.JSON.csproj", "{DF09B787-82AE-4273-B8A7-C7809DE7D95B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cs_native_explore", "..\cs_native_explore\cs_native_explore\cs_native_explore.vcxproj", "{CA7795FC-3EC7-4415-AB25-87B86CA34F7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs_native_explore_interop", "..\cs_native_explore_interop\cs_native_explore_interop\cs_native_explore_interop.csproj", "{7713B55C-B82F-4337-B6D3-F5E4493DD9BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cs_native_explore_interop", "..\cs_native_explore_interop\cs_native_explore_interop\cs_native_explore_interop.csproj", "{7713B55C-B82F-4337-B6D3-F5E4493DD9BF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CA7795FC-3EC7-4415-AB25-87B86CA34F7F} = {CA7795FC-3EC7-4415-AB25-87B86CA34F7F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs_native_explore_test", "..\cs_native_explore_test\cs_native_explore_test\cs_native_explore_test.csproj", "{2C62CE2E-762F-456D-8C88-C3D26A9A02B5}"
 EndProject

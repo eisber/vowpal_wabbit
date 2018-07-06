@@ -11,7 +11,8 @@ extern "C" __declspec(dllexport) int generate_softmax(float lambda, float* score
 	return exploration::generate_softmax(lambda, scores, scores + scores_size, pdf, pdf + pdf_size);
 }
 
-extern "C" __declspec(dllexport) int generate_bag(uint32_t* top_actions, uint32_t top_actions_size, float* pdf, uint32_t pdf_size)
+// using int32_t to avoid copy as int is more natural in C#
+extern "C" __declspec(dllexport) int generate_bag(int32_t* top_actions, uint32_t top_actions_size, float* pdf, uint32_t pdf_size)
 {
 	return exploration::generate_bag(top_actions, top_actions + top_actions_size, pdf, pdf + pdf_size);
 }

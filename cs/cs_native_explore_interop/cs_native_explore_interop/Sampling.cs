@@ -7,7 +7,9 @@ namespace VowpalWabbit.Native.Exploration
 {
     public static class Sampling
     {
-        [DllImport(@"cs_native_explore.dll", CharSet = CharSet.Ansi)]
+        private const string DllName = "cs_native_explore.dll";
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
 
         private static extern int sample_after_normalizing([MarshalAs(UnmanagedType.LPStr)] string seed, [In, Out] float[] pdf, UInt32 pdf_size, ref UInt32 chosen_index);
 
