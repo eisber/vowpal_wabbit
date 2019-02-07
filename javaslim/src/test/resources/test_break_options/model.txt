@@ -1,0 +1,13 @@
+Version 8.5.0
+Id 
+Min label:-50
+Max label:50
+bits:25
+lda:0
+0 ngram:
+0 skip:
+options: --interactions bI --interactions be --interactions cI --interactions ce --interactions aj --interactions ak --interactions aI --interactions bi --interactions ci --interactions ai --interactions a7 --interactions am --interactions b7 --interactions c8 --link=logistic 
+Checksum: 3468581065
+:0
+2:-0.0624863
+83942:-0.181884

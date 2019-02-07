@@ -1,0 +1,18 @@
+Version 8.6.1
+Id 
+Min label:-1
+Max label:1
+bits:18
+lda:0
+0 ngram:
+0 skip:
+options: --hash all --hash_seed 0 --link identity
+Checksum: 1241758645
+:0
+Constant:116060:0.0040493
+a^42:150311:0.0040493
+a^w:9575:-0.160261
+a^x:55432:0.134598
+b^42:138448:0.0040493
+b^y:152274:0.134598
+b^z:124687:-0.160261

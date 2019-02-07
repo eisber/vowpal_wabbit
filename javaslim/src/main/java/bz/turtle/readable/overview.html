@@ -1,0 +1,32 @@
+<HTML>
+<BODY>
+
+
+Pure java reader for <a href="https://github.com/JohnLangford/vowpal_wabbit/">Vowpal Wabbit</a>
+<code>--readable_model</code> file and creates a weights array
+containing the weight per bucket then using same hashing of vw finds the correct bucket for the input features and
+computes the inner product.
+check out this gist and Feature-Hashing-and-Extraction for more information
+<pre>
+Example:
+
+    Create a vw model:
+    $ echo "1 |ns a b c:4" | vw --readable_model /tmp/readable_model.txt
+
+
+    Main.java:
+
+    import bz.turtle.readable.*;
+    public class Main {
+        public static void main(String[] args) throws Exception {
+            ReadableModel m = new ReadableModel(new File("/tmp/readable_model.txt"));
+            float[] p = m.predict(new PredictionRequest(new Namespace("ns", new Feature("a"), new Feature("c",3)));
+            System.out.println(Arrays.toString(p));
+        }
+    }
+
+</pre>
+
+@see bz.turtle.readable.ReadableModel
+</BODY>
+</HTML>
