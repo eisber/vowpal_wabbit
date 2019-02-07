@@ -1,0 +1,14 @@
+Version 8.6.1
+Id 
+Min label:-2
+Max label:2
+bits:18
+lda:0
+0 ngram:
+0 skip:
+options: --hash_seed 0 --link poisson
+Checksum: 513802008
+:0
+27683:-0.297751
+116060:-0.0640085
+183220:0.309875
