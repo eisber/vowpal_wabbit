@@ -48,9 +48,14 @@ target_include_directories(vw_jni PUBLIC
   ${JNI_INCLUDE_DIRS})
 
 # Ensure target directory exists
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/target/bin/natives/linux_64/)
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(JNI_TARGET_DIR ${CMAKE_CURRENT_SOURCE_DIR}/target/bin/natives/linux/)
+else()
+  set(JNI_TARGET_DIR ${CMAKE_CURRENT_SOURCE_DIR}/target/bin/natives/linux_64/)
+endif()
+file(MAKE_DIRECTORY ${JNI_TARGET_DIR})
 add_custom_command(TARGET vw_jni POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:vw_jni> ${CMAKE_CURRENT_SOURCE_DIR}/target/bin/natives/linux_64/
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:vw_jni> ${JNI_TARGET_DIR}
 )
 
 if(STATIC_LINK_VW_JAVA)
